@@ -136,13 +136,19 @@ export default function App() {
 
   // Sync currentView with location for direct URL access
   React.useEffect(() => {
-    const path = location.pathname;
+    let path = location.pathname;
+    // Normalize path: remove trailing slash except for root
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+
     const pathMapRev: Record<string, View> = {
       '/': 'home',
       '/about': 'about',
       '/services': 'services',
       '/intelligence': 'intelligence',
       '/contact': 'clientPortal',
+      '/client-portal': 'clientPortal',
       '/admin/login': 'admin',
       '/admin/dashboard': 'admin',
       '/case-lookup': 'caseLookup',
@@ -163,6 +169,9 @@ export default function App() {
 
     if (pathMapRev[path]) {
       setCurrentView(pathMapRev[path]);
+    } else {
+      // Fallback to home for unknown paths
+      setCurrentView('home');
     }
   }, [location.pathname]);
 
