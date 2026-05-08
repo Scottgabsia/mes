@@ -10,7 +10,7 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "isolatedModules": true,
     "moduleDetection": "force",
     "allowJs": true,
@@ -20,7 +20,13 @@
         "./*"
       ]
     },
-    "allowImportingTsExtensions": true,
-    "noEmit": true
-  }
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
+  },
+  "include": ["server.ts", "src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
 }
