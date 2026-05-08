@@ -105,7 +105,7 @@ export default function App() {
   React.useEffect(() => {
     window.scrollTo(0, 0);
     
-    // Auto collapse sidebar on intelligence, client portal, recovery confirmation and dashboard view
+    // Auto collapse logic based on view
     const autoCollapseViews: View[] = [
       'intelligence', 
       'about',
@@ -126,12 +126,25 @@ export default function App() {
       'amlkyc',
       'admin'
     ];
+    
     if (autoCollapseViews.includes(currentView)) {
       setIsSidebarCollapsed(true);
     } else {
       setIsSidebarCollapsed(false);
     }
   }, [currentView]);
+
+  // Sync currentView with location for direct URL access
+  React.useEffect(() => {
+    const path = location.pathname;
+    if (path === '/' || path === '') setCurrentView('home');
+    else if (path === '/admin/login' || path === '/admin/dashboard') setCurrentView('admin');
+    else if (path === '/about') setCurrentView('about');
+    else if (path === '/services') setCurrentView('services');
+    else if (path === '/intelligence') setCurrentView('intelligence');
+    else if (path === '/contact' || path === '/client-portal') setCurrentView('clientPortal');
+    // ... add more if needed
+  }, [location.pathname]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -143,25 +156,32 @@ export default function App() {
     closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'instant' });
     
-    // Sync URL for key views if desired, or just let internal state handle it
-    if (view === 'home') navigate('/');
-    else if (view !== 'admin') {
-      // For this specific app, we keep internal state navigation for most views
-      // but ensure admin paths are distinct.
-      if (location.pathname.startsWith('/admin')) {
-        navigate('/');
-      }
+    // Navigation mapping
+    const pathMap: Record<string, string> = {
+      'home': '/',
+      'about': '/about',
+      'services': '/services',
+      'intelligence': '/intelligence',
+      'clientPortal': '/contact',
+      'admin': '/admin/login',
+      'caseLookup': '/case-lookup',
+      'privacyPolicy': '/privacy',
+      'termsOfService': '/terms',
+      'reviews': '/reviews',
+      'submitReview': '/reviews/submit'
+    };
+
+    if (pathMap[view]) {
+      navigate(pathMap[view]);
     }
   };
 
-  // If we are on a specific admin sub-route, we might want to bypass the standard layout
-  const isAdminRoute = location.pathname.startsWith('/admin');
-
-  if (location.pathname === '/admin/login') {
+  // Dedicated Route handlers for Admin
+  if (location.pathname === '/admin/login' || location.pathname === '/admin/login/') {
     return <AdminLoginView />;
   }
 
-  if (location.pathname === '/admin/dashboard') {
+  if (location.pathname === '/admin/dashboard' || location.pathname === '/admin/dashboard/') {
     return <CaseManagerView />;
   }
 

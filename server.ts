@@ -50,8 +50,13 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
+    // Determine the dist path relative to this file
+    // The compiled server.js is in /dist, alongside index.html and assets/
+    const distPath = path.resolve(__dirname); 
+    
     app.use(express.static(distPath));
+    
+    // Fallback for SPA routing
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
