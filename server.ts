@@ -50,15 +50,24 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Determine the dist path relative to the current working directory
-    const distPath = path.join(process.cwd(), "dist");
+    // In production, server.js is compiled into the dist folder.
+    // So __dirname will be the dist directory itself.
+    const distPath = __dirname;
+    const indexPath = path.join(distPath, "index.html");
+    
+    console.log(`[PROD] Serving static files from: ${distPath}`);
+    console.log(`[PROD] Using index.html at: ${indexPath}`);
     
     // Serve static files
     app.use(express.static(distPath, {
-      index: 'index.html',
-      fallthrough: true // Allow falling through to the * handler
+      index: false, // We'll handle the root and fallbacks manually
     }));
     
+    // Root route
+    app.get("/", (req, res) => {
+      res.sendFile(indexPath);
+    });
+
     // API 404s
     app.get("/api/*", (req, res) => {
       res.status(404).json({ error: "API route not found" });
@@ -66,12 +75,11 @@ async function startServer() {
 
     // SPA fallback
     app.get("*", (req, res) => {
-      const indexPath = path.join(distPath, "index.html");
+      // Check if file exists to provide better errors
       res.sendFile(indexPath, (err) => {
         if (err) {
           console.error(`[ERROR] Failed to send index.html for ${req.url}:`, err);
-          // If index.html is missing, try to serve from process directory as last resort
-          res.status(500).send("Application load error. Root index.html not found.");
+          res.status(500).send("Application load error (index.html not found).");
         }
       });
     });

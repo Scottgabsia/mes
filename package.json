@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && tsc && cp dist/index.html dist/404.html",
+    "build": "vite build && tsc && cp dist/index.html dist/404.html && echo '/* /index.html 200' > dist/_redirects",
     "start": "NODE_ENV=production node dist/server.js",
     "preview": "vite preview",
     "clean": "rm -rf dist",
