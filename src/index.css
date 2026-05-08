@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-manrope: "Manrope", sans-serif;
+  --font-fira: "Fira Code", monospace;
+
+  --color-on-tertiary-fixed: #271900;
+  --color-on-tertiary: #412d00;
+  --color-on-primary-fixed: #00174b;
+  --color-surface-container: #1c2028;
+  --color-on-background: #e0e2ee;
+  --color-on-primary-container: #f3f3ff;
+  --color-on-secondary-fixed: #002022;
+  --color-on-surface: #e0e2ee;
+  --color-primary-fixed: #dbe1ff;
+  --color-surface-container-low: #181c24;
+  --color-tertiary: #ffba20;
+  --color-error-container: #93000a;
+  --color-outline-variant: #424656;
+  --color-surface-tint: #b4c5ff;
+  --color-tertiary-container: #926800;
+  --color-surface-container-high: #262a33;
+  --color-on-tertiary-container: #fff2e3;
+  --color-surface-container-highest: #31353e;
+  --color-surface-variant: #31353e;
+  --color-primary-fixed-dim: #b4c5ff;
+  --color-on-secondary-fixed-variant: #004f54;
+  --color-inverse-on-surface: #2d303a;
+  --color-surface-dim: #10131c;
+  --color-surface-bright: #353943;
+  --color-secondary-container: #00eefc;
+  --color-error: #ffb4ab;
+  --color-on-primary: #002a78;
+  --color-surface: #10131c;
+  --color-background: #10131c;
+  --color-secondary: #d3fbff;
+  --color-on-secondary-container: #00686f;
+  --color-inverse-primary: #0053da;
+  --color-on-error-container: #ffdad6;
+  --color-outline: #8c90a2;
+  --color-primary: #b4c5ff;
+  --color-tertiary-fixed-dim: #ffba20;
+  --color-primary-container: #0062ff;
+  --color-inverse-surface: #e0e2ee;
+  --color-surface-container-lowest: #0a0e16;
+  --color-secondary-fixed-dim: #00dbe9;
+  --color-tertiary-fixed: #ffdea8;
+  --color-secondary-fixed: #7df4ff;
+  --color-on-tertiary-fixed-variant: #5e4200;
+  --color-on-surface-variant: #c2c6d9;
+  --color-on-primary-fixed-variant: #003ea8;
+  --color-on-error: #690005;
+  --color-on-secondary: #00363a;
+
+  --radius-default: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+
+  --spacing-stack-sm: 12px;
+  --spacing-container-margin: 40px;
+  --spacing-base: 8px;
+  --spacing-gutter: 24px;
+  --spacing-stack-md: 24px;
+  --spacing-stack-lg: 48px;
+  --spacing-card-padding: 32px;
+}
+
+@utility glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@utility mesh-background {
+  background-color: #0a0e16;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(217,100%,13%,0.5) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(200,100%,10%,0.3) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(220,100%,15%,0.4) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(210,100%,12%,0.3) 0px, transparent 50%);
+}
+
+@utility grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+@utility text-glow-blue {
+  text-shadow: 0 0 20px rgba(0, 98, 255, 0.5);
+}
+
+@utility scanline-effect {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 98, 255, 0.02) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+  }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+@utility tech-border {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+@utility scanner-line {
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0, 98, 255, 0.4), transparent);
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+@keyframes scroll-fast {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@utility glass-card {
+  background: rgba(16, 19, 28, 0.4);
+  backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+  &:hover {
+    border-color: rgba(0, 98, 255, 0.4);
+    box-shadow: 0 0 40px rgba(0, 98, 255, 0.15);
+  }
+}
+
+@utility cyber-bg {
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(0, 98, 255, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(0, 219, 233, 0.06) 0%, transparent 40%),
+    linear-gradient(to bottom, #070a0f, #0d1017);
+}
+
+@utility mesh-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+@utility neon-border {
+  box-shadow: 0 0 20px rgba(0, 98, 255, 0.4), inset 0 0 10px rgba(0, 98, 255, 0.2);
+}
+
+@utility map-pulse {
+  animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+@utility scrolling-ticker {
+  animation: ticker 50s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@utility glow-icon {
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+body {
+  @apply bg-background text-on-background font-manrope mesh-background min-h-screen selection:bg-blue-600/30 grid-pattern;
+}
+

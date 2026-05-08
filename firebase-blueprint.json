@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "RecoveryRequest": {
+      "title": "Recovery Request",
+      "description": "A submission from a client regarding a crypto recovery case.",
+      "type": "object",
+      "properties": {
+        "operatorAlias": {
+          "type": "string",
+          "description": "Identifier for the person submitting the request."
+        },
+        "secureComms": {
+          "type": "string",
+          "format": "email",
+          "description": "Client's secure contact email."
+        },
+        "incidentVector": {
+          "type": "string",
+          "enum": ["EXCHANGE_EXPLOIT", "WALLET_DRAINAGE", "PHISHING_EVENT", "CREDENTIAL_LOSS"],
+          "description": "The method used in the incident."
+        },
+        "targetNetwork": {
+          "type": "string",
+          "enum": ["BTC", "ETH", "SOL", "USDT"],
+          "description": "The blockchain network involved."
+        },
+        "transactionHash": {
+          "type": "string",
+          "description": "The ID of the suspicious transaction."
+        },
+        "caseNarrative": {
+          "type": "string",
+          "description": "Detailed description of the incident."
+        },
+        "estimatedValue": {
+          "type": "number",
+          "description": "Estimated value of assets to be recovered."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of submission."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "ANALYZING", "RECOVERING", "COMPLETED"],
+          "description": "Current status of the case."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Firebase UID of the submitting user (optional if anonymous)."
+        }
+      },
+      "required": ["operatorAlias", "secureComms", "transactionHash", "caseNarrative", "createdAt"]
+    }
+  },
+  "firestore": {
+    "recovery_requests": {
+      "schema": "RecoveryRequest",
+      "description": "Collection of all submitted recovery requests."
+    }
+  }
+}
