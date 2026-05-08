@@ -137,13 +137,33 @@ export default function App() {
   // Sync currentView with location for direct URL access
   React.useEffect(() => {
     const path = location.pathname;
-    if (path === '/' || path === '') setCurrentView('home');
-    else if (path === '/admin/login' || path === '/admin/dashboard') setCurrentView('admin');
-    else if (path === '/about') setCurrentView('about');
-    else if (path === '/services') setCurrentView('services');
-    else if (path === '/intelligence') setCurrentView('intelligence');
-    else if (path === '/contact' || path === '/client-portal') setCurrentView('clientPortal');
-    // ... add more if needed
+    const pathMapRev: Record<string, View> = {
+      '/': 'home',
+      '/about': 'about',
+      '/services': 'services',
+      '/intelligence': 'intelligence',
+      '/contact': 'clientPortal',
+      '/admin/login': 'admin',
+      '/admin/dashboard': 'admin',
+      '/case-lookup': 'caseLookup',
+      '/privacy': 'privacyPolicy',
+      '/terms': 'termsOfService',
+      '/reviews': 'reviews',
+      '/reviews/submit': 'submitReview',
+      '/traceability': 'chainTraceability',
+      '/recovery': 'exchangeRecovery',
+      '/legal': 'legalEnforcement',
+      '/risk': 'riskMonitoring',
+      '/tools': 'tools',
+      '/iso27001': 'iso27001',
+      '/soc2': 'soc2',
+      '/gdpr': 'gdpr',
+      '/amlkyc': 'amlkyc'
+    };
+
+    if (pathMapRev[path]) {
+      setCurrentView(pathMapRev[path]);
+    }
   }, [location.pathname]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -168,7 +188,16 @@ export default function App() {
       'privacyPolicy': '/privacy',
       'termsOfService': '/terms',
       'reviews': '/reviews',
-      'submitReview': '/reviews/submit'
+      'submitReview': '/reviews/submit',
+      'chainTraceability': '/traceability',
+      'exchangeRecovery': '/recovery',
+      'legalEnforcement': '/legal',
+      'riskMonitoring': '/risk',
+      'tools': '/tools',
+      'iso27001': '/iso27001',
+      'soc2': '/soc2',
+      'gdpr': '/gdpr',
+      'amlkyc': '/amlkyc'
     };
 
     if (pathMap[view]) {
