@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   Terminal
 } from 'lucide-react';
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { HomeView } from './views/HomeView';
 import { ServicesView } from './views/ServicesView';
 import { IntelligenceView } from './views/IntelligenceView';
@@ -37,6 +38,7 @@ import { PrivacyPolicyView } from './views/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { ReviewsView } from './views/ReviewsView';
 import { SubmitReviewView } from './views/SubmitReviewView';
+import { AdminLoginView } from './views/AdminLoginView';
 import CaseManagerView from './views/AdminDashboardView';
 
 type View = 
@@ -87,6 +89,17 @@ export default function App() {
   const [selectedCase, setSelectedCase] = React.useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Handle initial route
+  React.useEffect(() => {
+    const path = location.pathname;
+    if (path === '/admin/login' || path === '/admin/dashboard') {
+      setCurrentView('admin');
+    }
+  }, []);
 
   // Scroll to top and handle sidebar collapse on view change
   React.useEffect(() => {
@@ -129,7 +142,28 @@ export default function App() {
     setCurrentView(view);
     closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'instant' });
+    
+    // Sync URL for key views if desired, or just let internal state handle it
+    if (view === 'home') navigate('/');
+    else if (view !== 'admin') {
+      // For this specific app, we keep internal state navigation for most views
+      // but ensure admin paths are distinct.
+      if (location.pathname.startsWith('/admin')) {
+        navigate('/');
+      }
+    }
   };
+
+  // If we are on a specific admin sub-route, we might want to bypass the standard layout
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (location.pathname === '/admin/login') {
+    return <AdminLoginView />;
+  }
+
+  if (location.pathname === '/admin/dashboard') {
+    return <CaseManagerView />;
+  }
 
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
@@ -182,7 +216,7 @@ export default function App() {
               <span className="font-fira text-[10px] text-slate-500 uppercase">System Integrity</span>
               <span className="font-fira text-xs text-emerald-400">99.998% SECURE</span>
             </div>
-            <div className="hidden sm:block w-10 h-10 rounded-full border border-blue-500/30 p-0.5 overflow-hidden active:scale-95 transition-transform ring-4 ring-blue-600/5 cursor-pointer" onClick={() => handleNavClick('admin')}>
+            <div className="hidden sm:block w-10 h-10 rounded-full border border-blue-500/30 p-0.5 overflow-hidden active:scale-95 transition-transform ring-4 ring-blue-600/5 cursor-pointer" onClick={() => navigate('/admin/login')}>
               <img 
                 alt="User Profile" 
                 className="w-full h-full object-cover rounded-full" 
@@ -275,9 +309,9 @@ export default function App() {
                   </div>
                 </button>
                 <button 
-                  onClick={() => handleNavClick('admin')}
+                  onClick={() => navigate('/admin/login')}
                   className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
-                    currentView === 'admin' ? 'text-blue-500' : 'text-slate-400'
+                    location.pathname === '/admin/login' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -587,7 +621,7 @@ export default function App() {
               About Us
             </button>
             <button 
-              onClick={() => handleNavClick('admin')}
+              onClick={() => navigate('/admin/login')}
               className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
             >
               Admin Portal
