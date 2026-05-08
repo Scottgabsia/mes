@@ -50,14 +50,14 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
+    // Determine the dist path relative to the current working directory
     const distPath = path.join(process.cwd(), "dist");
     
-    console.log(`[INFO] Starting in PRODUCTION mode`);
-    console.log(`[INFO] Working Directory: ${process.cwd()}`);
-    console.log(`[INFO] Static Assets Path: ${distPath}`);
-    
     // Serve static files
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+      index: 'index.html',
+      fallthrough: true // Allow falling through to the * handler
+    }));
     
     // API 404s
     app.get("/api/*", (req, res) => {
@@ -67,12 +67,11 @@ async function startServer() {
     // SPA fallback
     app.get("*", (req, res) => {
       const indexPath = path.join(distPath, "index.html");
-      console.log(`[ROUTE] ${req.method} ${req.url} -> Falling back to ${indexPath}`);
-      
       res.sendFile(indexPath, (err) => {
         if (err) {
           console.error(`[ERROR] Failed to send index.html for ${req.url}:`, err);
-          res.status(500).send("The application failed to load. Please check the server configuration.");
+          // If index.html is missing, try to serve from process directory as last resort
+          res.status(500).send("Application load error. Root index.html not found.");
         }
       });
     });
