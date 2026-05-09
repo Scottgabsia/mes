@@ -20,13 +20,15 @@ async function startServer() {
   const getTransporter = () => {
     const host = process.env.SMTP_HOST || 'smtp.titan.email';
     const port = parseInt(process.env.SMTP_PORT || '465');
-    const user = process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com';
+    const user = process.env.SMTP_USER || 'info@digitalassetsforensicscryptorecovery.com';
     const pass = process.env.SMTP_PASS || 'Michealg12$';
 
     if (!user || !pass) {
-      console.warn("SMTP credentials missing, using mock logging.");
+      console.warn("[SMTP] Credentials missing or incomplete.");
       return null;
     }
+
+    console.log(`[SMTP] Initializing for ${user} on ${host}:${port}`);
 
     return nodemailer.createTransport({
       host,
@@ -37,7 +39,6 @@ async function startServer() {
         pass,
       },
       tls: {
-        // Do not fail on invalid certs
         rejectUnauthorized: false
       }
     });
@@ -48,9 +49,9 @@ async function startServer() {
   if (testTransporter) {
     testTransporter.verify((error, success) => {
       if (error) {
-        console.error("SMTP Verification Error:", error);
+        console.error("[SMTP] Verification Failed:", error);
       } else {
-        console.log("SMTP Server is ready to take messages");
+        console.log("[SMTP] Server connection verified successfully");
       }
     });
   }
@@ -73,8 +74,8 @@ async function startServer() {
       const transporter = getTransporter();
       if (transporter) {
         const mailOptions = {
-          from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
-          to: "info@digitalassetsforensiccryptorecovery.com",
+          from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensicscryptorecovery.com'}>`,
+          to: "info@digitalassetsforensicscryptorecovery.com",
           subject: `NEW LEAD: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
@@ -143,13 +144,14 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // In production, server.js is compiled into the dist folder.
-    // So __dirname will be the dist directory itself.
-    const distPath = __dirname;
+    // In production, serving from the root via server.ts or from dist via node dist/server.js
+    // We determine dist path relative to current working directory or __dirname
+    const distPath = path.join(process.cwd(), 'dist');
     const indexPath = path.join(distPath, "index.html");
     
-    console.log(`[PROD] Serving static files from: ${distPath}`);
-    console.log(`[PROD] Using index.html at: ${indexPath}`);
+    console.log(`[PROD] Mode detected`);
+    console.log(`[PROD] Static files: ${distPath}`);
+    console.log(`[PROD] Entry point: ${indexPath}`);
     
     // Serve static files
     app.use(express.static(distPath, {
