@@ -241,7 +241,7 @@ export default function App() {
               <h1 className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
                 Digital Assets <span className="text-blue-500">Forensics</span>
               </h1>
-              <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Crypto Recovery Agency</span>
+              <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis for Digital Asset & Crypto Recovery</span>
             </div>
           </div>
           
@@ -570,7 +570,7 @@ export default function App() {
               </div>
               <div className="flex flex-col">
                 <h2 className="text-lg font-black tracking-tighter text-white uppercase font-manrope leading-none">Digital Assets <span className="text-blue-500">Forensics</span></h2>
-                <span className="text-[7px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-0.5 font-bold">Crypto Recovery Agency</span>
+                <span className="text-[7px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-0.5 font-bold">Professional Forensic Analysis for Digital Asset & Crypto Recovery</span>
               </div>
             </div>
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">

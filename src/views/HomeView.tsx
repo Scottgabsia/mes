@@ -138,11 +138,11 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-manrope text-white text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight"
+            className="font-manrope text-white text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight uppercase"
           >
-            THE PREMIER <br/>
-            <span className="text-white text-glow-blue uppercase">Crypto Recovery</span><br/>
-            <span className="text-blue-500 uppercase">Agency</span>
+            Professional <br/>
+            <span className="text-white text-glow-blue">Forensic Analysis</span><br/>
+            <span className="text-blue-500">& Crypto Recovery</span>
           </motion.h2>
           
           <p className="text-lg text-slate-400 leading-relaxed max-w-xl">
