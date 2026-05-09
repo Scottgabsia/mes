@@ -685,7 +685,9 @@ export default function App() {
               Terms of Service
             </button>
           </div>
-          <p className="text-slate-600 text-[10px] uppercase tracking-widest font-bold">© 2026 DIGITAL ASSETS FORENSICS CRYPTO RECOVERY AGENCY // ALL RIGHTS RESERVED // CLASSIFIED</p>
+          <p className="text-slate-600 text-[10px] uppercase tracking-widest font-bold">
+            © 2026 DIGITAL ASSETS FORENSICS CRYPTO RECOVERY AGENCY // NEW HAMPSHIRE, USA REGISTERED LLC // ALL RIGHTS RESERVED // CLASSIFIED
+          </p>
         </div>
       </footer>
     </div>

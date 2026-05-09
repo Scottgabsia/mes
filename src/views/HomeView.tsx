@@ -102,21 +102,20 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       // but the rule should allow this public creation now.
     }
 
-    // 2. Submit to Formspree (using same ID from ClientPortalView)
+    // 2. Call server API for email notification
     try {
-      await fetch("https://formspree.io/f/xvgzgezy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      await fetch('/api/submit-recovery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          ...formData,
-          network: network === 'Other' ? customNetwork : network,
-          estimatedValue: balance,
-          formSource: 'Home_Triage_Form',
+          ...submissionData,
           timestamp: new Date().toISOString()
         }),
       });
     } catch (error) {
-      console.error("Formspree submission error:", error);
+      console.error("Email API error:", error);
     }
 
     // Always navigate to confirmation after submit

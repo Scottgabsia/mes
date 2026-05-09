@@ -171,16 +171,14 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
         handleFirestoreError(fsError, OperationType.CREATE, 'recovery_requests');
       }
 
-      // 2. Call server API for email notification (legacy logging)
+      // 2. Call server API for email notification
       const response = await fetch('/api/submit-recovery', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          phone: formData.phone,
-          estimatedValue: assetValue,
+          ...submissionData,
           timestamp: new Date().toISOString()
         }),
       });
