@@ -19,7 +19,7 @@ interface AboutViewProps {
 
 export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
   return (
-    <div className="pt-24 sm:pt-40 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto">
+    <div className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto">
       {/* Hero Section */}
       <div className="mb-12 sm:mb-24">
         <h2 className="text-slate-500 font-fira text-[10px] sm:text-xs font-bold tracking-[0.4em] mb-4 uppercase">

@@ -23,6 +23,27 @@ interface HomeViewProps {
 
 export const HomeView = ({ onNavigate }: HomeViewProps) => {
   const [balance, setBalance] = React.useState(500000);
+  const [traceCount, setTraceCount] = React.useState(2841);
+  const [secondsSinceLast, setSecondsSinceLast] = React.useState(12.4);
+
+  React.useEffect(() => {
+    const traceInterval = setInterval(() => {
+      setTraceCount(prev => prev + (Math.random() > 0.5 ? 1 : -1));
+    }, 3000);
+
+    const secInterval = setInterval(() => {
+      setSecondsSinceLast(prev => {
+        const next = prev + 0.1;
+        return next > 30 ? 0.1 : parseFloat(next.toFixed(1));
+      });
+    }, 100);
+
+    return () => {
+      clearInterval(traceInterval);
+      clearInterval(secInterval);
+    };
+  }, []);
+
   const [network, setNetwork] = React.useState('Bitcoin (BTC)');
   const [customNetwork, setCustomNetwork] = React.useState('');
   const [isOtherNetwork, setIsOtherNetwork] = React.useState(false);
@@ -103,7 +124,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
   };
 
   return (
-    <div className="pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
+    <div className="pt-40 sm:pt-52 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
       {/* Hero & Main Viz */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 sm:gap-16 items-start mb-20 sm:mb-stack-lg">
         <div className="space-y-6 sm:space-y-stack-md xl:sticky xl:top-32">
@@ -112,7 +133,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
             </span>
-            <span className="font-fira text-[11px] text-blue-400 tracking-wider uppercase">SYSTEM ACTIVE: 2,841 TRACES</span>
+            <span className="font-fira text-[11px] text-blue-400 tracking-wider uppercase">SYSTEM ACTIVE: {traceCount.toLocaleString()} TRACES</span>
           </div>
           
           <motion.h2 
@@ -344,7 +365,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Secure Email</label>
+                <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Email Address</label>
                 <input 
                   required
                   name="email"

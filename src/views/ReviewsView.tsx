@@ -123,9 +123,9 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
     <main className="pt-32 pb-24 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen">
       {/* Header Section */}
       <div className="mb-12 border-l-4 border-blue-600 pl-6">
-        <h1 className="text-4xl lg:text-5xl text-white font-manrope font-extrabold tracking-tight mb-2 uppercase">
+        <h1 className="text-2xl sm:text-3xl lg:text-5xl text-white font-manrope font-extrabold tracking-tight mb-2 uppercase flex flex-wrap items-center">
           <span className="text-blue-500 opacity-50 font-mono">[</span>
-          VERIFIED_REPUTATION_LEDGER
+          <span className="break-all sm:break-normal">VERIFIED_REPUTATION_LEDGER</span>
           <span className="text-blue-500 opacity-50 font-mono text-glow-blue">]</span>
         </h1>
         <div className="flex flex-wrap items-center gap-6">
@@ -162,7 +162,7 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
           />
         </div>
         
-        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-white/5">
+        <div className="flex flex-wrap items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-white/5 w-full lg:w-auto">
           {[
             { id: 'ALL', label: 'ALL_INSTANCES' },
             { id: 'GOOGLE', label: 'GOOGLE_REV' },
@@ -171,7 +171,7 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
             <button
               key={btn.id}
               onClick={() => setFilter(btn.id as any)}
-              className={`px-6 py-2.5 rounded-lg font-mono text-[10px] font-bold tracking-widest transition-all uppercase cursor-pointer ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 rounded-lg font-mono text-[9px] sm:text-[10px] font-bold tracking-widest transition-all uppercase cursor-pointer whitespace-nowrap ${
                 filter === btn.id 
                   ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]' 
                   : 'text-slate-500 hover:text-white hover:bg-white/5'
@@ -190,9 +190,9 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
             <motion.div
               layout
               key={review.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.92, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: -10 }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
               className={`glass-panel p-8 rounded-2xl border relative group flex flex-col ${
                 review.platform === 'GOOGLE' ? 'border-blue-500/10 hover:border-blue-500/30' : 'border-emerald-500/10 hover:border-emerald-500/30'

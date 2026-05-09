@@ -26,8 +26,36 @@ interface ServicesViewProps {
 }
 
 export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
+  const [time, setTime] = React.useState(new Date());
+  const [lastIntercept, setLastIntercept] = React.useState(12.4);
+
+  React.useEffect(() => {
+    const clockInterval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    const interceptInterval = setInterval(() => {
+      setLastIntercept(prev => {
+        const next = prev + 0.1;
+        return next > 60 ? 0.1 : parseFloat(next.toFixed(1));
+      });
+    }, 100);
+
+    return () => {
+      clearInterval(clockInterval);
+      clearInterval(interceptInterval);
+    };
+  }, []);
+
+  const formatTime = (date: Date) => {
+    const hh = String(date.getUTCHours()).padStart(2, '0');
+    const mm = String(date.getUTCMinutes()).padStart(2, '0');
+    const ss = String(date.getUTCSeconds()).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
+  };
+
   return (
-    <div className="pt-24 sm:pt-40 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto min-h-screen">
+    <div className="pt-40 sm:pt-52 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto min-h-screen">
       {/* Hero Section */}
       <div className="relative mb-6 sm:mb-stack-lg">
         <div className="max-w-3xl">
@@ -77,7 +105,7 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
                   <p className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">System Status / Active Timer</p>
                 </div>
                 <div className="bg-white/[0.02] border border-white/5 p-4 sm:p-6 rounded-lg text-center md:text-left">
-                  <p className="text-2xl sm:text-4xl font-fira font-light text-on-surface tabular-nums tracking-wider leading-none">02:14:55<span className="text-[10px] text-error ml-2 font-bold uppercase">UTC</span></p>
+                  <p className="text-2xl sm:text-4xl font-fira font-light text-on-surface tabular-nums tracking-wider leading-none">{formatTime(time)}<span className="text-[10px] text-error ml-2 font-bold uppercase">UTC</span></p>
                   <div className="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-error/40 w-3/4"></div>
                   </div>
@@ -98,7 +126,7 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
                 </div>
                 <div>
                   <p className="text-[9px] font-bold text-slate-500 uppercase mb-2 tracking-widest">Last Intercept</p>
-                  <p className="text-[10px] sm:text-xs font-fira text-on-surface">0x8F...D92 <span className="text-slate-500 ml-2 whitespace-nowrap">// 12.4s ago</span></p>
+                  <p className="text-[10px] sm:text-xs font-fira text-on-surface">0x8F...D92 <span className="text-slate-500 ml-2 whitespace-nowrap">// {lastIntercept.toFixed(1)}s ago</span></p>
                 </div>
                 <div className="pt-4 border-t border-white/5">
                   <div className="flex justify-between items-center text-[8px] sm:text-[9px]">

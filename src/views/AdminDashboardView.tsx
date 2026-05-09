@@ -138,6 +138,15 @@ const CaseManagerView: React.FC = () => {
     }
   };
 
+  const [nodeCount, setNodeCount] = React.useState(1248);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setNodeCount(prev => prev + (Math.random() > 0.6 ? 1 : Math.random() > 0.4 ? 0 : -1));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   if (authChecking) {
     return (
       <div className="min-h-screen bg-[#020408] flex items-center justify-center">
@@ -182,7 +191,7 @@ const CaseManagerView: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen pt-20 sm:pt-24 pb-12 px-4 sm:px-6 lg:px-12 bg-[#020408]">
+    <div className="min-h-screen pt-28 sm:pt-32 pb-12 px-4 sm:px-6 lg:px-12 bg-[#020408]">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
         
         {/* Sidebar / List */}
@@ -199,7 +208,7 @@ const CaseManagerView: React.FC = () => {
               <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
               <input 
                 type="text" 
-                placeholder="SEARCH CASE_ID OR ALIAS..."
+                placeholder="SEARCH CASE_ID, NAME OR EMAIL..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-[#0a0e16] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-xs font-mono text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-700"
@@ -308,33 +317,33 @@ const CaseManagerView: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-[9px] sm:text-[10px] font-mono text-slate-500 uppercase tracking-widest">Network Nodes</p>
-                      <h3 className="text-xl sm:text-2xl font-manrope font-black text-white uppercase tracking-tighter">1,248 Active</h3>
+                      <h3 className="text-xl sm:text-2xl font-manrope font-black text-white uppercase tracking-tighter transition-all duration-1000">{nodeCount.toLocaleString()} Active</h3>
                     </div>
                   </div>
                 </div>
 
                 {/* Case Control Panel */}
                 <div className="glass-panel p-5 sm:p-8 rounded-2xl border border-white/5 space-y-6 sm:space-y-8">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-2">
-                      <h2 className="text-lg sm:text-xl md:text-2xl font-manrope font-black text-white uppercase tracking-tight leading-tight">
+                      <h2 className="text-sm xs:text-base sm:text-lg md:text-xl md:text-2xl font-manrope font-black text-white uppercase tracking-tight leading-tight break-all sm:break-normal">
                         Management_Console::<span className="text-blue-500">ID_{activeCaseData.id.slice(0, 8)}</span>
                       </h2>
                       <p className="text-[9px] sm:text-xs font-mono text-slate-500 uppercase tracking-widest flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="flex items-center gap-2"><UsersIcon size={12} className="text-blue-500" /> {activeCaseData.operatorAlias}</span>
+                        <span className="flex items-center gap-2" title="Full Name"><UsersIcon size={12} className="text-blue-500" /> {activeCaseData.operatorAlias}</span>
                         <span className="hidden sm:inline opacity-30">//</span>
-                        <span className="text-slate-600">{activeCaseData.secureComms}</span>
+                        <span className="text-slate-600 truncate max-w-[150px] sm:max-w-none" title="Email Address">{activeCaseData.secureComms}</span>
                       </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                       <div className="flex flex-col items-end">
-                         <span className="text-[10px] font-manrope font-black uppercase text-slate-400">Progression Control</span>
-                         <span className="text-[8px] font-mono text-blue-500 uppercase">Triggers User Portal UI</span>
+                    <div className="flex items-center sm:justify-end gap-3 pt-4 sm:pt-0 border-t border-white/5 sm:border-t-0">
+                       <div className="flex flex-col items-start sm:items-end">
+                         <span className="text-[9px] sm:text-[10px] font-manrope font-black uppercase text-slate-400">Progression Control</span>
+                         <span className="text-[7px] sm:text-[8px] font-mono text-blue-500 uppercase">Triggers User Portal UI</span>
                        </div>
                        <select 
                         value={activeCaseData.status}
                         onChange={(e) => handleUpdateStatus(activeCaseData.id, e.target.value)}
-                        className="bg-[#0a0e16] border border-white/10 rounded-lg px-4 py-2 text-xs font-mono text-white outline-none focus:border-blue-500 transition-all cursor-pointer"
+                        className="bg-[#0a0e16] border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-[10px] sm:text-xs font-mono text-white outline-none focus:border-blue-500 transition-all cursor-pointer min-w-[140px]"
                        >
                          {statusLevels.map(lvl => (
                            <option key={lvl.id} value={lvl.id}>{lvl.label}</option>
@@ -399,16 +408,16 @@ const CaseManagerView: React.FC = () => {
                                   const ref = doc(db, 'recovery_requests', activeCaseData.id);
                                   await updateDoc(ref, { completedSteps: newSteps, updatedAt: serverTimestamp() });
                                 }}
-                                className={`w-full p-3 rounded-lg border flex items-center justify-between transition-all ${
+                                className={`w-full p-2.5 sm:p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2 transition-all ${
                                   isCompleted 
                                     ? 'bg-blue-600/10 border-blue-500/30 text-blue-100' 
                                     : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20'
                                 }`}
                               >
-                                <span className={`text-[10px] font-mono uppercase tracking-widest ${isCompleted ? 'text-white' : ''}`}>
+                                <span className={`text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-left ${isCompleted ? 'text-white' : ''}`}>
                                   {index + 1}. {lvl.label}
                                 </span>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t border-white/5 sm:border-t-0">
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
@@ -424,7 +433,7 @@ const CaseManagerView: React.FC = () => {
                                   >
                                     SYNC_UI
                                   </button>
-                                  <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                                  <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
                                     isCompleted ? 'bg-blue-500 border-blue-500 text-white' : 'border-white/20'
                                   }`}>
                                     {isCompleted && <CheckIcon size={10} />}

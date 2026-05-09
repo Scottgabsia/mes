@@ -274,14 +274,13 @@ export default function App() {
               <span className="font-fira text-[10px] text-slate-500 uppercase">System Integrity</span>
               <span className="font-fira text-xs text-emerald-400">99.998% SECURE</span>
             </div>
-            <div className="hidden sm:block w-10 h-10 rounded-full border border-blue-500/30 p-0.5 overflow-hidden active:scale-95 transition-transform ring-4 ring-blue-600/5 cursor-pointer" onClick={() => navigate('/admin/login')}>
-              <img 
-                alt="User Profile" 
-                className="w-full h-full object-cover rounded-full" 
-                referrerPolicy="no-referrer"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD3XHIJCED4mqE0H2ColprUH5KPY-fKRzXsVYSNwXeCTSt1TjNFAyYb-XTmXdQT3VV5Ah4Wx3Bm4F9HOj_1sVZOxe4M1KegwBj81Y2eGAggkrzRZj5juwirOho8ZwItOAxIrdZBZRQZ0OE_pB1roPCgI_xRlig8w_9iwz_4mkwqzld0x6w5b6rWvHiA4ly-CrJQ0Etkly_N5uzdfFfZWivnnoGfWwsJZh3nYiJemIBj-0KnDCq4j4Jb4xPo9qFoBnAqOztKvS63Eo" 
-              />
-            </div>
+            <button 
+              className="flex w-10 h-10 rounded-full border border-blue-500/30 items-center justify-center active:scale-95 transition-transform ring-4 ring-blue-600/5 bg-blue-600/10 text-blue-500 hover:bg-blue-600/20 hover:text-white cursor-pointer" 
+              onClick={() => handleNavClick('clientPortal')}
+              title="Contact Support"
+            >
+              <Mail className="w-5 h-5" />
+            </button>
             {/* Mobile Menu Toggle */}
             <button 
               onClick={toggleMobileMenu}
@@ -299,7 +298,7 @@ export default function App() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden bg-slate-950/95 border-b border-white/10 overflow-hidden"
+              className="lg:hidden bg-slate-950/95 border-b border-white/10 overflow-y-auto max-h-[calc(100vh-80px)]"
             >
               <nav className="flex flex-col p-6 gap-6">
                 <div className="flex border-b border-white/5 pb-6">
@@ -367,16 +366,6 @@ export default function App() {
                   </div>
                 </button>
                 <button 
-                  onClick={() => navigate('/admin/login')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
-                    location.pathname === '/admin/login' ? 'text-blue-500' : 'text-slate-400'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Terminal className="w-5 h-5" /> Admin Portal
-                  </div>
-                </button>
-                <button 
                   onClick={() => handleNavClick('clientPortal')}
                   className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
                     currentView === 'clientPortal' ? 'text-blue-500' : 'text-slate-400'
@@ -387,15 +376,14 @@ export default function App() {
                   </div>
                 </button>
                 <div className="pt-6 border-t border-white/5 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full border border-blue-500/30 p-0.5">
-                      <img 
-                        alt="User Profile" 
-                        className="w-full h-full object-cover rounded-full" 
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD3XHIJCED4mqE0H2ColprUH5KPY-fKRzXsVYSNwXeCTSt1TjNFAyYb-XTmXdQT3VV5Ah4Wx3Bm4F9HOj_1sVZOxe4M1KegwBj81Y2eGAggkrzRZj5juwirOho8ZwItOAxIrdZBZRQZ0OE_pB1roPCgI_xRlig8w_9iwz_4mkwqzld0x6w5b6rWvHiA4ly-CrJQ0Etkly_N5uzdfFfZWivnnoGfWwsJZh3nYiJemIBj-0KnDCq4j4Jb4xPo9qFoBnAqOztKvS63Eo" 
-                      />
+                  <div 
+                    className="flex items-center gap-4 cursor-pointer group"
+                    onClick={() => handleNavClick('clientPortal')}
+                  >
+                    <div className="w-10 h-10 rounded-full border border-blue-500/30 flex items-center justify-center bg-blue-600/10 text-blue-500 group-hover:bg-blue-600/20 transition-colors">
+                      <Mail className="w-5 h-5" />
                     </div>
-                    <span className="font-manrope text-white font-bold">OPERATOR_01</span>
+                    <span className="font-manrope text-white font-bold uppercase tracking-widest text-[11px]">Secure Channel</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="font-fira text-[10px] text-slate-500 uppercase">Integrity</span>

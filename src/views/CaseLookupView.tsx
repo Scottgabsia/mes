@@ -59,7 +59,7 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
   };
 
   return (
-    <main className="pt-24 sm:pt-40 pb-32 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen relative z-10">
+    <main className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen relative z-10">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-blue-500/5 blur-[80px] sm:blur-[120px] pointer-events-none rounded-full"></div>
       
       <div className="text-center mb-12 sm:mb-16 relative">
@@ -82,7 +82,7 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
           <form onSubmit={handleLookup} className="space-y-6 sm:space-y-8 relative z-10">
             <div className="space-y-4">
               <label className="font-mono text-[11px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                <span className="w-1 h-3 bg-blue-500/50"></span> VERIFICATION_EMAIL
+                <span className="w-1 h-3 bg-blue-500/50"></span> EMAIL_ADDRESS
               </label>
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-transparent rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
@@ -93,7 +93,7 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="secure-comms@forensic.io"
+                    placeholder="UPLINK: EMAIL@DOMAIN.COM"
                     className="w-full bg-slate-950/80 border border-white/10 text-white pl-12 sm:pl-14 pr-6 py-4 sm:py-5 rounded-2xl font-mono text-sm sm:text-base focus:border-blue-500/50 outline-none transition-all placeholder:text-slate-800"
                   />
                 </div>

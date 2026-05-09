@@ -39,7 +39,7 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({ onBack }) =>
 
   if (isSubmitted) {
     return (
-      <main className="pt-24 sm:pt-32 pb-24 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen">
+      <main className="pt-32 sm:pt-40 pb-24 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({ onBack }) =>
   }
 
   return (
-    <main className="pt-24 sm:pt-32 pb-24 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen">
+    <main className="pt-32 sm:pt-40 pb-24 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen">
       <button 
         onClick={onBack}
         className="flex items-center gap-2 text-slate-500 hover:text-blue-400 transition-colors font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-8 group"

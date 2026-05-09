@@ -18,6 +18,52 @@ export const ToolsView = () => {
   const [address, setAddress] = React.useState('');
   const [isAuditing, setIsAuditing] = React.useState(false);
   const [auditResult, setAuditResult] = React.useState<null | { score: number, status: string }>(null);
+  const [throughput, setThroughput] = React.useState(1.4);
+  const [entityTags, setEntityTags] = React.useState(402129);
+  const [eps, setEps] = React.useState(12.4);
+  const [logs, setLogs] = React.useState([
+    { time: '17:24:02', text: 'SOURCE: TOR_NODE_82 // PKT_CAP: 1.2MB' },
+    { time: '17:24:03', text: 'ANALYZING_CLUSTER_XJ9... [MATCH_92%]' },
+    { time: '17:24:05', text: 'ALERT: SUSPICIOUS_BRIDGE_TX // NET: SOLANA' },
+    { time: '17:24:06', text: 'PING: VASP_COMPLIANCE_API // RESPONSE: 200' },
+    { time: '17:24:08', text: 'SYNC_COMPLETE // UPDATING_ENTITY_DB...' },
+    { time: '17:24:09', text: 'IDLE // STANDBY_MODE_ACTIVE' }
+  ]);
+
+  React.useEffect(() => {
+    const statInterval = setInterval(() => {
+      setThroughput(prev => parseFloat((prev + (Math.random() > 0.5 ? 0.01 : -0.01)).toFixed(2)));
+      setEntityTags(prev => prev + (Math.random() > 0.8 ? 1 : 0));
+      setEps(prev => parseFloat((prev + (Math.random() > 0.5 ? 0.1 : -0.1)).toFixed(1)));
+    }, 3000);
+
+    const logInterval = setInterval(() => {
+      const now = new Date();
+      const hh = String(now.getUTCHours()).padStart(2, '0');
+      const mm = String(now.getUTCMinutes()).padStart(2, '0');
+      const ss = String(now.getUTCSeconds()).padStart(2, '0');
+      const timeStr = `${hh}:${mm}:${ss}`;
+      
+      const actions = [
+        'SOURCE: TOR_NODE_' + Math.floor(Math.random() * 99),
+        'ANALYZING_CLUSTER_' + Math.random().toString(36).substring(7).toUpperCase(),
+        'ALERT: P2P_ANOMALY_DETECTED',
+        'PING: COMPLIANCE_NODE_' + Math.floor(Math.random() * 10),
+        'SYNC_STATUS: OK // NODES_STABLE',
+        'ENCRYPTED_PAYLOAD_RECEIVED // SIZE: ' + (Math.random() * 5).toFixed(1) + 'MB'
+      ];
+
+      setLogs(prev => {
+        const newLog = { time: timeStr, text: actions[Math.floor(Math.random() * actions.length)] };
+        return [newLog, ...prev.slice(0, 5)];
+      });
+    }, 2000);
+
+    return () => {
+      clearInterval(statInterval);
+      clearInterval(logInterval);
+    };
+  }, []);
 
   const runAudit = () => {
     if (!address) return;
@@ -196,9 +242,9 @@ export const ToolsView = () => {
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { label: 'ATTACK_VECTORS', val: '22 Active', icon: <ShieldAlert size={14} /> },
-              { label: 'NODE_THROUGHPUT', val: '1.4 PB/day', icon: <Cpu size={14} /> },
-              { label: 'ENTITY_TAGS', val: '402,129', icon: <Fingerprint size={14} /> },
-              { label: 'RECOVERY_EPS', val: '12.4 / hr', icon: <Zap size={14} /> }
+              { label: 'NODE_THROUGHPUT', val: `${throughput.toFixed(2)} PB/day`, icon: <Cpu size={14} /> },
+              { label: 'ENTITY_TAGS', val: entityTags.toLocaleString(), icon: <Fingerprint size={14} /> },
+              { label: 'RECOVERY_EPS', val: `${eps.toFixed(1)} / hr`, icon: <Zap size={14} /> }
             ].map((stat, i) => (
               <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10">
                 <div className="flex items-center gap-2 mb-2 text-slate-500">
@@ -212,12 +258,9 @@ export const ToolsView = () => {
           <div className="lg:col-span-4 bg-black/40 rounded-xl p-4 border border-white/5 h-[120px] overflow-hidden relative">
             <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black to-transparent z-10"></div>
             <div className="space-y-1 font-mono text-[8px] text-emerald-500/70">
-              <p>{"[17:24:02] SOURCE: TOR_NODE_82 // PKT_CAP: 1.2MB"}</p>
-              <p>{"[17:24:03] ANALYZING_CLUSTER_XJ9... [MATCH_92%]"}</p>
-              <p>{"[17:24:05] ALERT: SUSPICIOUS_BRIDGE_TX // NET: SOLANA"}</p>
-              <p>{"[17:24:06] PING: VASP_COMPLIANCE_API // RESPONSE: 200"}</p>
-              <p>{"[17:24:08] SYNC_COMPLETE // UPDATING_ENTITY_DB..."}</p>
-              <p>{"[17:24:09] IDLE // STANDBY_MODE_ACTIVE"}</p>
+              {logs.map((log, idx) => (
+                <p key={idx}>{`[${log.time}] ${log.text}`}</p>
+              ))}
             </div>
           </div>
         </div>

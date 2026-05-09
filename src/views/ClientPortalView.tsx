@@ -46,7 +46,19 @@ interface ClientPortalViewProps {
 }
 
 export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPortalViewProps) => {
-  const [assetValue, setAssetValue] = React.useState(42500);
+  const [assetValue, setAssetValue] = React.useState<number | string>(42500);
+  const [buffer, setBuffer] = React.useState(72);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setBuffer(prev => {
+        const next = prev + (Math.random() > 0.5 ? 0.5 : -0.5);
+        return parseFloat(Math.min(95, Math.max(60, next)).toFixed(1));
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [formData, setFormData] = React.useState({
     operatorAlias: '',
@@ -146,7 +158,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       ...formData,
       secureComms: normalizedEmail,
       targetNetwork: isCustomNetwork ? formData.customNetwork : formData.targetNetwork,
-      estimatedValue: parseFloat(assetValue) || 0,
+      estimatedValue: typeof assetValue === 'number' ? assetValue : 0,
       createdAt: serverTimestamp(),
       status: 'PENDING'
     };
@@ -186,13 +198,27 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     }
   };
 
+  const handleAssetInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === '') {
+      setAssetValue('');
+      return;
+    }
+    // Remove leading zeros
+    const sanitized = val.replace(/^0+/, '');
+    const num = parseInt(sanitized || '0');
+    if (!isNaN(num)) {
+      setAssetValue(Math.min(100000000, num)); // Cap at 100M for stability
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
-    <main className="pt-24 md:pt-32 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen relative z-10">
+    <main className="pt-32 md:pt-40 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen relative z-10">
       {/* Technical Stepper */}
       <div className="mb-8 md:mb-12">
         <div className="flex flex-row items-center justify-between gap-1 xs:gap-2 max-w-4xl mx-auto">
@@ -266,7 +292,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                 {/* Operator Alias */}
                 <div className="space-y-2">
                   <label className="font-mono text-[11px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1 h-3 bg-blue-500/50"></span> OPERATOR_ALIAS
+                    <span className="w-1 h-3 bg-blue-500/50"></span> FULL_NAME
                   </label>
                   <div className="relative">
                     <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -277,7 +303,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                       onChange={handleInputChange}
                       type="text"
                       className="w-full bg-[#0a0e16]/60 border border-white/10 text-white pl-12 pr-4 py-4 rounded-xl font-mono text-sm focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-white/10"
-                      placeholder="e.g. S. ROGERS / N7-XRAY"
+                      placeholder="e.g. STEVE ROGERS"
                     />
                   </div>
                 </div>
@@ -286,7 +312,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <label className="font-mono text-[11px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                      <span className="w-1 h-3 bg-blue-500/50"></span> SECURE_COMMS
+                      <span className="w-1 h-3 bg-blue-500/50"></span> EMAIL_ADDRESS
                     </label>
                     <span className="text-[9px] font-bold text-blue-400 bg-blue-400/10 border border-blue-400/30 px-2 py-0.5 rounded flex items-center gap-1 tracking-widest uppercase">
                       <Lock size={10} /> ENCRYPTED
@@ -301,7 +327,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                       onChange={handleInputChange}
                       type="email"
                       className="w-full bg-[#0a0e16]/60 border border-white/10 text-white pl-12 pr-4 py-4 rounded-xl font-mono text-sm focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-white/10"
-                      placeholder="secure-comms@forensic.io"
+                      placeholder="UPLINK: EMAIL@DOMAIN.COM"
                     />
                   </div>
                 </div>
@@ -450,11 +476,12 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     <div className="flex items-center gap-1 text-2xl md:text-3xl text-white font-mono font-bold tracking-tighter">
                       <span>$</span>
                       <input 
-                        type="number"
-                        min="0"
+                        type="text"
+                        inputMode="numeric"
                         value={assetValue}
-                        onChange={(e) => setAssetValue(Math.max(0, parseInt(e.target.value) || 0))}
-                        className="bg-transparent border-none outline-none focus:ring-0 p-0 w-32 md:w-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-text hover:text-blue-400 transition-colors"
+                        onChange={handleAssetInputChange}
+                        className="bg-transparent border-none outline-none focus:ring-0 p-0 w-32 md:w-64 font-mono text-white placeholder:text-white/5"
+                        placeholder="0.00"
                       />
                       <span className="text-[10px] text-blue-400/50 ml-1 font-normal uppercase tracking-widest">USD_EQUIVALENT</span>
                     </div>
@@ -464,17 +491,39 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     <span className="text-sm font-bold text-blue-400 font-mono">99.4%</span>
                   </div>
                 </div>
-                <div className="relative py-4">
+                <div className="relative py-4 group/slider">
+                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-white/10"></div>
+                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 pointer-events-none">
+                    {[0, 25, 50, 75, 100].map(mark => (
+                      <div key={mark} className="w-px h-1.5 bg-white/20"></div>
+                    ))}
+                  </div>
+                  
                   <input 
                     type="range"
                     min="0"
-                    max="100000"
-                    step="100"
-                    value={assetValue}
+                    max="1000000"
+                    step="500"
+                    value={typeof assetValue === 'number' ? assetValue : 0}
                     onChange={(e) => setAssetValue(parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-blue-500"
+                    className="absolute inset-x-0 top-1/2 -translate-y-1/2 w-full h-8 bg-transparent appearance-none cursor-pointer z-10 accent-blue-500 hover:accent-blue-400"
                   />
-                  <div className="absolute top-1/2 -translate-y-1/2 h-1.5 bg-gradient-to-r from-blue-600 to-blue-400 pointer-events-none rounded-full" style={{ width: `${(assetValue/100000)*100}%` }}></div>
+                  
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 pointer-events-none rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300" 
+                    style={{ width: `${Math.min(100, (Number(assetValue || 0) / 1000000) * 100)}%` }}
+                  >
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_10px_#fff,0_0_20px_#3b82f6] border-2 border-blue-600 scale-110 group-hover/slider:scale-125 transition-transform"></div>
+                  </div>
+
+                  <div className="flex justify-between mt-6">
+                    <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">MIN_LIMIT: $0</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse"></div>
+                      <span className="text-[8px] font-mono text-blue-500 uppercase tracking-widest">REALTIME_VALUATION_SCALING</span>
+                    </div>
+                    <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">MAX_SCALE: $1M</span>
+                  </div>
                 </div>
               </div>
  
@@ -632,7 +681,10 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
             <div className="mt-4 flex gap-4">
               <div className="flex-grow">
                 <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 w-[72%] shadow-[0_0_8px_#3b82f6]"></div>
+                  <div 
+                    className="h-full bg-blue-500 transition-all duration-1000 shadow-[0_0_8px_#3b82f6]" 
+                    style={{ width: `${buffer}%` }}
+                  ></div>
                 </div>
                 <p className="text-[8px] font-mono text-slate-500 mt-1 uppercase">BUFFER_CAPACITY</p>
               </div>

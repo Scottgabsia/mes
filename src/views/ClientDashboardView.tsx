@@ -30,6 +30,17 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [messages, setMessages] = React.useState<any[]>([]);
   const [liveCaseData, setLiveCaseData] = React.useState<any>(caseData);
   const [sendingMessage, setSendingMessage] = React.useState(false);
+  
+  const [hopCount, setHopCount] = React.useState(12);
+  const [mixerDepth, setMixerDepth] = React.useState(4);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setHopCount(prev => prev + (Math.random() > 0.7 ? 1 : Math.random() > 0.3 ? 0 : -1));
+      setMixerDepth(prev => prev + (Math.random() > 0.9 ? 1 : Math.random() > 0.1 ? 0 : -1));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   React.useEffect(() => {
     if (!caseData?.id) return;
@@ -125,10 +136,25 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
   const currentSteps = getStatusSteps(displayStatus);
 
+  const [activityTimes, setActivityTimes] = React.useState([120, 900, 2700]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setActivityTimes(prev => prev.map(t => t + 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatRelTime = (seconds: number) => {
+    if (seconds < 60) return `${Math.floor(seconds)}s AGO`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m AGO`;
+    return `${Math.floor(seconds / 3600)}h AGO`;
+  };
+
   const recentActivity = [
-    { type: 'log', title: 'Node 04-X Alpha assigned to case monitoring', time: '2 mins ago' },
-    { type: 'file', title: 'Forensic_Report_Draft_v1.pdf generated', time: '15 mins ago' },
-    { type: 'comms', title: 'Analyst Rogers sent a secure message', time: '45 mins ago' },
+    { type: 'log', title: 'Node 04-X Alpha assigned to case monitoring', time: formatRelTime(activityTimes[0]) },
+    { type: 'file', title: 'Forensic_Report_Draft_v1.pdf generated', time: formatRelTime(activityTimes[1]) },
+    { type: 'comms', title: 'Analyst Rogers sent a secure message', time: formatRelTime(activityTimes[2]) },
   ];
 
   const [keyphrase, setKeyphrase] = React.useState('');
@@ -187,7 +213,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   };
 
   return (
-    <main className="pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen relative z-10">
+    <main className="pt-32 sm:pt-40 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen relative z-10">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b border-white/5 pb-8">
         <div>
@@ -328,11 +354,11 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                    <div className="mt-8 grid grid-cols-2 gap-4">
                      <div className="p-3 rounded-lg bg-white/5 border border-white/5">
                         <p className="text-[8px] font-mono text-slate-500 uppercase mb-1">HOP_COUNT</p>
-                        <p className="text-lg font-mono font-bold text-white">12</p>
+                        <p className="text-lg font-mono font-bold text-white transition-all duration-1000">{hopCount}</p>
                      </div>
                      <div className="p-3 rounded-lg bg-white/5 border border-white/5">
                         <p className="text-[8px] font-mono text-slate-500 uppercase mb-1">MIXER_DEPTH</p>
-                        <p className="text-lg font-mono font-bold text-white">4</p>
+                        <p className="text-lg font-mono font-bold text-white transition-all duration-1000">{Math.max(1, mixerDepth)}</p>
                      </div>
                    </div>
                 </div>

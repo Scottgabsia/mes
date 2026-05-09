@@ -18,8 +18,41 @@ import {
 } from 'lucide-react';
 
 export const IntelligenceView = () => {
+  const [riskIndex, setRiskIndex] = React.useState(89.4);
+  const [exploitVectors, setExploitVectors] = React.useState(402);
+  const [threatActors, setThreatActors] = React.useState(12041);
+  const [threats, setThreats] = React.useState([
+    { id: '#INC-8821', title: 'DEX Liquidity Drain via Reentrancy', status: 'CRITICAL', priority: 'PRIORITY_01', color: 'border-l-red-400', textColor: 'text-red-400', bg: 'bg-red-400/10', secondsAgo: 0.2, detail: '0x8a...2e1c' },
+    { id: '#INC-8820', title: 'Suspicious Token Mint Event', status: 'WARNING', priority: 'PRIORITY_02', color: 'border-l-yellow-400', textColor: 'text-yellow-400', bg: 'bg-yellow-400/10', secondsAgo: 12, detail: '0x4f...99ab' },
+    { id: '#INC-8819', title: 'Phishing Site URL Expansion', status: 'MONITOR', priority: 'PRIORITY_03', color: 'border-l-blue-400', textColor: 'text-blue-400', bg: 'bg-blue-400/10', secondsAgo: 60, detail: 'trust-wallet.xyz' }
+  ]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setRiskIndex(prev => {
+        const next = prev + (Math.random() > 0.5 ? 0.1 : -0.1);
+        return parseFloat(next.toFixed(1));
+      });
+      setExploitVectors(prev => prev + (Math.random() > 0.8 ? 1 : Math.random() > 0.2 ? 0 : -1));
+      setThreatActors(prev => prev + (Math.random() > 0.7 ? 1 : Math.random() > 0.3 ? 0 : -1));
+      
+      setThreats(prev => prev.map(t => ({
+        ...t,
+        secondsAgo: t.secondsAgo + 0.1
+      })));
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatAgo = (seconds: number) => {
+    if (seconds < 60) return `${seconds.toFixed(1)}s AGO`;
+    const mins = Math.floor(seconds / 60);
+    return `${mins}m AGO`;
+  };
+
   return (
-    <main className="pt-28 pb-32 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative overflow-hidden">
+    <main className="pt-40 sm:pt-52 pb-32 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative overflow-hidden">
       {/* Background Grid Overlay */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
       
@@ -86,7 +119,7 @@ export const IntelligenceView = () => {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
               <span className="text-[10px] font-mono text-slate-500 mb-1 uppercase tracking-widest">RISK INDEX</span>
-              <span className="text-5xl text-white mb-1 font-bold">89.4<span className="text-xl opacity-50">%</span></span>
+              <span className="text-5xl text-white mb-1 font-bold">{riskIndex.toFixed(1)}<span className="text-xl opacity-50">%</span></span>
               <div className="px-3 py-1 bg-red-400/20 border border-red-400/40 rounded-full">
                 <span className="font-mono text-[10px] text-red-400 font-bold uppercase tracking-widest">CRITICAL STATE</span>
               </div>
@@ -97,14 +130,14 @@ export const IntelligenceView = () => {
             <div className="flex flex-col gap-1">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">EXPLOIT VECTORS</p>
               <div className="flex items-end gap-2">
-                <p className="font-mono text-2xl text-white leading-none">402</p>
+                <p className="font-mono text-2xl text-white leading-none">{exploitVectors.toLocaleString()}</p>
                 <span className="text-[10px] text-red-400 font-mono mb-0.5">+12.4%</span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">THREAT ACTORS</p>
               <div className="flex items-end gap-2">
-                <p className="font-mono text-2xl text-white leading-none">12,041</p>
+                <p className="font-mono text-2xl text-white leading-none">{threatActors.toLocaleString()}</p>
                 <span className="text-[10px] text-red-400 font-mono mb-0.5">+241</span>
               </div>
             </div>
@@ -164,11 +197,7 @@ export const IntelligenceView = () => {
 
           <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-white/10">
             {/* Threat Entry High */}
-            {[
-              { id: '#INC-8821', title: 'DEX Liquidity Drain via Reentrancy', status: 'CRITICAL', priority: 'PRIORITY_01', color: 'border-l-red-400', textColor: 'text-red-400', bg: 'bg-red-400/10', time: '0.2s AGO', detail: '0x8a...2e1c' },
-              { id: '#INC-8820', title: 'Suspicious Token Mint Event', status: 'WARNING', priority: 'PRIORITY_02', color: 'border-l-yellow-400', textColor: 'text-yellow-400', bg: 'bg-yellow-400/10', time: '12s AGO', detail: '0x4f...99ab' },
-              { id: '#INC-8819', title: 'Phishing Site URL Expansion', status: 'MONITOR', priority: 'PRIORITY_03', color: 'border-l-blue-400', textColor: 'text-blue-400', bg: 'bg-blue-400/10', time: '1m AGO', detail: 'trust-wallet.xyz' }
-            ].map((threat, i) => (
+            {threats.map((threat, i) => (
               <div key={i} className={`group relative bg-white/[0.02] hover:bg-white/[0.05] p-5 border border-white/5 border-l-4 ${threat.color} rounded-r-xl transition-all duration-300 overflow-hidden`}>
                 <div className="flex items-start justify-between gap-4 relative z-10">
                   <div className="flex gap-5">
@@ -179,7 +208,7 @@ export const IntelligenceView = () => {
                     <div>
                       <h4 className="font-manrope text-sm text-white font-semibold mb-1 group-hover:text-blue-400 transition-colors uppercase tracking-tight">{threat.title}</h4>
                       <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
-                        <span className="flex items-center gap-1.5"><span className={`w-1 h-1 rounded-full ${threat.bg.replace('bg-', 'bg-opacity-50 ')}`}></span> DETECTED: {threat.time}</span>
+                        <span className="flex items-center gap-1.5"><span className={`w-1 h-1 rounded-full ${threat.bg.replace('bg-', 'bg-opacity-50 ')}`}></span> DETECTED: {formatAgo(threat.secondsAgo)}</span>
                         <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-slate-700"></span> SOURCE: {threat.detail}</span>
                       </div>
                     </div>
