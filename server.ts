@@ -28,13 +28,29 @@ async function startServer() {
     return nodemailer.createTransport({
       host,
       port,
-      secure: port === 465, // true for 465, false for other ports
+      secure: port === 465,
       auth: {
         user,
         pass,
       },
+      tls: {
+        // Do not fail on invalid certs
+        rejectUnauthorized: false
+      }
     });
   };
+
+  // Verify SMTP Connection on startup
+  const testTransporter = getTransporter();
+  if (testTransporter) {
+    testTransporter.verify((error, success) => {
+      if (error) {
+        console.error("SMTP Verification Error:", error);
+      } else {
+        console.log("SMTP Server is ready to take messages");
+      }
+    });
+  }
 
   // API Routes
   app.post("/api/submit-recovery", async (req, res) => {
@@ -46,12 +62,17 @@ async function startServer() {
     console.log("--------------------------------------------------");
 
     try {
+      const { 
+        createdAt, 
+        ...safeData 
+      } = formData;
+
       const transporter = getTransporter();
       if (transporter) {
         const mailOptions = {
-          from: `"System Alert" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+          from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
           to: "info@digitalassetsforensiccryptorecovery.com",
-          subject: `NEW LEAD: ${formData.operatorAlias} | ${formData.incidentVector}`,
+          subject: `NEW LEAD: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
               <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Recovery Lead Received</h2>
@@ -59,22 +80,22 @@ async function startServer() {
               
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Client Manifest</h3>
-                <p><strong>Full Name:</strong> ${formData.operatorAlias}</p>
-                <p><strong>Email Address:</strong> ${formData.secureComms}</p>
-                <p><strong>Phone:</strong> ${formData.phone}</p>
+                <p><strong>Full Name:</strong> ${safeData.operatorAlias || safeData.name}</p>
+                <p><strong>Email Address:</strong> ${safeData.secureComms || safeData.email}</p>
+                <p><strong>Phone:</strong> ${safeData.phone}</p>
               </div>
 
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Incident Parameters</h3>
-                <p><strong>Service Type:</strong> ${formData.incidentVector}</p>
-                <p><strong>Target Network:</strong> ${formData.targetNetwork}</p>
-                <p><strong>Asset Value Estimate:</strong> $${formData.estimatedValue}</p>
-                <p><strong>Transaction Hash:</strong> <code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">${formData.transactionHash}</code></p>
+                <p><strong>Service Type:</strong> ${safeData.incidentVector}</p>
+                <p><strong>Target Network:</strong> ${safeData.targetNetwork}</p>
+                <p><strong>Asset Value Estimate:</strong> $${safeData.estimatedValue}</p>
+                <p><strong>Transaction Hash:</strong> <code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">${safeData.transactionHash}</code></p>
               </div>
 
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Case Narrative</h3>
-                <p style="white-space: pre-wrap;">${formData.caseNarrative}</p>
+                <p style="white-space: pre-wrap;">${safeData.caseNarrative}</p>
               </div>
               
               <p style="font-size: 10px; color: #64748b; margin-top: 30px;">

@@ -98,9 +98,12 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       await addDoc(collection(db, 'recovery_requests'), submissionData);
     } catch (fsError) {
       console.error("Firestore submission error:", fsError);
-      // We don't block here because users might have different permission levels, 
-      // but the rule should allow this public creation now.
     }
+
+    const { 
+      createdAt,
+      ...apiData 
+    } = submissionData;
 
     // 2. Call server API for email notification
     try {
@@ -110,7 +113,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...submissionData,
+          ...apiData,
           timestamp: new Date().toISOString()
         }),
       });
@@ -123,7 +126,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
   };
 
   return (
-    <div className="pt-40 sm:pt-52 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
+    <div className="pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
       {/* Hero & Main Viz */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 sm:gap-16 items-start mb-20 sm:mb-stack-lg">
         <div className="space-y-6 sm:space-y-stack-md xl:sticky xl:top-32">

@@ -164,6 +164,11 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     };
 
     try {
+      const { 
+        createdAt,
+        ...apiData 
+      } = submissionData;
+
       // 1. Save to Firestore
       try {
         await addDoc(collection(db, 'recovery_requests'), submissionData);
@@ -178,7 +183,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...submissionData,
+          ...apiData,
           timestamp: new Date().toISOString()
         }),
       });
