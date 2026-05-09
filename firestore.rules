@@ -15,12 +15,26 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && request.auth.token.email == 'contact@vr-astrovision.com';
+      return isSignedIn() && (
+        request.auth.token.email == 'contact@vr-astrovision.com' || 
+        request.auth.token.email == 'admin@forensic.io'
+      );
     }
 
-    match /recovery_requests/{document=**} {
-      // Direct access allowed as requested for admin view
-      allow read, write: if true;
+    match /recovery_requests/{requestId} {
+      allow read, write: if isAdmin();
+      
+      match /messages/{messageId} {
+        allow read, write: if isAdmin();
+      }
+    }
+    
+    // Explicitly allow users to look up their own requests if they provide the ID
+    // (In this app, lookup is done by ID directly without auth, so we allow get)
+    // For list, we still restrict.
+    match /recovery_requests/{requestId} {
+      allow get: if true;
+      allow create: if true; // Allow anyone to submit a recovery request
     }
     
     // Explicit deny for everything else

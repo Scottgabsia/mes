@@ -17,14 +17,24 @@ export const AdminLoginView: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    // If identifier is not an email, assume it's a username and append a default domain
+    let loginEmail = email;
+    if (email && !email.includes('@')) {
+      loginEmail = `${email}@forensic.io`;
+    }
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // In a real app, you'd check if they have admin claims, but for this demo, 
-      // successful login to the admin route is enough if we trust the user.
-      // But we should probably check if it's the specific target email or some admin list.
+      await signInWithEmailAndPassword(auth, loginEmail, password);
       navigate('/admin/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      console.error('Login error:', err);
+      if (err.code === 'auth/operation-not-allowed') {
+        setError('Email/Password provider is disabled. Please enable it in the Firebase Console under Authentication > Sign-in method.');
+      } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setError('Invalid credentials. Make sure you have created the admin user in the Firebase Console and enabled Email/Password login.');
+      } else {
+        setError(err.message || 'Authentication failed');
+      }
       setLoading(false);
     }
   };
@@ -56,22 +66,22 @@ export const AdminLoginView: React.FC = () => {
           
           <form onSubmit={handleLogin} className="space-y-6 relative z-10">
             <div className="space-y-2">
-              <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest pl-1">Identifier</label>
+              <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest pl-1">USERNAME OR EMAIL</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
                 <input 
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@forensic.io"
+                  placeholder="admin"
                   className="w-full bg-[#0a0e16] border border-white/10 rounded-xl py-4 pl-12 pr-4 text-xs font-mono text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-800"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest pl-1">Passkey</label>
+              <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest pl-1">PASSWORD</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
                 <input 
@@ -99,11 +109,11 @@ export const AdminLoginView: React.FC = () => {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Decrypting...
+                  AUTHENTICATING...
                 </>
               ) : (
                 <>
-                  Establish Uplink
+                  SIGN IN
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

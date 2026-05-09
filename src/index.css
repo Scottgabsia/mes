@@ -203,3 +203,18 @@ body {
   @apply bg-background text-on-background font-manrope mesh-background min-h-screen selection:bg-blue-600/30 grid-pattern;
 }
 
+/* Prevent zoom on mobile inputs */
+@layer base {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+

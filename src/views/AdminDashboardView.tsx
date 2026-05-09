@@ -39,6 +39,8 @@ const CaseManagerView: React.FC = () => {
   const [message, setMessage] = React.useState('');
   const [sendingMessage, setSendingMessage] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [authChecking, setAuthChecking] = React.useState(true);
+  const [isAuthorized, setIsAuthorized] = React.useState(false);
 
   const statusLevels = [
     { id: 'PENDING', label: 'Intake Received' },
@@ -50,6 +52,25 @@ const CaseManagerView: React.FC = () => {
   ];
 
   React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthChecking(false);
+      // For this demo, we check if the user is the admin email or has the forensic.io domain
+      if (user && (
+        user.email === 'contact@vr-astrovision.com' || 
+        user.email?.endsWith('@forensic.io') ||
+        user.email?.includes('admin')
+      )) {
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  React.useEffect(() => {
+    if (!isAuthorized || authChecking) return;
+    
     setLoading(true);
     setErrorStatus(null);
     
@@ -79,7 +100,7 @@ const CaseManagerView: React.FC = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [isAuthorized, authChecking]);
 
   const handleUpdateStatus = async (requestId: string, newStatus: string) => {
     try {
@@ -116,6 +137,40 @@ const CaseManagerView: React.FC = () => {
       setSendingMessage(false);
     }
   };
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[#020408] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent animate-spin rounded-full"></div>
+          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Verifying Authorization...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#020408] flex items-center justify-center p-6">
+        <div className="max-w-md w-full glass-panel p-8 rounded-3xl border border-red-500/20 text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mx-auto">
+            <LockIcon size={32} />
+          </div>
+          <h2 className="text-xl font-manrope font-black text-white uppercase tracking-tight">Access Denied</h2>
+          <p className="text-slate-400 text-sm leading-relaxed font-mono">
+            Your current account does not have administrative privileges.<br/>
+            Contact the system administrator for uplink permission.
+          </p>
+          <button 
+            onClick={() => window.location.href = '/admin/login'}
+            className="w-full bg-slate-800 text-white font-mono font-bold uppercase tracking-widest py-4 rounded-xl hover:bg-slate-700 transition-all cursor-pointer"
+          >
+            Return to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Logic to find current selected case data from the live requests stream
   const activeCaseData = selectedCase ? requests.find(r => r.id === selectedCase.id) || selectedCase : null;
