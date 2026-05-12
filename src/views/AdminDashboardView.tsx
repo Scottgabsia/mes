@@ -102,6 +102,20 @@ const CaseManagerView: React.FC = () => {
     return () => unsubscribe();
   }, [isAuthorized, authChecking]);
 
+  const createNotification = async (requestId: string, title: string, message: string, type: 'STATUS_UPDATE' | 'MILESTONE_COMPLETE' | 'MESSAGE' | 'ACTION_REQUIRED') => {
+    try {
+      await addDoc(collection(db, 'recovery_requests', requestId, 'notifications'), {
+        title,
+        message,
+        type,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error('Failed to create notification:', err);
+    }
+  };
+
   const handleUpdateStatus = async (requestId: string, newStatus: string) => {
     try {
       const ref = doc(db, 'recovery_requests', requestId);
@@ -109,6 +123,25 @@ const CaseManagerView: React.FC = () => {
         status: newStatus,
         updatedAt: serverTimestamp()
       });
+      
+      const statusLabel = statusLevels.find(l => l.id === newStatus)?.label || newStatus;
+      let notificationTitle = 'Status Updated';
+      let notificationMessage = `Your case status has been updated to: ${statusLabel}`;
+      let notificationType: 'STATUS_UPDATE' | 'ACTION_REQUIRED' = 'STATUS_UPDATE';
+
+      if (newStatus === 'ANALYSIS') {
+        notificationTitle = 'Action Required';
+        notificationMessage = 'Further authority verification is required for your case. Please check your workspace for the new operational step.';
+        notificationType = 'ACTION_REQUIRED';
+      }
+
+      await createNotification(
+        requestId, 
+        notificationTitle, 
+        notificationMessage, 
+        notificationType
+      );
+
       if (selectedCase?.id === requestId) {
         setSelectedCase({ ...selectedCase, status: newStatus });
       }
@@ -130,6 +163,14 @@ const CaseManagerView: React.FC = () => {
         createdAt: serverTimestamp(),
         type: 'admin_message'
       });
+
+      await createNotification(
+        selectedCase.id,
+        'New Message Received',
+        'You have a new secure communication from your lead analyst.',
+        'MESSAGE'
+      );
+
       setMessage('');
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${selectedCase.id}/messages`);
@@ -401,12 +442,22 @@ const CaseManagerView: React.FC = () => {
                                 disabled={index === 0}
                                 onClick={async () => {
                                   const currentSteps = activeCaseData.completedSteps || [];
+                                  const isChecking = !isCompleted;
                                   const newSteps = isCompleted 
                                     ? currentSteps.filter((s: string) => s !== lvl.id)
                                     : [...currentSteps, lvl.id];
                                   
                                   const ref = doc(db, 'recovery_requests', activeCaseData.id);
                                   await updateDoc(ref, { completedSteps: newSteps, updatedAt: serverTimestamp() });
+
+                                  if (isChecking) {
+                                    await createNotification(
+                                      activeCaseData.id,
+                                      'Milestone Achieved',
+                                      `Phase "${lvl.label}" has been successfully completed and verified.`,
+                                      'MILESTONE_COMPLETE'
+                                    );
+                                  }
                                 }}
                                 className={`w-full p-2.5 sm:p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2 transition-all ${
                                   isCompleted 

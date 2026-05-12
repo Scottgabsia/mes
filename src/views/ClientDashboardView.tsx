@@ -14,7 +14,11 @@ import {
   Eye,
   FileSearch,
   CheckCircle2,
-  User as UserIcon
+  User as UserIcon,
+  Bell,
+  Inbox,
+  AlertTriangle,
+  Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -30,6 +34,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [messages, setMessages] = React.useState<any[]>([]);
   const [liveCaseData, setLiveCaseData] = React.useState<any>(caseData);
   const [sendingMessage, setSendingMessage] = React.useState(false);
+  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
+  const [unreadCount, setUnreadCount] = React.useState(0);
   
   const [hopCount, setHopCount] = React.useState(12);
   const [mixerDepth, setMixerDepth] = React.useState(4);
@@ -57,6 +64,20 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       handleFirestoreError(error, OperationType.LIST, `recovery_requests/${caseData.id}/messages`);
     });
 
+    // Listen to notifications
+    const qNotifications = query(
+      collection(db, 'recovery_requests', caseData.id, 'notifications'),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubNotifications = onSnapshot(qNotifications, (snapshot) => {
+      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setNotifications(docs);
+      setUnreadCount(docs.filter((n: any) => !n.read).length);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, `recovery_requests/${caseData.id}/notifications`);
+    });
+
     // Listen to case document itself for live status updates
     const unsubCase = onSnapshot(doc(db, 'recovery_requests', caseData.id), (snapshot) => {
       if (snapshot.exists()) {
@@ -68,6 +89,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
     return () => {
       unsubMessages();
+      unsubNotifications();
       unsubCase();
     };
   }, [caseData?.id]);
@@ -212,6 +234,29 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     }
   };
 
+  const handleMarkAsRead = async (notificationId: string) => {
+    if (!caseData?.id) return;
+    try {
+      await updateDoc(doc(db, 'recovery_requests', caseData.id, 'notifications', notificationId), {
+        read: true
+      });
+    } catch (err) {
+      handleFirestoreError(err, OperationType.UPDATE, `recovery_requests/${caseData.id}/notifications/${notificationId}`);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    if (!caseData?.id || unreadCount === 0) return;
+    const unread = notifications.filter(n => !n.read);
+    try {
+      await Promise.all(unread.map(n => 
+        updateDoc(doc(db, 'recovery_requests', caseData.id, 'notifications', n.id), { read: true })
+      ));
+    } catch (err) {
+      console.error('Failed to mark all as read:', err);
+    }
+  };
+
   return (
     <main className="pt-32 sm:pt-40 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen relative z-10">
       {/* Header Section */}
@@ -235,7 +280,103 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           </h1>
         </div>
         
-        <div className="flex items-center gap-2 sm:gap-4 bg-slate-950/60 p-1.5 sm:p-2 rounded-xl border border-white/5 backdrop-blur-md overflow-x-auto scrollbar-hide shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <button 
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className={`p-3 rounded-xl border transition-all relative group ${
+                unreadCount > 0 ? 'bg-blue-600/10 border-blue-500 text-blue-400' : 'bg-white/5 border-white/10 text-slate-500 hover:text-white'
+              }`}
+            >
+              <Bell size={20} className={unreadCount > 0 ? 'animate-bounce' : ''} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white font-mono text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-red-500/40 border-2 border-[#020408]">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            <AnimatePresence>
+              {isNotificationsOpen && (
+                <>
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setIsNotificationsOpen(false)}
+                    className="fixed inset-0 z-40"
+                  />
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-4 w-[320px] sm:w-[400px] glass-panel border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                  >
+                    <div className="p-4 border-b border-white/5 bg-slate-950/60 flex items-center justify-between">
+                      <h3 className="font-mono text-[10px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                        <Inbox size={12} className="text-blue-500" /> Notifications
+                      </h3>
+                      {unreadCount > 0 && (
+                        <button 
+                          onClick={handleMarkAllRead}
+                          className="text-[9px] font-mono text-blue-400 hover:text-white uppercase tracking-tighter"
+                        >
+                          Mark all as read
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto custom-scrollbar p-2 space-y-2">
+                      {notifications.length === 0 ? (
+                        <div className="py-12 text-center">
+                          <p className="text-[10px] font-mono text-slate-600 uppercase tracking-widest">No notifications detected</p>
+                        </div>
+                      ) : (
+                        notifications.map((notif: any) => (
+                          <div 
+                            key={notif.id}
+                            onClick={() => !notif.read && handleMarkAsRead(notif.id)}
+                            className={`p-4 rounded-xl border transition-all cursor-pointer group ${
+                              notif.read ? 'bg-white/5 border-white/5 opacity-60' : 'bg-blue-600/5 border-blue-500/20 hover:border-blue-500/40'
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                                notif.type === 'STATUS_UPDATE' ? 'bg-blue-500/20 text-blue-400' :
+                                notif.type === 'ACTION_REQUIRED' ? 'bg-amber-500/20 text-amber-500' :
+                                notif.type === 'MESSAGE' ? 'bg-purple-500/20 text-purple-400' :
+                               'bg-emerald-500/20 text-emerald-400'
+                              }`}>
+                                {notif.type === 'STATUS_UPDATE' ? <Activity size={14} /> :
+                                 notif.type === 'ACTION_REQUIRED' ? <AlertTriangle size={14} /> :
+                                 notif.type === 'MESSAGE' ? <MessageSquare size={14} /> :
+                                 <Info size={14} />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-[11px] font-bold uppercase tracking-wide mb-0.5 ${notif.read ? 'text-slate-400' : 'text-white'}`}>
+                                  {notif.title}
+                                </p>
+                                <p className="text-[10px] text-slate-400 font-manrope leading-relaxed line-clamp-2">
+                                  {notif.message}
+                                </p>
+                                <p className="text-[8px] font-mono text-slate-600 mt-2 uppercase">
+                                  {notif.createdAt?.toDate?.()?.toLocaleString() || 'JUST NOW'}
+                                </p>
+                              </div>
+                              {!notif.read && (
+                                <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1" />
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 sm:gap-4 bg-slate-950/60 p-1.5 sm:p-2 rounded-xl border border-white/5 backdrop-blur-md overflow-x-auto scrollbar-hide shrink-0">
           <button 
             onClick={() => setActiveTab('overview')}
             className={`px-4 sm:px-6 py-2 rounded-lg font-mono text-[10px] sm:text-xs font-bold transition-all uppercase tracking-widest whitespace-nowrap ${activeTab === 'overview' ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(0,98,255,0.4)]' : 'text-slate-500 hover:text-white'}`}
@@ -256,8 +397,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           </button>
         </div>
       </div>
+    </div>
 
-      <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait">
         {activeTab === 'overview' && (
           <motion.div 
             key="overview"

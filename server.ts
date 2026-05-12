@@ -20,7 +20,7 @@ async function startServer() {
   const getTransporter = () => {
     const host = process.env.SMTP_HOST || 'smtp.titan.email';
     const port = parseInt(process.env.SMTP_PORT || '465');
-    const user = process.env.SMTP_USER || 'info@digitalassetsforensicscryptorecovery.com';
+    const user = process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com';
     const pass = process.env.SMTP_PASS || 'Michealg12$';
 
     if (!user || !pass) {
@@ -28,7 +28,8 @@ async function startServer() {
       return null;
     }
 
-    console.log(`[SMTP] Initializing for ${user} on ${host}:${port}`);
+    const isUsingFallback = !process.env.SMTP_USER;
+    console.log(`[SMTP] Initializing for ${user} on ${host}:${port} (${isUsingFallback ? 'Using internal fallback' : 'Using environment variables'})`);
 
     return nodemailer.createTransport({
       host,
@@ -74,8 +75,8 @@ async function startServer() {
       const transporter = getTransporter();
       if (transporter) {
         const mailOptions = {
-          from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensicscryptorecovery.com'}>`,
-          to: "info@digitalassetsforensicscryptorecovery.com",
+          from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+          to: "info@digitalassetsforensiccryptorecovery.com",
           subject: `NEW LEAD: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">

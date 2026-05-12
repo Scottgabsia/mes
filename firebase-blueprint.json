@@ -52,12 +52,41 @@
         }
       },
       "required": ["operatorAlias", "secureComms", "transactionHash", "caseNarrative", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "A notification alert for the client.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["STATUS_UPDATE", "MILESTONE_COMPLETE", "MESSAGE", "ACTION_REQUIRED"]
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["title", "message", "type", "read", "createdAt"]
     }
   },
   "firestore": {
     "recovery_requests": {
       "schema": "RecoveryRequest",
       "description": "Collection of all submitted recovery requests."
+    },
+    "recovery_requests/{requestId}/notifications": {
+      "schema": "Notification",
+      "description": "Subcollection of notifications for a specific recovery request."
     }
   }
 }
