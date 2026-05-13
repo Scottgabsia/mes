@@ -34,6 +34,7 @@ import { GDPRView } from './views/GDPRView';
 import { AMLKYCView } from './views/AMLKYCView';
 import { CaseLookupView } from './views/CaseLookupView';
 import { AboutView } from './views/AboutView';
+import { BlogView } from './views/BlogView';
 import { PrivacyPolicyView } from './views/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { ReviewsView } from './views/ReviewsView';
@@ -46,6 +47,7 @@ type View =
   | 'services' 
   | 'intelligence' 
   | 'about'
+  | 'blog'
   | 'privacyPolicy'
   | 'termsOfService'
   | 'reviews'
@@ -109,6 +111,7 @@ export default function App() {
     const autoCollapseViews: View[] = [
       'intelligence', 
       'about',
+      'blog',
       'privacyPolicy',
       'termsOfService',
       'clientPortal', 
@@ -145,6 +148,7 @@ export default function App() {
     const pathMapRev: Record<string, View> = {
       '/': 'home',
       '/about': 'about',
+      '/blog': 'blog',
       '/services': 'services',
       '/intelligence': 'intelligence',
       '/contact': 'clientPortal',
@@ -189,6 +193,7 @@ export default function App() {
     const pathMap: Record<string, string> = {
       'home': '/',
       'about': '/about',
+      'blog': '/blog',
       'services': '/services',
       'intelligence': '/intelligence',
       'clientPortal': '/contact',
@@ -530,6 +535,7 @@ export default function App() {
             {currentView === 'services' && <ServicesView onServiceClick={() => handleNavClick('clientPortal')} />}
             {currentView === 'intelligence' && <IntelligenceView />}
             {currentView === 'about' && <AboutView onContactClick={() => handleNavClick('clientPortal')} onNavigate={handleNavClick} />}
+            {currentView === 'blog' && <BlogView />}
             {currentView === 'clientPortal' && <ClientPortalView onInitiateRecovery={() => handleNavClick('recoveryConfirmation')} onNavigate={handleNavClick} />}
             {currentView === 'recoveryConfirmation' && <RecoveryConfirmationView onBackToDashboard={() => handleNavClick('clientDashboard')} />}
             {currentView === 'caseLookup' && (
@@ -665,6 +671,12 @@ export default function App() {
               className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
             >
               About Us
+            </button>
+            <button 
+              onClick={() => handleNavClick('blog')}
+              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
+            >
+              Blog
             </button>
             <button 
               onClick={() => navigate('/admin/login')}

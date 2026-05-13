@@ -137,6 +137,53 @@ async function startServer() {
     }
   });
 
+  app.post("/api/subscribe", async (req, res) => {
+    const { name, email } = req.body;
+    
+    console.log("--------------------------------------------------");
+    console.log("NEW BLOG SUBSCRIPTION");
+    console.log(`NAME: ${name}`);
+    console.log(`EMAIL: ${email}`);
+    console.log("--------------------------------------------------");
+
+    try {
+      const transporter = getTransporter();
+      if (transporter) {
+        const mailOptions = {
+          from: `"Intelligence Stream" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+          to: "info@digitalassetsforensiccryptorecovery.com",
+          subject: `NEW BLOG SUBSCRIBER: ${name}`,
+          html: `
+            <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
+              <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Blog Subscription</h2>
+              <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+              </div>
+              <p style="font-size: 10px; color: #64748b; margin-top: 30px;">
+                This user has requested to join the Digital Assets Forensics intelligence stream.
+              </p>
+            </div>
+          `,
+        };
+
+        await transporter.sendMail(mailOptions);
+      }
+      
+      res.status(200).json({ 
+        success: true, 
+        message: "Successfully subscribed to the intelligence stream." 
+      });
+    } catch (error) {
+      console.error("Failed to process subscription email:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to process subscription" 
+      });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
