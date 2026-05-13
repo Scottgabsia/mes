@@ -74,19 +74,24 @@ async function startServer() {
 
       const transporter = getTransporter();
       if (transporter) {
-        const mailOptions = {
+        const generatedCaseId = `DF-${Math.floor(1000 + Math.random() * 9000)}-${Buffer.from(Date.now().toString()).toString('base64').substring(0, 4).toUpperCase()}`;
+        const clientEmail = safeData.secureComms || safeData.email;
+        const clientName = safeData.operatorAlias || safeData.name || "Valued Client";
+
+        // 1. Send Notification to Admin
+        const adminMailOptions = {
           from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
           to: "info@digitalassetsforensiccryptorecovery.com",
-          subject: `NEW LEAD: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
+          subject: `NEW LEAD [${generatedCaseId}]: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
-              <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Recovery Lead Received</h2>
+              <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Recovery Lead: ${generatedCaseId}</h2>
               <p><strong>System Identification:</strong> ${new Date().toLocaleString()}</p>
               
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Client Manifest</h3>
-                <p><strong>Full Name:</strong> ${safeData.operatorAlias || safeData.name}</p>
-                <p><strong>Email Address:</strong> ${safeData.secureComms || safeData.email}</p>
+                <p><strong>Full Name:</strong> ${clientName}</p>
+                <p><strong>Email Address:</strong> ${clientEmail}</p>
                 <p><strong>Phone:</strong> ${safeData.phone}</p>
               </div>
 
@@ -110,19 +115,77 @@ async function startServer() {
           `,
         };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully: " + info.messageId);
+        await transporter.sendMail(adminMailOptions);
+
+        // 2. Send Confirmation to Client
+        if (clientEmail) {
+          const clientMailOptions = {
+            from: `"Digital Assets Forensics" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+            to: clientEmail,
+            subject: `Case Initialized: ${generatedCaseId} - Documentation Received`,
+            html: `
+              <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; color: #020617; line-height: 1.6;">
+                <div style="background: #020617; padding: 40px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+                  <h1 style="color: #3b82f6; margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px;">Intake Confirmed</h1>
+                  <p style="color: #94a3b8; font-size: 12px; margin-top: 10px; font-family: monospace;">STATUS: ENCRYPTED_PROCESSING</p>
+                </div>
+                
+                <div style="padding: 40px 30px; background: #ffffff; border: 1px solid #e2e8f0; border-top: none;">
+                  <p style="font-size: 16px;">Hello <strong>${clientName}</strong>,</p>
+                  <p>Your case has been successfully initialized in our forensic queue. Our intelligence team is currently performing the initial heuristic sweep based on the technical parameters you provided.</p>
+                  
+                  <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #3b82f6;">
+                    <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Recovery Case ID</p>
+                    <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: 800; color: #1e293b; font-family: monospace;">${generatedCaseId}</p>
+                  </div>
+
+                  <h3 style="color: #1e293b; margin-top: 40px;">Next Steps in Your Recovery</h3>
+                  <ul style="padding-left: 20px; color: #475569;">
+                    <li style="margin-bottom: 10px;">Forensic Analysts will trace the asset movement to identified exit-ramps.</li>
+                    <li style="margin-bottom: 10px;">KYC-request documentation is being prepared for the target exchanges.</li>
+                    <li style="margin-bottom: 10px;">Our legal council will review the jurisdictional viability for a freezing order.</li>
+                  </ul>
+
+                  <div style="margin-top: 40px; text-align: center;">
+                    <a href="https://wa.me/2347069151241?text=Hello,%20I%20am%20enquiring%20about%20my%20case%20${generatedCaseId}" 
+                       style="display: inline-block; background: #25d366; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; margin-bottom: 15px; width: 100%; box-sizing: border-box;">
+                       SECURE CHAT VIA WHATSAPP
+                    </a>
+                    
+                    <a href="https://digitalassetsforensiccryptorecovery.com/status?case=${generatedCaseId}" 
+                       style="display: inline-block; background: #1e293b; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; width: 100%; box-sizing: border-box;">
+                       CHECK LIVE CASE STATUS
+                    </a>
+                  </div>
+                </div>
+
+                <div style="padding: 30px; background: #f8fafc; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none; text-align: center;">
+                  <p style="font-size: 11px; color: #64748b; margin: 0;">
+                    © 2026 Digital Assets Forensics. All rights reserved.<br>
+                    Private & Confidential • Forensic Intelligence Services
+                  </p>
+                  <p style="font-size: 10px; color: #cbd5e1; margin-top: 10px;">
+                    DO NOT REPLY Directly to this automated notification. Use the secure links above for operational updates.
+                  </p>
+                </div>
+              </div>
+            `,
+          };
+
+          await transporter.sendMail(clientMailOptions);
+        }
         
         res.status(200).json({ 
           success: true, 
-          message: "Data securely transmitted and email notification sent.",
-          caseId: `DF-${Math.floor(Math.random() * 10000)}-QX-04`
+          message: "Data securely transmitted and confirmation sent.",
+          caseId: generatedCaseId
         });
       } else {
+        const generatedCaseId = `DF-${Math.floor(Math.random() * 10000)}-QX-04`;
         res.status(200).json({ 
           success: true, 
           message: "Data logged to server (SMTP not configured).",
-          caseId: `DF-${Math.floor(Math.random() * 10000)}-QX-04`
+          caseId: generatedCaseId
         });
       }
     } catch (error) {
