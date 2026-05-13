@@ -24,11 +24,11 @@ async function startServer() {
     const pass = process.env.SMTP_PASS;
 
     if (!user || !pass || !host) {
-      console.warn("[SMTP] Configuration missing. Please set SMTP_HOST, SMTP_USER, and SMTP_PASS in your environment.");
+      console.warn(`[SMTP] Configuration incomplete. Missing: ${[!host && 'SMTP_HOST', !user && 'SMTP_USER', !pass && 'SMTP_PASS'].filter(Boolean).join(', ')}`);
       return null;
     }
 
-    console.log(`[SMTP] Initializing for ${user} on ${host}:${port}`);
+    console.log(`[SMTP] Initializing for ${user} on ${host}:${port} (Secure: ${port === 465})`);
 
     return nodemailer.createTransport({
       host,
@@ -57,6 +57,49 @@ async function startServer() {
   }
 
   // API Routes
+  app.get("/api/health", (req, res) => {
+    const host = process.env.SMTP_HOST;
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS ? "********" : undefined;
+    
+    res.json({ 
+      status: "online",
+      smtpConfigured: !!(host && user && process.env.SMTP_PASS),
+      smtpDetails: {
+        host,
+        user,
+        passSet: !!process.env.SMTP_PASS
+      }
+    });
+  });
+
+  app.get("/api/debug-email", async (req, res) => {
+    const transporter = getTransporter();
+    if (!transporter) {
+      return res.status(500).json({ error: "SMTP not configured" });
+    }
+
+    try {
+      await transporter.verify();
+      const mailOptions = {
+        from: `"DEBUG" <${process.env.SMTP_USER}>`,
+        to: process.env.SMTP_USER || "info@digitalassetsforensiccryptorecovery.com",
+        subject: "SMTP Debug Test",
+        text: `This is a test email triggered at ${new Date().toISOString()}`
+      };
+      
+      const info = await transporter.sendMail(mailOptions);
+      res.json({ success: true, messageId: info.messageId, response: info.response });
+    } catch (error) {
+      console.error("[SMTP DEBUG ERR]", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
+    }
+  });
+
   app.post("/api/submit-recovery", async (req, res) => {
     const formData = req.body;
     
