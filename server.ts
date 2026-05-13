@@ -18,18 +18,17 @@ async function startServer() {
 
   // SMTP Configuration from environment
   const getTransporter = () => {
-    const host = process.env.SMTP_HOST || 'smtp.titan.email';
+    const host = process.env.SMTP_HOST;
     const port = parseInt(process.env.SMTP_PORT || '465');
-    const user = process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com';
-    const pass = process.env.SMTP_PASS || 'Michealg12$';
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS;
 
-    if (!user || !pass) {
-      console.warn("[SMTP] Credentials missing or incomplete.");
+    if (!user || !pass || !host) {
+      console.warn("[SMTP] Configuration missing. Please set SMTP_HOST, SMTP_USER, and SMTP_PASS in your environment.");
       return null;
     }
 
-    const isUsingFallback = !process.env.SMTP_USER;
-    console.log(`[SMTP] Initializing for ${user} on ${host}:${port} (${isUsingFallback ? 'Using internal fallback' : 'Using environment variables'})`);
+    console.log(`[SMTP] Initializing for ${user} on ${host}:${port}`);
 
     return nodemailer.createTransport({
       host,
@@ -80,7 +79,7 @@ async function startServer() {
 
         // 1. Send Notification to Admin
         const adminMailOptions = {
-          from: `"Recovery Portal" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+          from: `"Recovery Portal" <${process.env.SMTP_USER}>`,
           to: "info@digitalassetsforensiccryptorecovery.com",
           subject: `NEW LEAD [${generatedCaseId}]: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
           html: `
@@ -120,7 +119,7 @@ async function startServer() {
         // 2. Send Confirmation to Client
         if (clientEmail) {
           const clientMailOptions = {
-            from: `"Digital Assets Forensics" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+            from: `"Digital Assets Forensics" <${process.env.SMTP_USER}>`,
             to: clientEmail,
             subject: `Case Initialized: ${generatedCaseId} - Documentation Received`,
             html: `
@@ -213,7 +212,7 @@ async function startServer() {
       const transporter = getTransporter();
       if (transporter) {
         const mailOptions = {
-          from: `"Intelligence Stream" <${process.env.SMTP_USER || 'info@digitalassetsforensiccryptorecovery.com'}>`,
+          from: `"Intelligence Stream" <${process.env.SMTP_USER}>`,
           to: "info@digitalassetsforensiccryptorecovery.com",
           subject: `NEW BLOG SUBSCRIBER: ${name}`,
           html: `
