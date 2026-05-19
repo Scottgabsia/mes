@@ -10,6 +10,8 @@ import {
   MessageSquare
 } from 'lucide-react';
 
+import { SEO } from '../components/SEO';
+
 interface Review {
   id: string;
   user: string;
@@ -261,6 +263,11 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
 
   return (
     <main className="pt-32 pb-24 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen">
+      <SEO 
+        title="Client Reviews | Verified Crypto Recovery Success Stories" 
+        description="Authentic reviews for our crypto recovery service. Read how our bitcoin recovery experts have helped hundreds of clients reclaim their stolen digital assets."
+        keywords="crypto recovery service reviews, legit crypto recovery, bitcoin recovery expert testimonials, scammed crypto recovery success, verified crypto recovery"
+      />
       {/* Header Section */}
       <div className="mb-12 border-l-4 border-blue-600 pl-6">
         <h1 className="text-2xl sm:text-3xl lg:text-5xl text-white font-manrope font-extrabold tracking-tight mb-2 uppercase flex flex-wrap items-center">

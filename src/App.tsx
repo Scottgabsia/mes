@@ -40,6 +40,7 @@ import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { ReviewsView } from './views/ReviewsView';
 import { SubmitReviewView } from './views/SubmitReviewView';
 import { AdminLoginView } from './views/AdminLoginView';
+import { FAQView } from './views/FAQView';
 import CaseManagerView from './views/AdminDashboardView';
 
 type View = 
@@ -52,6 +53,7 @@ type View =
   | 'termsOfService'
   | 'reviews'
   | 'submitReview'
+  | 'faq'
   | 'admin'
   | 'clientPortal' 
   | 'recoveryConfirmation' 
@@ -160,6 +162,7 @@ export default function App() {
       '/terms': 'termsOfService',
       '/reviews': 'reviews',
       '/reviews/submit': 'submitReview',
+      '/faq': 'faq',
       '/traceability': 'chainTraceability',
       '/recovery': 'exchangeRecovery',
       '/legal': 'legalEnforcement',
@@ -203,6 +206,7 @@ export default function App() {
       'termsOfService': '/terms',
       'reviews': '/reviews',
       'submitReview': '/reviews/submit',
+      'faq': '/faq',
       'chainTraceability': '/traceability',
       'exchangeRecovery': '/recovery',
       'legalEnforcement': '/legal',
@@ -243,9 +247,9 @@ export default function App() {
                 />
               </div>
               <div className="flex flex-col">
-              <h1 className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
+              <div className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
                 Digital Assets <span className="text-blue-500">Forensics</span>
-              </h1>
+              </div>
               <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis for Digital Asset & Crypto Recovery</span>
             </div>
           </div>
@@ -259,6 +263,7 @@ export default function App() {
             <NavLink active={currentView === 'about'} onClick={() => handleNavClick('about')}>About</NavLink>
             <NavLink active={currentView === 'services'} onClick={() => handleNavClick('services')}>Services</NavLink>
             <NavLink active={currentView === 'intelligence'} onClick={() => handleNavClick('intelligence')}>Intelligence</NavLink>
+            <NavLink active={currentView === 'faq'} onClick={() => handleNavClick('faq')}>FAQ</NavLink>
             <NavLink active={currentView === 'clientPortal'} onClick={() => handleNavClick('clientPortal')}>Contact</NavLink>
             
             <button 
@@ -559,6 +564,7 @@ export default function App() {
             {currentView === 'termsOfService' && <TermsOfServiceView />}
             {currentView === 'reviews' && <ReviewsView onNavigate={(view) => handleNavClick(view as any)} />}
             {currentView === 'submitReview' && <SubmitReviewView onBack={() => handleNavClick('reviews')} />}
+            {currentView === 'faq' && <FAQView />}
           </motion.div>
         </AnimatePresence>
 
@@ -677,6 +683,12 @@ export default function App() {
               className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
             >
               Blog
+            </button>
+            <button 
+              onClick={() => handleNavClick('faq')}
+              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
+            >
+              FAQ
             </button>
             <button 
               onClick={() => navigate('/admin/login')}

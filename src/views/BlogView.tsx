@@ -12,6 +12,8 @@ import {
   ShieldAlert
 } from 'lucide-react';
 
+import { SEO } from '../components/SEO';
+
 export const BlogView = () => {
   const [activeCategory, setActiveCategory] = React.useState('ALL_POSTS');
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -220,6 +222,10 @@ export const BlogView = () => {
   if (selectedPost) {
     return (
       <main className="pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1000px] mx-auto min-h-screen relative z-10 transition-all">
+        <SEO 
+          title={selectedPost.title} 
+          description={selectedPost.excerpt}
+        />
         <motion.button 
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -293,6 +299,11 @@ export const BlogView = () => {
 
   return (
     <main className="pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative z-10">
+      <SEO 
+        title="Forensic Intelligence | How to Recover Lost Crypto" 
+        description="Educational guides on how to recover 12 word seed phrases, lost private keys, and scammed crypto assets. Expert insights from our forensic analysts."
+        keywords="how to recover lost crypto, recover deleted crypto wallet, how to recover 12 word seed phrase, lost bitcoin private key recovery, crypto wallet password reset, recover metamask wallet, trust wallet seed phrase recovery, recover ledger nano without seed phrase, recover coinbase wallet"
+      />
       {/* Hero Header */}
       <div className="relative mb-24 flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-12">
         <div className="max-w-4xl">
@@ -516,15 +527,13 @@ export const BlogView = () => {
         <h3 className="font-mono text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-8 text-center sm:text-left">CORE_RECOVERY_KEYWORDS</h3>
         <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-6 opacity-30 hover:opacity-60 transition-opacity duration-700">
           {[
-            'CRYPTO_ASSET_RECOVERY', 'RECOVER_STOLEN_BITCOIN', 'ETHEREUM_RECOVERY_SERVICE', 
-            'STOLEN_CRYPTO_BACK_2026', 'RECOVER_SCAMMED_WALLET', 'SEED_PHRASE_RECOVERY',
-            'LOST_PRIVATE_KEY', 'WALLET_PASSWORD_RECOVERY', 'METAMASK_SEED_PHRASE',
-            'BRUTE_FORCE_WALLET', 'BLOCKCHAIN_INVESTIGATION', 'CRYPTO_TRACING',
-            'WALLET_FORENSICS', 'TRACE_BTC_TO_EXCHANGE', 'FORENSIC_INVESTIGATOR',
-            'CRYPTO_SCAM_RECOVERY', 'PIG_BUTCHERING_HELP', 'RECOVERY_SCAM_SIGNS',
-            'FBI_CRYPTO_RECOVERY', 'LEGITIMATE_RECOVERY_COMPANIES'
+            'crypto recovery service', 'cryptocurrency recovery tool', 'bitcoin recovery expert', 
+            'scammed crypto recovery', 'hire crypto recovery specialist', 'how to recover lost crypto',
+            'recover deleted crypto wallet', 'how to recover 12 word seed phrase', 'lost bitcoin private key recovery',
+            'crypto wallet password reset', 'recover metamask wallet', 'trust wallet seed phrase recovery',
+            'recover ledger nano without seed phrase', 'recover coinbase wallet'
           ].map(keyword => (
-            <span key={keyword} className="font-mono text-[9px] sm:text-[10px] text-white uppercase tracking-widest">{keyword}</span>
+            <span key={keyword} className="font-mono text-[9px] sm:text-[10px] text-white uppercase tracking-widest">{keyword.replace(/\s+/g, '_')}</span>
           ))}
         </div>
       </div>

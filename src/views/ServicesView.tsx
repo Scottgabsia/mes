@@ -21,6 +21,8 @@ import {
   Radar as R
 } from 'lucide-react';
 
+import { SEO } from '../components/SEO';
+
 interface ServicesViewProps {
   onServiceClick: () => void;
 }
@@ -56,6 +58,11 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
 
   return (
     <div className="pt-40 sm:pt-52 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto min-h-screen">
+      <SEO 
+        title="Forensic Services | Wallet Recovery & Tracking" 
+        description="Comprehensive crypto recovery services including wallet reconstruction for MetaMask, Trust Wallet, Ledger, and Coinbase. Expert seed phrase recovery and chain tracking."
+        keywords="recover metamask wallet, trust wallet seed phrase recovery, recover ledger nano without seed phrase, recover coinbase wallet, recover deleted crypto wallet, how to recover 12 word seed phrase, lost bitcoin private key recovery, crypto wallet password reset"
+      />
       {/* Hero Section */}
       <div className="relative mb-6 sm:mb-stack-lg">
         <div className="max-w-3xl">
@@ -64,7 +71,7 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
           </div>
           <h2 className="font-manrope text-4xl sm:text-[44px] md:text-[64px] text-on-surface mb-4 sm:mb-stack-sm leading-[1.1] font-extrabold tracking-tight">Technical Forensics <span className="text-primary">Catalog</span></h2>
           <p className="text-slate-400 text-base sm:text-lg mb-6 sm:mb-stack-md leading-relaxed max-w-xl opacity-80">
-            Deploy multi-jurisdictional blockchain interrogation protocols. Every service is governed by cryptographic forensic standards and high-fidelity decryption sequences.
+            Professional <span className="text-white">cryptocurrency recovery tool</span> suite for individuals and institutions. If you need to <span className="text-blue-500">recover deleted crypto wallet</span> or have a <span className="text-blue-500">lost bitcoin private key</span>, our specialized protocols are ready.
           </p>
         </div>
       </div>
@@ -263,13 +270,13 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
         {[
           {
             title: "Wallet Recovery",
-            desc: "Advanced seed phrase reconstruction and brute-force key derivation for lost HD wallets. Supported on 120+ asset types.",
+            desc: "Expert seed phrase reconstruction and brute-force key derivation for lost HD wallets. We specialize in how to recover 12 word seed phrase and recover metamask wallet configurations.",
             icon: Wallet,
             color: "text-primary",
             bg: "bg-primary/10",
             border: "border-primary/20",
             stats: { 'Entropy Level': '256-Bit Secure', 'Last Run': '2m ago' },
-            points: ['BIP39/44 Reconstruction', 'Multi-Sig Recomposition'],
+            points: ['Trust Wallet Seed Phrase Recovery', 'Ledger Nano Recovery (No Seed)', 'Coinbase Wallet Retrieval'],
             action: 'BEGIN PROCESS',
             success: '94.8%'
           },

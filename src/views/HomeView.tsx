@@ -14,6 +14,7 @@ import {
 import { ProgressBar, ForensicAgent } from '../components/Common';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { ReviewsSection } from '../components/ReviewsSection';
+import { SEO } from '../components/SEO';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -83,7 +84,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       targetNetwork: network === 'Other' ? customNetwork : network,
       transactionHash: formData.entityId || 'HOME_TRIAGE_REF',
       caseNarrative: `Submitted via Home Triage Form. Entity ID: ${formData.entityId || 'N/A'}. Network: ${network}. Service: ${formData.service}.`,
-      estimatedValue: parseFloat(balance) || 0,
+      estimatedValue: parseFloat(balance.toString()) || 0,
       createdAt: serverTimestamp(),
       status: 'PENDING',
       formSource: 'Home_Triage_Form',
@@ -127,6 +128,11 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
 
   return (
     <div className="pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
+      <SEO 
+        title="Crypto Recovery Service & Blockchain Forensics" 
+        description="Global leader in cryptocurrency recovery service. Expert forensic analysis for Bitcoin, Ethereum, and DeFi exploits. Recover scammed crypto with zero upfront costs."
+        keywords="crypto recovery service, cryptocurrency recovery tool, bitcoin recovery expert, scammed crypto recovery, hire crypto recovery specialist, how to recover lost crypto, blockchain forensics"
+      />
       {/* Hero & Main Viz */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 sm:gap-16 items-start mb-20 sm:mb-stack-lg">
         <div className="space-y-6 sm:space-y-stack-md xl:sticky xl:top-32">
@@ -138,18 +144,18 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
             <span className="font-fira text-[11px] text-blue-400 tracking-wider uppercase">SYSTEM ACTIVE: {traceCount.toLocaleString()} TRACES</span>
           </div>
           
-          <motion.h2 
+          <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="font-manrope text-white text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight uppercase"
           >
-            Professional <br/>
-            <span className="text-white text-glow-blue">Forensic Analysis</span><br/>
-            <span className="text-blue-500">& Crypto Recovery</span>
-          </motion.h2>
+            Elite <br/>
+            <span className="text-white text-glow-blue">Crypto Recovery</span><br/>
+            <span className="text-blue-500">& Forensic Service</span>
+          </motion.h1>
           
           <p className="text-lg text-slate-400 leading-relaxed max-w-xl">
-            Military-grade chain analysis and global legal frameworks to track, freeze, and recover misappropriated assets across <span className="text-blue-400 font-fira text-sm">34+ blockchain networks</span>.
+            As a leading <span className="text-blue-400 font-bold">crypto recovery service</span>, we use military-grade chain analysis to track, freeze, and recover misappropriated assets across <span className="text-blue-400 font-fira text-sm">34+ blockchain networks</span>. Hire a <span className="text-white font-semibold">bitcoin recovery expert</span> today.
           </p>
 
           <div className="flex flex-wrap items-center gap-6 pt-6">

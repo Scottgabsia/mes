@@ -10,6 +10,7 @@ import {
   Target,
   BadgeCheck
 } from 'lucide-react';
+import { SEO } from '../components/SEO';
 import { ReviewsSection } from '../components/ReviewsSection';
 
 interface AboutViewProps {
@@ -20,6 +21,11 @@ interface AboutViewProps {
 export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
   return (
     <div className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto">
+      <SEO 
+        title="About Us | Global Leaders in Blockchain Intelligence" 
+        description="Hire a crypto recovery specialist from our global network of forensic analysts and blockchain engineers. Digital Assets Forensics: your trusted bitcoin recovery expert."
+        keywords="bitcoin recovery expert, hire crypto recovery specialist, crypto recovery agency, blockchain investigation experts, professional crypto recovery"
+      />
       {/* Hero Section */}
       <div className="mb-12 sm:mb-24">
         <h2 className="text-slate-500 font-fira text-[10px] sm:text-xs font-bold tracking-[0.4em] mb-4 uppercase">
@@ -27,10 +33,10 @@ export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
         </h2>
         <h1 className="text-3xl sm:text-5xl md:text-7xl font-sans font-bold tracking-tight text-white mb-6 sm:mb-8 border-l-4 border-primary pl-4 sm:pl-8">
           DIGITAL ASSETS FORENSICS <br/>
-          <span className="text-primary italic text-2xl sm:text-4xl md:text-5xl">CRYPTO RECOVERY AGENCY</span>
+          <span className="text-primary italic text-2xl sm:text-4xl md:text-5xl">CRYPTO RECOVERY SPECIALISTS</span>
         </h1>
         <p className="text-slate-400 text-base sm:text-xl max-w-3xl leading-relaxed font-light">
-          We are a global network of forensic analysts, blockchain engineers, and legal experts dedicated to the integrity of the digital economy. Founded on the principle that code is law, but justice is human.
+          When you <span className="text-white font-semibold">hire a crypto recovery specialist</span> from our team, you gain access to a global network of <span className="text-white">bitcoin recovery experts</span>, blockchain engineers, and legal veterans dedicated to your restitution.
         </p>
       </div>
 
