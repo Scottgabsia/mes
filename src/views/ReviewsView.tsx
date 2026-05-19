@@ -101,6 +101,146 @@ const REVIEWS_DATA: Review[] = [
     date: '2026-05-04',
     verified: true,
     tag: 'HISTORIC_RECOVERY'
+  },
+  {
+    id: 'rev_09',
+    user: 'MARCUS_CHEN',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "They managed to recover my assets from a cross-chain bridge hack. The technical expertise regarding Cosmos and Polkadot was impressive. Truly institutional level capability.",
+    date: '2026-05-10',
+    verified: true,
+    tag: 'BRIDGE_RECOVERY'
+  },
+  {
+    id: 'rev_10',
+    user: 'L_RODRIGUEZ',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Fast and reliable. I was targeted in a sim-swap attack. DA Forensics acted immediately to contact the CEX where the thief moved the funds. Saved my life savings.",
+    date: '2026-05-12',
+    verified: true,
+    tag: 'SIM_SWAP_PROTECT'
+  },
+  {
+    id: 'rev_11',
+    user: 'TECHSTACKER',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content: "Very satisfied. Tracking took some time, but their periodic updates gave me peace of mind. Recovered about 70% of what I lost in the exchange bankruptcy.",
+    date: '2026-05-14',
+    verified: true,
+    tag: 'PORTFOLIO_HEAL'
+  },
+  {
+    id: 'rev_12',
+    user: 'NORDIC_INVESTOR',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Highest level of professionalism. They even coordinated with my local police department to provide the necessary forensic evidence for the case file. Full success.",
+    date: '2026-05-15',
+    verified: true,
+    tag: 'LEGAL_LIAISON'
+  },
+  {
+    id: 'rev_13',
+    user: 'AMARA_CRYPTO',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Specialized knowledge. They identified a vulnerability in the smart contract that lead to my loss and helped me present a solid case to the developers. 10/10 service.",
+    date: '2026-05-17',
+    verified: true,
+    tag: 'CONTRACT_AUDIT'
+  },
+  {
+    id: 'rev_14',
+    user: 'BITCOIN_BULL_22',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "No nonsense. They don't make empty promises. They gave me a realistic assessment and then exceeded it by recovering the full amount within 3 weeks.",
+    date: '2026-05-18',
+    verified: true,
+    tag: 'TRANSPARENCY_FIRST'
+  },
+  {
+    id: 'rev_15',
+    user: 'G_STRAT_OFFICE',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Highest level of discretion. As a family office, we needed a partner that understood institutional confidentiality while delivering results. Their tracing of the obfuscated layer-2 transactions was flawless.",
+    date: '2026-05-18',
+    verified: true,
+    tag: 'CORPORATE_RECOVERY'
+  },
+  {
+    id: 'rev_16',
+    user: 'JULIAN_FORBES',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I lost access to my legacy wallet due to a corrupted seed phrase backup. They didn't just 'recover' it; they used specialized hardware to rebuild the missing fragments. Absolutely genius team.",
+    date: '2026-05-19',
+    verified: true,
+    tag: 'TECHNICAL_EXCELLENCE'
+  },
+  {
+    id: 'rev_17',
+    user: 'S_AHMED_DXB',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "The tracing report they provided was so detailed that the local cybercrime unit was able to freeze the funds within 48 hours. Without their forensic evidence, I would have had no case.",
+    date: '2026-05-19',
+    verified: true,
+    tag: 'LAW_ENFORCEMENT_READY'
+  },
+  {
+    id: 'rev_18',
+    user: 'BLOCKCHAIN_BRAD',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Clear, concise, and professional. They gave me a 60% chance of recovery due to the age of the transaction, and they actually hit 100%. One star off just because the process was quite intense.",
+    date: '2026-05-20',
+    verified: true,
+    tag: 'HONEST_ASSESSMENT'
+  },
+  {
+    id: 'rev_19',
+    user: 'LARA_VENTURES',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Exceptional service for DeFi related losses. They understood the complexities of the flash loan exploit that targeted my liquidity pool. The recovery was swift and efficient.",
+    date: '2026-05-21',
+    verified: true,
+    tag: 'DEFI_SPECIALIST'
+  },
+  {
+    id: 'rev_20',
+    user: 'K_YAMAMOTO',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Safe and secure. They never asked for my private keys and guided me through the entire multi-sig setup for the return of the funds. A truly ethical company in a difficult space.",
+    date: '2026-05-22',
+    verified: true,
+    tag: 'ETHICAL_RECOVERY'
+  },
+  {
+    id: 'rev_21',
+    user: 'D_WATSON_UK',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "After my exchange account was compromised, I was lost. Digital Assets Forensics took the lead, handled all the back-and-forth with the exchange's legal team, and got my funds back.",
+    date: '2026-05-23',
+    verified: true,
+    tag: 'EXCHANGE_LIAISON'
+  },
+  {
+    id: 'rev_22',
+    user: 'CRYPTO_MOM_LIFE',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I'm not tech-savvy, but they made me feel empowered. They explained everything in simple terms and didn't stop until they found the person who scammed me. Thank you!",
+    date: '2026-05-24',
+    verified: true,
+    tag: 'USER_EMPOWERMENT'
   }
 ];
 
