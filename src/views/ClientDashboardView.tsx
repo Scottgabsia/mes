@@ -272,9 +272,10 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-manrope font-black text-white uppercase tracking-tight flex items-center gap-3 sm:gap-4">
             <img 
-               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs" 
-               alt="Digital Assets Forensics Crypto Recovery Agency Logo" 
-               className="w-10 h-10 sm:w-12 sm:h-12 object-contain" 
+               src="/logo.png" 
+               alt="Crypto Recovery Assets Agency Logo" 
+               referrerPolicy="no-referrer"
+               className="w-12 h-12 sm:w-16 sm:h-16 object-contain" 
             />
             <span>Case <span className="text-blue-500">Workspace</span></span>
           </h1>

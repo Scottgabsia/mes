@@ -238,19 +238,20 @@ export default function App() {
       <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">
             <div className="flex items-center gap-2 sm:gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
-              <div className="relative w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center">
+              <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
                 <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-lg group-hover:bg-blue-500/30 transition-all"></div>
                 <img 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs" 
-                  alt="Digital Assets Forensics Crypto Recovery Agency Logo" 
-                  className="w-8 h-8 sm:w-12 sm:h-12 object-contain relative z-10" 
+                  src="/logo.png" 
+                  alt="Crypto Recovery Assets Agency Logo" 
+                  referrerPolicy="no-referrer"
+                  className="w-10 h-10 sm:w-14 sm:h-14 object-contain relative z-10" 
                 />
               </div>
               <div className="flex flex-col">
               <div className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
-                Digital Assets <span className="text-blue-500">Forensics</span>
+                Crypto Recovery <span className="text-blue-500">Assets</span>
               </div>
-              <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis for Digital Asset & Crypto Recovery</span>
+              <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
             </div>
           </div>
           
@@ -322,13 +323,14 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-4 mb-2">
                   <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs" 
-                    alt="Digital Assets Forensics Crypto Recovery Agency Logo" 
-                    className="w-10 h-10 object-contain" 
+                    src="/logo.png" 
+                    alt="Crypto Recovery Assets Agency Logo" 
+                    referrerPolicy="no-referrer"
+                    className="w-12 h-12 object-contain" 
                   />
                   <div className="flex flex-col">
-                    <span className="text-white font-black text-sm uppercase tracking-tighter">Digital Assets</span>
-                    <span className="text-blue-500 font-mono text-[9px] uppercase tracking-widest font-bold">Forensics</span>
+                    <span className="text-white font-black text-sm uppercase tracking-tighter">Crypto Recovery</span>
+                    <span className="text-blue-500 font-mono text-[9px] uppercase tracking-widest font-bold">Assets</span>
                   </div>
                 </div>
                 <div className="flex flex-col border-l-2 border-blue-500/30 pl-4 mb-2">
@@ -573,16 +575,17 @@ export default function App() {
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-stack-lg mb-12 sm:mb-20 relative z-10">
           <div className="space-y-8">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
-              <div className="relative w-12 h-12 flex items-center justify-center">
+              <div className="relative w-14 h-14 flex items-center justify-center">
                 <img 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs" 
-                  alt="Digital Assets Forensics Crypto Recovery Agency Logo" 
-                  className="w-10 h-10 object-contain relative z-10" 
+                  src="/logo.png" 
+                  alt="Crypto Recovery Assets Agency Logo" 
+                  referrerPolicy="no-referrer"
+                  className="w-12 h-12 object-contain relative z-10" 
                 />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-lg font-black tracking-tighter text-white uppercase font-manrope leading-none">Digital Assets <span className="text-blue-500">Forensics</span></h2>
-                <span className="text-[7px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-0.5 font-bold">Professional Forensic Analysis for Digital Asset & Crypto Recovery</span>
+                <h2 className="text-lg font-black tracking-tighter text-white uppercase font-manrope leading-none">Crypto Recovery <span className="text-blue-500">Assets</span></h2>
+                <span className="text-[7px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-0.5 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
               </div>
             </div>
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
@@ -710,7 +713,7 @@ export default function App() {
             </button>
           </div>
           <p className="text-slate-600 text-[10px] uppercase tracking-widest font-bold">
-            © 2026 DIGITAL ASSETS FORENSICS CRYPTO RECOVERY AGENCY // NEW HAMPSHIRE, USA REGISTERED LLC // ALL RIGHTS RESERVED // CLASSIFIED
+            © 2026 CRYPTO RECOVERY ASSETS // NEW HAMPSHIRE, USA REGISTERED LLC // ALL RIGHTS RESERVED // CLASSIFIED
           </p>
         </div>
       </footer>

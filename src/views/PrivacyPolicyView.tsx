@@ -12,7 +12,7 @@ export const PrivacyPolicyView = () => {
           PRIVACY <span className="text-primary italic">POLICY</span>
         </h1>
         <p className="text-slate-400 text-lg leading-relaxed max-w-3xl">
-          Last Updated: May 2026. This document outlines how Digital Assets Forensics Crypto Recovery Agency ("the Agency", "we", "us") handles data during high-stakes recovery operations.
+          Last Updated: May 2026. This document outlines how Crypto Recovery Assets Agency ("the Agency", "we", "us") handles data during high-stakes recovery operations.
         </p>
       </div>
 

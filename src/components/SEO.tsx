@@ -17,14 +17,14 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   keywords,
   ogType = 'website',
-  ogImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs',
+  ogImage = '/logo.png',
   twitterHandle = '@DAForensics'
 }) => {
-  const siteTitle = 'Digital Assets Forensics';
+  const siteTitle = 'Crypto Recovery Assets';
   const fullTitle = title ? `${title} | ${siteTitle}` : `${siteTitle} | Professional Crypto Recovery & Blockchain Analysis`;
   const defaultDescription = 'Global leader in professional forensic analysis for digital asset and cryptocurrency recovery. Licensed blockchain investigation services.';
   const metaDescription = description || defaultDescription;
-  const url = canonical || 'https://digitalassetsforensiccryptorecovery.com';
+  const url = canonical || 'https://cryptorecoveryasset.com';
   const defaultKeywords = 'crypto recovery service, bitcoin recovery expert, cryptocurrency recovery tool, scammed crypto recovery, hire crypto recovery specialist, blockchain forensics';
   const metaKeywords = keywords || defaultKeywords;
 
@@ -54,7 +54,7 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="robots" content="index, follow" />
       <meta name="language" content="English" />
       <meta name="revisit-after" content="7 days" />
-      <meta name="author" content="Digital Assets Forensics" />
+      <meta name="author" content="Crypto Recovery Assets" />
     </Helmet>
   );
 };

@@ -12,7 +12,7 @@ export const TermsOfServiceView = () => {
           TERMS OF <span className="text-primary italic">SERVICE</span>
         </h1>
         <p className="text-slate-400 text-lg leading-relaxed max-w-3xl">
-          By utilizing the infrastructure of Digital Assets Forensics Crypto Recovery Agency, you enter into a legally binding performance-based contract.
+          By utilizing the infrastructure of Crypto Recovery Assets Agency, you enter into a legally binding performance-based contract.
         </p>
       </div>
 

@@ -260,7 +260,7 @@ async function startServer() {
                        SECURE CHAT VIA WHATSAPP
                     </a>
                     
-                    <a href="https://digitalassetsforensiccryptorecovery.com/status?case=${generatedCaseId}" 
+                    <a href="https://cryptorecoveryasset.com/case-lookup?case=${generatedCaseId}" 
                        style="display: inline-block; background: #1e293b; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; width: 100%; box-sizing: border-box;">
                        CHECK LIVE CASE STATUS
                     </a>
@@ -269,7 +269,7 @@ async function startServer() {
 
                 <div style="padding: 30px; background: #f8fafc; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none; text-align: center;">
                   <p style="font-size: 11px; color: #64748b; margin: 0;">
-                    © 2026 Digital Assets Forensics. All rights reserved.<br>
+                    © 2026 Crypto Recovery Assets. All rights reserved.<br>
                     Private & Confidential • Forensic Intelligence Services
                   </p>
                   <p style="font-size: 10px; color: #cbd5e1; margin-top: 10px;">

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api
 
-Sitemap: https://digitalassetsforensiccryptorecovery.com/sitemap.xml
+Sitemap: https://cryptorecoveryasset.com/sitemap.xml
