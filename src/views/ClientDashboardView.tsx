@@ -272,7 +272,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-manrope font-black text-white uppercase tracking-tight flex items-center gap-3 sm:gap-4">
             <img 
-               src="/logo.png?v=3" 
+               src="/logo.png?v=4" 
                alt="Crypto Recovery Assets Agency Logo" 
                referrerPolicy="no-referrer"
                className="w-12 h-12 sm:w-16 sm:h-16 object-contain" 
