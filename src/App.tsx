@@ -255,8 +255,8 @@ export default function App() {
               </div>
             </div>
           
-          <nav className="hidden lg:flex items-center gap-10">
-            <div className="flex flex-col items-end mr-4">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-10 ml-auto mr-4 xl:mr-6">
+            <div className="flex flex-col items-end mr-2 xl:mr-4">
               <span className="font-fira text-[10px] text-blue-500/60 uppercase tracking-widest">Live Network Status</span>
               <span className="font-fira text-[11px] text-blue-400 animate-pulse">● SECURING NODE 8.21.03...</span>
             </div>

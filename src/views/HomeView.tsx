@@ -127,7 +127,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
   };
 
   return (
-    <div className="pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
+    <div className="pt-28 xs:pt-32 sm:pt-40 lg:pt-44 xl:pt-48 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
       <SEO 
         title="Crypto Recovery Service & Blockchain Forensics" 
         description="Global leader in cryptocurrency recovery service. Expert forensic analysis for Bitcoin, Ethereum, and DeFi exploits. Recover scammed crypto with zero upfront costs."
@@ -136,12 +136,12 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       {/* Hero & Main Viz */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 sm:gap-16 items-start mb-20 sm:mb-stack-lg">
         <div className="space-y-6 sm:space-y-stack-md xl:sticky xl:top-32">
-          <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded bg-blue-600/10 border border-blue-500/20 glass-panel">
-            <span className="relative flex h-2 w-2">
+          <div className="inline-flex items-center gap-3 px-4 py-2 sm:px-5 sm:py-2.5 rounded bg-blue-500/20 border border-blue-500/40 glass-panel shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+            <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
             </span>
-            <span className="font-fira text-[11px] text-blue-400 tracking-wider uppercase">SYSTEM ACTIVE: {traceCount.toLocaleString()} TRACES</span>
+            <span className="font-fira text-[11px] sm:text-xs md:text-[13px] font-bold text-blue-200 tracking-widest uppercase">SYSTEM ACTIVE: {traceCount.toLocaleString()} TRACES</span>
           </div>
           
           <motion.h1 
