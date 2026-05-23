@@ -14,7 +14,13 @@ import {
   Activity as ActivityIcon,
   History as HistoryIcon,
   AlertCircle as AlertIcon,
-  Lock as LockIcon
+  Lock as LockIcon,
+  RefreshCw as RefreshIcon,
+  Play as PlayIcon,
+  Check as CheckSymbolIcon,
+  X as XIcon,
+  Server as ServerIcon,
+  Mail as MailIcon
 } from 'lucide-react';
 import { 
   collection, 
@@ -223,7 +229,9 @@ const CaseManagerView: React.FC = () => {
   }
 
   // Logic to find current selected case data from the live requests stream
-  const activeCaseData = selectedCase ? requests.find(r => r.id === selectedCase.id) || selectedCase : null;
+  const activeCaseData = selectedCase 
+    ? (selectedCase.id === 'smtp_diagnostics' ? selectedCase : (requests.find(r => r.id === selectedCase.id) || selectedCase)) 
+    : null;
 
   const filteredRequests = requests.filter(r => 
     r.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -244,6 +252,26 @@ const CaseManagerView: React.FC = () => {
                 <span className="text-[9px] sm:text-[10px] font-mono text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 uppercase tracking-widest animate-pulse">Live Sync</span>
               </div>
             </div>
+
+            <button
+              onClick={() => setSelectedCase({ id: 'smtp_diagnostics' })}
+              className={`w-full p-4 rounded-xl text-left border transition-all flex items-center justify-between cursor-pointer ${
+                selectedCase?.id === 'smtp_diagnostics'
+                  ? 'bg-amber-600/10 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.15)] text-amber-200 font-bold'
+                  : 'bg-white/5 border-white/10 hover:border-amber-500/30 hover:text-white text-slate-400 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <SendIcon className="text-amber-500 shrink-0" size={18} />
+                <div className="min-w-0">
+                  <h4 className="text-xs font-mono tracking-widest uppercase truncate">SMTP Diagnostics</h4>
+                  <p className="text-[9px] text-slate-500 font-mono mt-0.5 uppercase">Test Email Server Setup</p>
+                </div>
+              </div>
+              <ChevronIcon size={16} className={selectedCase?.id === 'smtp_diagnostics' ? 'text-amber-500 animate-pulse' : 'text-slate-700'} />
+            </button>
+
+            <div className="h-[1px] bg-white/5"></div>
 
             <div className="relative">
               <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
@@ -322,16 +350,19 @@ const CaseManagerView: React.FC = () => {
         </div>
 
         {/* Main Content / Case Detail */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-8 bg-[#020408]/50 min-h-[600px] flex flex-col">
           <AnimatePresence mode="wait">
             {activeCaseData ? (
-              <motion.div 
-                key={activeCaseData.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-8"
-              >
+              activeCaseData.id === 'smtp_diagnostics' ? (
+                <SMTPDiagnosticsPanel key="smtp-diagnostic" />
+              ) : (
+                <motion.div 
+                  key={activeCaseData.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-8"
+                >
                 {/* Header Stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                   <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-white/5 flex items-center gap-4 bg-gradient-to-br from-blue-500/5 to-transparent">
@@ -527,11 +558,24 @@ const CaseManagerView: React.FC = () => {
                   </div>
                 </div>
               </motion.div>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center glass-panel rounded-2xl border border-white/5 p-6 sm:p-12 opacity-30 text-center">
-                <ShieldIcon size={48} className="sm:size-64 mb-6" />
-                <h2 className="text-xl sm:text-2xl font-manrope font-black text-white uppercase tracking-tighter mb-2">No Node Selected</h2>
-                <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em]">Select a forensic inquiry to begin analysis</p>
+            )) : (
+              <div className="h-full flex flex-col items-center justify-center glass-panel rounded-2xl border border-white/5 p-6 sm:p-12 text-center max-w-2xl mx-auto space-y-6 my-auto">
+                <ServerIcon size={64} className="text-blue-500/40 mx-auto animate-pulse" />
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-manrope font-black text-white uppercase tracking-tighter mb-2">Systems Online & Synchronized</h2>
+                  <p className="text-[10px] sm:text-xs font-mono text-slate-500 uppercase tracking-[0.2em]">Select a forensic inquiry from the queue or configure settings</p>
+                </div>
+                <div className="h-[1px] bg-white/5 w-full"></div>
+                <div className="space-y-4 w-full max-w-sm mx-auto">
+                  <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Troubleshooting Lead Emails?</p>
+                  <button
+                    onClick={() => setSelectedCase({ id: 'smtp_diagnostics' })}
+                    className="w-full bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/30 hover:border-amber-500 text-amber-200 font-mono font-bold text-xs uppercase tracking-widest py-4 px-6 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-3"
+                  >
+                    <SendIcon size={14} className="text-amber-500" />
+                    Run SMTP Diagnostics
+                  </button>
+                </div>
               </div>
             )}
           </AnimatePresence>
@@ -540,6 +584,324 @@ const CaseManagerView: React.FC = () => {
     </div>
   );
 };
+
+const SMTPDiagnosticsPanel: React.FC = () => {
+  const [healthData, setHealthData] = React.useState<any>(null);
+  const [healthLoading, setHealthLoading] = React.useState(true);
+  const [testEmail, setTestEmail] = React.useState('info@cryptorecoveryasset.com');
+  const [testLoading, setTestLoading] = React.useState(false);
+  const [testResult, setTestResult] = React.useState<any>(null);
+
+  const fetchHealth = async () => {
+    setHealthLoading(true);
+    try {
+      const res = await fetch('/api/health');
+      const data = await res.json();
+      setHealthData(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setHealthLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchHealth();
+  }, []);
+
+  const handleTestEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testEmail.trim()) return;
+    setTestLoading(true);
+    setTestResult(null);
+    try {
+      const res = await fetch(`/api/debug-email?to=${encodeURIComponent(testEmail.trim())}`);
+      const data = await res.json();
+      setTestResult({
+        ok: res.ok,
+        status: res.status,
+        ...data
+      });
+    } catch (err: any) {
+      setTestResult({
+        ok: false,
+        error: err?.message || String(err)
+      });
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert(`Copied key to clipboard: ${text}`);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="space-y-6 sm:space-y-8 p-1 relative z-10"
+    >
+      {/* Top Header Banner */}
+      <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-amber-500/15 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(245,158,11,0.05),transparent)]"></div>
+        <div className="space-y-1.5 relative z-10">
+          <div className="flex items-center gap-2">
+            <ServerIcon className="text-amber-500 shrink-0" size={20} />
+            <h2 className="text-base sm:text-lg md:text-xl font-manrope font-black text-white uppercase tracking-tight">
+              SYSTEM_SMTP_DIAGNOSTICS
+            </h2>
+          </div>
+          <p className="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-widest leading-relaxed">
+            Verify environment variables, test live outbound mail delivery, and analyze Nodemailer handshake logs
+          </p>
+        </div>
+        <button
+          onClick={fetchHealth}
+          disabled={healthLoading}
+          className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 hover:border-amber-500 rounded-xl text-[10px] font-mono font-bold text-amber-200 hover:text-white uppercase tracking-widest cursor-pointer transition-all disabled:opacity-50 shrink-0 relative z-10"
+        >
+          <RefreshIcon className={`w-3.5 h-3.5 ${healthLoading ? 'animate-spin' : ''}`} />
+          Refresh Status
+        </button>
+      </div>
+
+      {/* Primary Panels Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
+        
+        {/* Secrets Environment Validation */}
+        <div className="xl:col-span-5 space-y-6">
+          <div className="glass-panel p-5 sm:p-6 rounded-2xl border border-white/5 space-y-6">
+            <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest flex items-center gap-2">
+              <LockIcon size={14} className="text-blue-400" /> SECRETS_REGISTRY_HEALTH
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Host validation */}
+              <DiagnosticField 
+                label="SMTP_HOST" 
+                value={healthLoading ? "SCANNING_HOST..." : (healthData?.smtpDetails?.host || "NOT_DEFINED")} 
+                status={healthLoading ? "PENDING" : (healthData?.smtpDetails?.host ? "VALID" : "MISSING")}
+                onCopy={() => copyToClipboard("SMTP_HOST")}
+              />
+              
+              {/* User Validation */}
+              <DiagnosticField 
+                label="SMTP_USER" 
+                value={healthLoading ? "IDENTIFYING..." : (healthData?.smtpDetails?.user || "NOT_DEFINED")} 
+                status={healthLoading ? "PENDING" : (healthData?.smtpDetails?.user ? "VALID" : "MISSING")}
+                onCopy={() => copyToClipboard("SMTP_USER")}
+              />
+
+              {/* Password Validation */}
+              <DiagnosticField 
+                label="SMTP_PASS" 
+                value={healthLoading ? "VERIFYING_DECRYPT..." : (healthData?.smtpDetails?.passSet ? "•••••••••••••••• (Active)" : "PASSWORD_NOT_SET")} 
+                status={healthLoading ? "PENDING" : (healthData?.smtpDetails?.passSet ? "VALID" : "MISSING")}
+                onCopy={() => copyToClipboard("SMTP_PASS")}
+              />
+
+              {/* Admin Target Email */}
+              <DiagnosticField 
+                label="ADMIN_EMAIL" 
+                value="info@cryptorecoveryasset.com" 
+                status="VALID"
+                onCopy={() => copyToClipboard("ADMIN_EMAIL")}
+              />
+            </div>
+
+            <div className="h-px bg-white/5"></div>
+
+            <div className={`p-4 rounded-xl border text-[10px] leading-relaxed font-mono ${
+              healthData?.smtpConfigured 
+                ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' 
+                : 'bg-red-500/5 border-red-500/20 text-red-400'
+            }`}>
+              <div className="flex items-center gap-2 mb-2 font-bold">
+                <AlertIcon size={14} />
+                <span>ENVIRONMENT STATUS: {healthData?.smtpConfigured ? "ROUTING_ONLINE" : "SMTP_NOT_CONFIGURED"}</span>
+              </div>
+              <p>
+                {healthData?.smtpConfigured 
+                  ? "All required SMTP environment variables are detected on this container. You are ready to trigger live delivery tests." 
+                  : "SMTP credentials are empty. The application is falling back to server-only logging. Standard visitor submission emails cannot be delivered. Follow the setup directions below to add them."
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Outbound Mail Connection Test */}
+        <div className="xl:col-span-7 space-y-6">
+          <div className="glass-panel p-5 sm:p-6 rounded-2xl border border-white/5 space-y-6">
+            <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest flex items-center gap-2">
+              <MailIcon size={14} className="text-amber-500" /> CONNECTION_TESTER
+            </h3>
+
+            <form onSubmit={handleTestEmail} className="space-y-4">
+              <p className="text-[10px] text-slate-500 font-mono uppercase leading-relaxed">
+                Provide an active recipient address below to attempt an immediate end-to-end TLS handshake & delivery test
+              </p>
+              
+              <div className="flex gap-3">
+                <div className="relative flex-grow">
+                  <MailIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+                  <input 
+                    type="email"
+                    required
+                    value={testEmail}
+                    onChange={(e) => setTestEmail(e.target.value)}
+                    placeholder="RECIPIENT_TEST_EMAIL@DOMAIN.COM"
+                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white pl-12 pr-4 py-4 rounded-xl text-xs font-mono outline-none focus:border-amber-500/50 transition-all uppercase placeholder:text-white/5"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={testLoading || !healthData?.smtpDetails?.user}
+                  className="px-6 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-mono font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center gap-2 shrink-0"
+                >
+                  {testLoading ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin"></div>
+                      TESTING...
+                    </>
+                  ) : (
+                    <>
+                      <PlayIcon size={14} />
+                      EXECUTE
+                    </>
+                  )}
+                </button>
+              </div>
+              {!healthData?.smtpDetails?.user && (
+                <p className="text-[9px] text-red-400 font-mono uppercase tracking-widest">
+                  ⚠ Test blocked: SMTP environment configuration missing
+                </p>
+              )}
+            </form>
+
+            {/* Test Connection Results Console Panel */}
+            {testResult && (
+              <div className="space-y-4">
+                <div className="h-px bg-white/5"></div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-[10px] font-mono uppercase">
+                    <span className="text-slate-500 tracking-widest">TRANSMISSION_FEEDBACK</span>
+                    <span className={testResult.success ? "text-emerald-400 font-bold" : "text-red-400 font-bold"}>
+                      {testResult.success ? "RESPONSE_OK_200" : "HANDSHAKE_FAILURE"}
+                    </span>
+                  </div>
+
+                  <div className={`p-4 rounded-xl border font-mono text-xs overflow-x-auto space-y-2 max-h-[250px] custom-scrollbar ${
+                    testResult.success 
+                      ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-300' 
+                      : 'bg-red-500/5 border-red-500/10 text-red-300'
+                  }`}>
+                    {testResult.success ? (
+                      <>
+                        <p className="font-bold">✓ Connected & Mail Transmitted successfully!</p>
+                        <p className="text-[10px] text-slate-400">Message ID: {testResult.messageId}</p>
+                        <p className="text-[10px] text-slate-400">Response: {testResult.response}</p>
+                        <p className="text-[10px] text-slate-400">Recipient: {testResult.recipient}</p>
+                        <p className="text-[10px] text-emerald-500 italic mt-2">Check your spam folder if it doesn't arrive in your inbox shortly.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-bold">✗ SMTP Handshake / Dispatch Failed:</p>
+                        <p className="text-[11px] bg-black/40 p-3 rounded-lg border border-red-500/10 text-red-200 whitespace-pre-wrap leading-relaxed select-all">
+                          {testResult.error || "Unknown Error"}
+                        </p>
+                        
+                        {testResult.suggestions && testResult.suggestions.length > 0 ? (
+                          <div className="pt-3 border-t border-red-500/15 mt-3 space-y-2 text-[10px] text-amber-200 bg-amber-500/5 p-3 rounded-lg">
+                            <p className="font-bold text-white uppercase tracking-wider">TAILORED RECOVERY ACTION PLAN:</p>
+                            {testResult.suggestions.map((sug: string, idx: number) => (
+                              <p key={idx} className="leading-relaxed pl-3 border-l border-amber-500/30">
+                                • {sug}
+                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="pt-2 text-[10px] text-slate-400 space-y-1">
+                            <p className="font-bold text-white uppercase tracking-wider mb-1">Common Fix Actions:</p>
+                            <p>• <strong>Password is Wrong</strong>: Email accounts require a secure "App Password" rather than your portal sign-in password if multi-factor is on.</p>
+                            <p>• <strong>Port Blocking</strong>: Secure port `465` (SSL) is our default. Try using `587` in settings if your provider uses TLS/STARTTLS.</p>
+                            <p>• <strong>IP Blocking</strong>: Titan/Google may restrict SMTP relays from automated Cloud Run environments. Whitelist SMTP logins in your mailbox control panel.</p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Secrets Setup Step-by-Step Walkthrough Guide */}
+      <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
+        <h3 className="text-sm font-manrope font-black text-white uppercase tracking-tight flex items-center gap-2">
+          <AlertIcon size={18} className="text-amber-500" /> HOW TO DEFINE SMTP ENVIRONMENT CONFIGURATIONS
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono text-xs text-slate-400 leading-relaxed">
+          <div className="space-y-2 p-4 rounded-xl bg-white/5 border border-white/5">
+            <span className="text-amber-500 font-bold">1. SECURE CREDENTIALS</span>
+            <p className="text-[11px]">
+              Access the **Settings &gt; Secrets / Environment Variables** menu in your AI Studio application builder (upper right corner).
+            </p>
+          </div>
+
+          <div className="space-y-2 p-4 rounded-xl bg-white/5 border border-white/5">
+            <span className="text-amber-500 font-bold">2. ADD CORRESPONDING KEYS</span>
+            <p className="text-[11px]">
+              Input the required keys precisely (Capitalization and structure matter):
+            </p>
+            <div className="bg-[#05070a]/80 p-2.5 rounded border border-white/5 space-y-1 text-[9px] text-blue-400 select-all">
+              <p>• SMTP_HOST</p>
+              <p>• SMTP_PORT</p>
+              <p>• SMTP_USER</p>
+              <p>• SMTP_PASS</p>
+              <p>• ADMIN_EMAIL</p>
+            </div>
+          </div>
+
+          <div className="space-y-2 p-4 rounded-xl bg-white/5 border border-white/5 sm:col-span-2 lg:col-span-1">
+            <span className="text-amber-500 font-bold">3. RESTART DEV SERVER</span>
+            <p className="text-[11px]">
+              Once saved, make sure to <strong>Restart Dev Server</strong> in the AI Studio conversation or file manager so the container gets bootloaded with your new active secrets!
+            </p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const DiagnosticField = ({ label, value, status, onCopy }: { label: string, value: string, status: "VALID" | "MISSING" | "PENDING", onCopy: () => void }) => (
+  <div className="p-3 bg-black/20 border border-white/5 rounded-xl flex items-center justify-between gap-4 font-mono text-[10px]">
+    <div className="min-w-0">
+      <div className="flex items-center gap-2 mb-1">
+        <button 
+          onClick={onCopy}
+          type="button" 
+          className="text-slate-500 hover:text-blue-400 hover:underline transition-all cursor-pointer text-[9px]"
+          title="Click to copy Key ID"
+        >
+          {label}
+        </button>
+        <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest ${
+          status === 'VALID' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+          status === 'MISSING' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+          'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+        }`}>{status}</span>
+      </div>
+      <p className={`truncate text-xs ${status === 'MISSING' ? 'text-slate-600 italic' : 'text-white'}`}>{value}</p>
+    </div>
+  </div>
+);
 
 const DataField = ({ label, value, isSecret, isHighlighted }: { label: string, value: string, isSecret?: boolean, isHighlighted?: boolean }) => (
   <div className="space-y-1.5 group">

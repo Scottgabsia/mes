@@ -16,27 +16,39 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Helper to safely sanitize surrounding quotes and spaces from user inputs in AI Studio Secrets menu
+  const cleanEnvVar = (val: string | undefined): string => {
+    if (!val) return "";
+    let v = val.trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1).trim();
+    }
+    return v;
+  };
+
+  const SMTP_HOST = cleanEnvVar(process.env.SMTP_HOST);
+  const SMTP_PORT_STR = cleanEnvVar(process.env.SMTP_PORT);
+  const SMTP_PORT = parseInt(SMTP_PORT_STR || '465');
+  const SMTP_USER = cleanEnvVar(process.env.SMTP_USER);
+  const SMTP_PASS = cleanEnvVar(process.env.SMTP_PASS);
+  const ADMIN_EMAIL = cleanEnvVar(process.env.ADMIN_EMAIL) || "info@cryptorecoveryasset.com";
+
   // SMTP Configuration from environment
   const getTransporter = () => {
-    const host = process.env.SMTP_HOST;
-    const port = parseInt(process.env.SMTP_PORT || '465');
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-
-    if (!user || !pass || !host) {
-      console.warn(`[SMTP] Configuration incomplete. Missing: ${[!host && 'SMTP_HOST', !user && 'SMTP_USER', !pass && 'SMTP_PASS'].filter(Boolean).join(', ')}`);
+    if (!SMTP_USER || !SMTP_PASS || !SMTP_HOST) {
+      console.warn(`[SMTP] Configuration incomplete. Missing: ${[!SMTP_HOST && 'SMTP_HOST', !SMTP_USER && 'SMTP_USER', !SMTP_PASS && 'SMTP_PASS'].filter(Boolean).join(', ')}`);
       return null;
     }
 
-    console.log(`[SMTP] Initializing for ${user} on ${host}:${port} (Secure: ${port === 465})`);
+    console.log(`[SMTP] Initializing for ${SMTP_USER} on ${SMTP_HOST}:${SMTP_PORT} (Secure: ${SMTP_PORT === 465})`);
 
     return nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
       auth: {
-        user,
-        pass,
+        user: SMTP_USER,
+        pass: SMTP_PASS,
       },
       tls: {
         rejectUnauthorized: false
@@ -56,19 +68,46 @@ async function startServer() {
     });
   }
 
+  // Helper to diagnose specific SMTP error signatures and suggest user solutions
+  const getSMTPSuggestions = (errorMessage: string): string[] => {
+    const errorStr = errorMessage.toLowerCase();
+    const suggestions: string[] = [];
+
+    const isTitan = errorStr.includes("titan") || SMTP_HOST.toLowerCase().includes("titan");
+
+    if (errorStr.includes("535") || errorStr.includes("authentication failed") || errorStr.includes("invalid login")) {
+      suggestions.push("AUTHENTICATION DISALLOWED (535): Your SMTP host rejected the username & password combination of SMTP_USER and SMTP_PASS.");
+      
+      if (isTitan) {
+        suggestions.push("👉 TITAN EMAIL SPECIFIC: If you have Two-Factor Authentication (2FA) enabled on your Titan account, your normal mailbox password WILL be rejected with a 535 error. You MUST generate an App Password in your Titan webmail (Settings > Security > App Passwords), and put that 16-character secure code as your SMTP_PASS in Google AI Studio.");
+        suggestions.push("👉 TITAN EMAIL SPECIFIC: Verify your SMTP_USER matches your complete mailbox email exactly (e.g., contact@vr-astrovision.com or info@cryptorecoveryasset.com) in all lowercase, and that SMTP_HOST is exactly smtp.titan.email.");
+      } else {
+        suggestions.push("Are you using Titan Mail? Titan accounts with Two-Factor Authentication (2FA) active require an App Password. Go to Titan Webmail > Settings Gear > Security > App Passwords, generate a custom secure key, and set it as your SMTP_PASS. Double-check that your SMTP_HOST is 'smtp.titan.email' and SMTP_PORT is '465'.");
+        suggestions.push("Are you using Gmail / Google Workspace? If so, Google disabled secure basic logins. You MUST configure standard 2-Step Verification first, then go to Google security settings and generate a 16-character secure 'App Password', and set that as your SMTP_PASS.");
+      }
+      suggestions.push("Double check that your SMTP_PASS has no typos, extra trailing spaces, or double/single quotes wrapped around it in the Settings > Secrets menu.");
+    } else if (errorStr.includes("enotfound") || errorStr.includes("getaddrinfo")) {
+      suggestions.push("HOST RESOLUTION FAILED (ENOTFOUND): The server container could not resolve the address for SMTP_HOST.");
+      suggestions.push("Double-check your SMTP_HOST settings for spelling errors (e.g., 'smtp.titan.email', 'smtp.gmail.com', 'smtp.mail.yahoo.com').");
+    } else if (errorStr.includes("etimeout") || errorStr.includes("timed out") || errorStr.includes("connect etimedout")) {
+      suggestions.push("CONNECTION TIMED OUT: The connection attempted to SMTP_HOST on SMTP_PORT took too long or was blocked.");
+      suggestions.push("Port 465 employs direct SSL (secure: true). If you configured port 587, the provider expects STARTTLS (secure: false). Make sure your port fits the standard (465 SSL vs 587 TLS). For Titan Email, port 465 is the recommended secure outbound port.");
+    } else {
+      suggestions.push("Verify that your email provider allows outbound SMTP relays from remote web sandbox nodes (like Google Cloud Run). Some domains require whitelisting or disabling security blocks on direct SMTP.");
+    }
+
+    return suggestions;
+  };
+
   // API Routes
   app.get("/api/health", (req, res) => {
-    const host = process.env.SMTP_HOST;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS ? "********" : undefined;
-    
     res.json({ 
       status: "online",
-      smtpConfigured: !!(host && user && process.env.SMTP_PASS),
+      smtpConfigured: !!(SMTP_HOST && SMTP_USER && SMTP_PASS),
       smtpDetails: {
-        host,
-        user,
-        passSet: !!process.env.SMTP_PASS
+        host: SMTP_HOST,
+        user: SMTP_USER,
+        passSet: !!SMTP_PASS
       }
     });
   });
@@ -76,25 +115,52 @@ async function startServer() {
   app.get("/api/debug-email", async (req, res) => {
     const transporter = getTransporter();
     if (!transporter) {
-      return res.status(500).json({ error: "SMTP not configured" });
+      return res.status(500).json({ 
+        success: false, 
+        error: "SMTP not configured. Ensure SMTP_HOST, SMTP_USER, and SMTP_PASS are set in Settings > Secrets." 
+      });
     }
 
     try {
       await transporter.verify();
+      const targetEmail = (req.query.to as string) || SMTP_USER || ADMIN_EMAIL || "info@cryptorecoveryasset.com";
       const mailOptions = {
-        from: `"DEBUG" <${process.env.SMTP_USER}>`,
-        to: process.env.SMTP_USER || "info@digitalassetsforensiccryptorecovery.com",
-        subject: "SMTP Debug Test",
-        text: `This is a test email triggered at ${new Date().toISOString()}`
+        from: `"SMTP Diagnostics" <${SMTP_USER}>`,
+        to: targetEmail,
+        subject: `SMTP Diagnostic Test - ${new Date().toLocaleTimeString()}`,
+        html: `
+          <div style="font-family: sans-serif; padding: 30px; border-radius: 12px; background: #0f172a; color: #f8fafc; max-width: 600px; margin: 0 auto; border: 1px solid #1e293b;">
+            <div style="text-align: center; border-bottom: 1px solid #1e293b; padding-bottom: 20px; margin-bottom: 20px;">
+              <span style="font-size: 24px; font-weight: bold; color: #3b82f6;">DIGITAL ASSETS FORENSICS</span>
+              <p style="color: #64748b; font-size: 11px; margin-top: 5px; font-family: monospace;">SYSTEM_DIAGNOSTICS: STATUS_ACTIVE</p>
+            </div>
+            <p>Hello,</p>
+            <p>If you are reading this email, your <strong>SMTP Routing Configuration</strong> is fully functional and running successfully on our server containers!</p>
+            <div style="background: #1e293b; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 11px; margin: 20px 0; border-left: 4px solid #3b82f6; color: #cbd5e1;">
+              <p style="margin: 0 0 5px 0;"><strong>Sender Host:</strong> ${SMTP_HOST}</p>
+              <p style="margin: 0 0 5px 0;"><strong>Sender Port:</strong> ${SMTP_PORT}</p>
+              <p style="margin: 0 0 5px 0;"><strong>Active Sender:</strong> ${SMTP_USER}</p>
+              <p style="margin: 0;"><strong>Recipient Target:</strong> ${targetEmail}</p>
+            </div>
+            <p style="color: #94a3b8; font-size: 13px;">No further settings edits are required. Form submissions will now be correctly dispatched to your configured inbox.</p>
+            <div style="text-align: center; border-top: 1px solid #1e293b; padding-top: 20px; margin-top: 30px; font-size: 10px; color: #64748b;">
+              Private & Confidential • Digital Assets Forensics Operations Team
+            </div>
+          </div>
+        `
       };
       
       const info = await transporter.sendMail(mailOptions);
-      res.json({ success: true, messageId: info.messageId, response: info.response });
+      res.json({ success: true, messageId: info.messageId, response: info.response, recipient: targetEmail });
     } catch (error) {
       console.error("[SMTP DEBUG ERR]", error);
-      res.status(500).json({ 
+      const errMsg = error instanceof Error ? error.message : String(error);
+      const suggestions = getSMTPSuggestions(errMsg);
+      
+      res.status(200).json({ 
         success: false, 
-        error: error instanceof Error ? error.message : String(error),
+        error: errMsg,
+        suggestions,
         stack: error instanceof Error ? error.stack : undefined
       });
     }
@@ -122,9 +188,9 @@ async function startServer() {
 
         // 1. Send Notification to Admin
         const adminMailOptions = {
-          from: `"Recovery Portal" <${process.env.SMTP_USER}>`,
-          to: "info@digitalassetsforensiccryptorecovery.com",
-          subject: `NEW LEAD [${generatedCaseId}]: ${safeData.operatorAlias} | ${safeData.incidentVector}`,
+          from: `"Operations Desk" <${SMTP_USER}>`,
+          to: ADMIN_EMAIL,
+          subject: `New Inquiry Notification [${generatedCaseId}]`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
               <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Recovery Lead: ${generatedCaseId}</h2>
@@ -162,9 +228,9 @@ async function startServer() {
         // 2. Send Confirmation to Client
         if (clientEmail) {
           const clientMailOptions = {
-            from: `"Digital Assets Forensics" <${process.env.SMTP_USER}>`,
+            from: `"Support Helpdesk" <${SMTP_USER}>`,
             to: clientEmail,
-            subject: `Case Initialized: ${generatedCaseId} - Documentation Received`,
+            subject: `Acknowledgment of Intake Ticket: ${generatedCaseId}`,
             html: `
               <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; color: #020617; line-height: 1.6;">
                 <div style="background: #020617; padding: 40px 20px; text-align: center; border-radius: 16px 16px 0 0;">
@@ -219,25 +285,30 @@ async function startServer() {
         
         res.status(200).json({ 
           success: true, 
-          message: "Data securely transmitted and confirmation sent.",
-          caseId: generatedCaseId
+          message: "Data securely processed and saved.",
+          caseId: generatedCaseId,
+          emailSent: true
         });
       } else {
-        const generatedCaseId = `DF-${Math.floor(Math.random() * 10000)}-QX-04`;
+        const generatedCaseId = `DF-${Math.floor(1000 + Math.random() * 9000)}-QX-04`;
         res.status(200).json({ 
           success: true, 
-          message: "Data logged to server (SMTP not configured).",
-          caseId: generatedCaseId
+          message: "Data logged to server database (SMTP not configured).",
+          caseId: generatedCaseId,
+          emailSent: false
         });
       }
     } catch (error) {
-      console.error("Failed to send email:", error);
-      // We still return 200/success because the lead was at least logged to the console
-      // and usually Firestore (handled in frontend). But we can return a partial success.
-      res.status(500).json({ 
-        success: false, 
-        error: "Failed to send email notification",
-        details: error instanceof Error ? error.message : String(error)
+      console.error("[SMTP ERROR] Failed to deliver recovery emails:", error);
+      const generatedCaseId = `DF-${Math.floor(1000 + Math.random() * 9000)}-FAIL`;
+      // We return 200 success back to the browser because the case itself is saved in Firestore (on the client).
+      // Returning 500 would show an error to standard customers which we want to avoid.
+      res.status(200).json({ 
+        success: true, 
+        message: "Data registered. Warning: Outbound email notification failed.",
+        caseId: generatedCaseId,
+        emailSent: false,
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   });
@@ -255,9 +326,9 @@ async function startServer() {
       const transporter = getTransporter();
       if (transporter) {
         const mailOptions = {
-          from: `"Intelligence Stream" <${process.env.SMTP_USER}>`,
-          to: "info@digitalassetsforensiccryptorecovery.com",
-          subject: `NEW BLOG SUBSCRIBER: ${name}`,
+          from: `"Newsletter Alerts" <${SMTP_USER}>`,
+          to: ADMIN_EMAIL,
+          subject: `Subscribed Alert: ${name}`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
               <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Blog Subscription</h2>
@@ -281,10 +352,10 @@ async function startServer() {
         message: "Successfully subscribed to the intelligence stream." 
       });
     } catch (error) {
-      console.error("Failed to process subscription email:", error);
-      res.status(500).json({ 
-        success: false, 
-        error: "Failed to process subscription" 
+      console.error("[SMTP ERROR] Failed to send subscription alarm email:", error);
+      res.status(200).json({ 
+        success: true, 
+        message: "Successfully subscribed to the intelligence stream (Warning: Notification failed)." 
       });
     }
   });

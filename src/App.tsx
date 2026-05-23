@@ -597,7 +597,7 @@ export default function App() {
                 <FileText className="text-slate-300 w-5 h-5 group-hover:text-white" />
               </button>
               <a 
-                href="mailto:info@digitalassetsforensiccryptorecovery.com" 
+                href="mailto:info@cryptorecoveryasset.com" 
                 className="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:bg-blue-600 transition-colors group cursor-pointer"
                 title="Email Support"
               >
