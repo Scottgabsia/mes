@@ -17,7 +17,7 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   keywords,
   ogType = 'website',
-  ogImage = '/logo.png',
+  ogImage = '/logo.png?v=3',
   twitterHandle = '@DAForensics'
 }) => {
   const siteTitle = 'Crypto Recovery Assets';

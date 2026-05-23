@@ -241,7 +241,7 @@ export default function App() {
               <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
                 <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-lg group-hover:bg-blue-500/30 transition-all"></div>
                 <img 
-                  src="/logo.png" 
+                  src="/logo.png?v=3" 
                   alt="Crypto Recovery Assets Agency Logo" 
                   referrerPolicy="no-referrer"
                   className="w-10 h-10 sm:w-14 sm:h-14 object-contain relative z-10" 
@@ -323,7 +323,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-4 mb-2">
                   <img 
-                    src="/logo.png" 
+                    src="/logo.png?v=3" 
                     alt="Crypto Recovery Assets Agency Logo" 
                     referrerPolicy="no-referrer"
                     className="w-12 h-12 object-contain" 
@@ -577,7 +577,7 @@ export default function App() {
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
               <div className="relative w-14 h-14 flex items-center justify-center">
                 <img 
-                  src="/logo.png" 
+                  src="/logo.png?v=3" 
                   alt="Crypto Recovery Assets Agency Logo" 
                   referrerPolicy="no-referrer"
                   className="w-12 h-12 object-contain relative z-10" 
