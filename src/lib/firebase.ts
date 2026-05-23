@@ -23,8 +23,29 @@ async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration.");
+    if (error instanceof Error) {
+      const errorMsg = error.message.toLowerCase();
+      if (
+        errorMsg.includes('the client is offline') || 
+        errorMsg.includes('unavailable') || 
+        errorMsg.includes('could not reach') ||
+        (error as any).code === 'unavailable'
+      ) {
+        console.warn(
+          "Firestore connection state warning: Operational in offline/cached mode. " +
+          "It will synchronize changes automatically once connection is fully active.", 
+          error.message
+        );
+      } else if (
+        errorMsg.includes('permission') || 
+        errorMsg.includes('insufficient') ||
+        (error as any).code === 'permission-denied'
+      ) {
+        // A permission-denied error indicates the client successfully reached the server and was assessed.
+        console.log("Firestore connection check: Reachable (permission denied as expected).");
+      } else {
+        console.error("Firestore connection verify error:", error.message);
+      }
     }
   }
 }

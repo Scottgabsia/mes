@@ -236,24 +236,24 @@ export default function App() {
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
       {/* TopAppBar */}
       <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">
-            <div className="flex items-center gap-2 sm:gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
-              <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+        <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">
+            <div className="flex items-center gap-2 sm:gap-4 cursor-pointer group min-w-0" onClick={() => handleNavClick('home')}>
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center">
                 <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-lg group-hover:bg-blue-500/30 transition-all"></div>
                 <img 
-                  src="/logo.png?v=4" 
+                  src="/logo.png?v=5" 
                   alt="Crypto Recovery Assets Agency Logo" 
                   referrerPolicy="no-referrer"
-                  className="w-10 h-10 sm:w-14 sm:h-14 object-contain relative z-10" 
+                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain relative z-10" 
                 />
               </div>
-              <div className="flex flex-col">
-              <div className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
-                Crypto Recovery <span className="text-blue-500">Assets</span>
+              <div className="flex flex-col min-w-0 max-w-[calc(100vw-130px)] sm:max-w-none mr-2 sm:mr-0 overflow-hidden">
+                <div className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
+                  Crypto Recovery <span className="text-blue-500">Assets</span>
+                </div>
+                <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
               </div>
-              <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
             </div>
-          </div>
           
           <nav className="hidden lg:flex items-center gap-10">
             <div className="flex flex-col items-end mr-4">
@@ -280,24 +280,24 @@ export default function App() {
             </button>
           </nav>
 
-          <div className="flex items-center gap-4 lg:gap-6">
+          <div className="flex items-center gap-2.5 xs:gap-4 lg:gap-6 flex-shrink-0">
             <div className="hidden xl:flex flex-col text-right">
               <span className="font-fira text-[10px] text-slate-500 uppercase">System Integrity</span>
               <span className="font-fira text-xs text-emerald-400">99.998% SECURE</span>
             </div>
             <button 
-              className="flex w-10 h-10 rounded-full border border-blue-500/30 items-center justify-center active:scale-95 transition-transform ring-4 ring-blue-600/5 bg-blue-600/10 text-blue-500 hover:bg-blue-600/20 hover:text-white cursor-pointer" 
+              className="flex w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-blue-500/30 items-center justify-center active:scale-95 transition-transform ring-4 ring-blue-600/5 bg-blue-600/10 text-blue-500 hover:bg-blue-600/20 hover:text-white cursor-pointer flex-shrink-0" 
               onClick={() => handleNavClick('clientPortal')}
               title="Contact Support"
             >
-              <Mail className="w-5 h-5" />
+              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             {/* Mobile Menu Toggle */}
             <button 
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 text-slate-400 hover:text-blue-500 transition-colors"
+              className="lg:hidden p-1.5 xs:p-2 text-slate-400 hover:text-blue-500 transition-colors flex-shrink-0"
             >
-              {isMobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+              {isMobileMenuOpen ? <X className="w-7 h-7 xs:w-8 xs:h-8" /> : <Menu className="w-7 h-7 xs:w-8 xs:h-8" />}
             </button>
           </div>
         </div>
@@ -322,12 +322,14 @@ export default function App() {
                   </button>
                 </div>
                 <div className="flex items-center gap-4 mb-2">
-                  <img 
-                    src="/logo.png?v=4" 
-                    alt="Crypto Recovery Assets Agency Logo" 
-                    referrerPolicy="no-referrer"
-                    className="w-12 h-12 object-contain" 
-                  />
+                  <div className="relative w-10 h-10 flex items-center justify-center">
+                    <img 
+                      src="/logo.png?v=5" 
+                      alt="Crypto Recovery Assets Agency Logo" 
+                      referrerPolicy="no-referrer"
+                      className="w-8 h-8 object-contain" 
+                    />
+                  </div>
                   <div className="flex flex-col">
                     <span className="text-white font-black text-sm uppercase tracking-tighter">Crypto Recovery</span>
                     <span className="text-blue-500 font-mono text-[9px] uppercase tracking-widest font-bold">Assets</span>
@@ -575,12 +577,12 @@ export default function App() {
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-stack-lg mb-12 sm:mb-20 relative z-10">
           <div className="space-y-8">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
-              <div className="relative w-14 h-14 flex items-center justify-center">
+              <div className="relative w-12 h-12 flex items-center justify-center">
                 <img 
-                  src="/logo.png?v=4" 
+                  src="/logo.png?v=5" 
                   alt="Crypto Recovery Assets Agency Logo" 
                   referrerPolicy="no-referrer"
-                  className="w-12 h-12 object-contain relative z-10" 
+                  className="w-10 h-10 object-contain relative z-10" 
                 />
               </div>
               <div className="flex flex-col">
