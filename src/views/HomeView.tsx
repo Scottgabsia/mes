@@ -127,7 +127,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
   };
 
   return (
-    <div className="pt-28 xs:pt-32 sm:pt-40 lg:pt-44 xl:pt-48 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
+    <div className="pt-24 xs:pt-28 sm:pt-40 lg:pt-44 xl:pt-48 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
       <SEO 
         title="Crypto Recovery Service & Blockchain Forensics" 
         description="Global leader in cryptocurrency recovery service. Expert forensic analysis for Bitcoin, Ethereum, and DeFi exploits. Recover scammed crypto with zero upfront costs."
