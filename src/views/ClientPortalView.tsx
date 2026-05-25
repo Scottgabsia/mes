@@ -160,7 +160,8 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       targetNetwork: isCustomNetwork ? formData.customNetwork : formData.targetNetwork,
       estimatedValue: typeof assetValue === 'number' ? assetValue : 0,
       createdAt: serverTimestamp(),
-      status: 'PENDING'
+      status: 'PENDING',
+      formSource: 'INTAKE_INITIALIZATION',
     };
 
     try {

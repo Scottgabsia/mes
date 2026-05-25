@@ -1,19 +1,25 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
+import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
-dotenv.config();
+const isProduction =
+  process.env.NODE_ENV === "production" ||
+  process.env.NODE_ENV === "prod";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+if (!isProduction) {
+  dotenv.config({ path: ".env" });
+  dotenv.config({ path: ".env.local", override: true });
+}
+
+const distPath = path.join(process.cwd(), "dist");
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = parseInt(process.env.PORT || "3000", 10);
 
+  app.set("trust proxy", 1);
   app.use(express.json());
 
   // Helper to safely sanitize surrounding quotes and spaces from user inputs in AI Studio Secrets menu
@@ -104,6 +110,7 @@ async function startServer() {
     res.json({ 
       status: "online",
       smtpConfigured: !!(SMTP_HOST && SMTP_USER && SMTP_PASS),
+      adminEmail: ADMIN_EMAIL,
       smtpDetails: {
         host: SMTP_HOST,
         user: SMTP_USER,
@@ -186,44 +193,53 @@ async function startServer() {
         const clientEmail = safeData.secureComms || safeData.email;
         const clientName = safeData.operatorAlias || safeData.name || "Valued Client";
 
+        const formSource = safeData.formSource || "INTAKE_INITIALIZATION";
+        const submittedAt = safeData.timestamp
+          ? new Date(safeData.timestamp).toLocaleString()
+          : new Date().toLocaleString();
+
         // 1. Send Notification to Admin
         const adminMailOptions = {
           from: `"Operations Desk" <${SMTP_USER}>`,
           to: ADMIN_EMAIL,
-          subject: `New Inquiry Notification [${generatedCaseId}]`,
+          replyTo: clientEmail || undefined,
+          subject: `[${formSource}] New Recovery Inquiry — ${generatedCaseId}`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
-              <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Recovery Lead: ${generatedCaseId}</h2>
-              <p><strong>System Identification:</strong> ${new Date().toLocaleString()}</p>
+              <h2 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">${formSource}: ${generatedCaseId}</h2>
+              <p><strong>Submitted:</strong> ${submittedAt}</p>
+              <p><strong>Notification inbox:</strong> ${ADMIN_EMAIL}</p>
               
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Client Manifest</h3>
                 <p><strong>Full Name:</strong> ${clientName}</p>
-                <p><strong>Email Address:</strong> ${clientEmail}</p>
-                <p><strong>Phone:</strong> ${safeData.phone}</p>
+                <p><strong>Email Address:</strong> ${clientEmail || "—"}</p>
+                <p><strong>Phone:</strong> ${safeData.phone || "—"}</p>
+                <p><strong>Status:</strong> ${safeData.status || "PENDING"}</p>
               </div>
 
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Incident Parameters</h3>
-                <p><strong>Service Type:</strong> ${safeData.incidentVector}</p>
-                <p><strong>Target Network:</strong> ${safeData.targetNetwork}</p>
-                <p><strong>Asset Value Estimate:</strong> $${safeData.estimatedValue}</p>
-                <p><strong>Transaction Hash:</strong> <code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">${safeData.transactionHash}</code></p>
+                <p><strong>Service Type:</strong> ${safeData.incidentVector || "—"}</p>
+                <p><strong>Target Network:</strong> ${safeData.targetNetwork || "—"}</p>
+                <p><strong>Asset Value Estimate:</strong> $${safeData.estimatedValue ?? "—"}</p>
+                <p><strong>Transaction Hash:</strong> <code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">${safeData.transactionHash || "—"}</code></p>
               </div>
 
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0; color: #334155;">Case Narrative</h3>
-                <p style="white-space: pre-wrap;">${safeData.caseNarrative}</p>
+                <p style="white-space: pre-wrap;">${safeData.caseNarrative || "—"}</p>
               </div>
               
               <p style="font-size: 10px; color: #64748b; margin-top: 30px;">
-                This is an automated encrypted transmission from the Digital Assets Forensics recovery portal.
+                Automated notification from the recovery portal. Reply goes to the client when their email was provided.
               </p>
             </div>
           `,
         };
 
         await transporter.sendMail(adminMailOptions);
+        console.log(`[SMTP] INTAKE notification sent to ${ADMIN_EMAIL} (case ${generatedCaseId})`);
 
         // 2. Send Confirmation to Client
         if (clientEmail) {
@@ -360,22 +376,28 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  if (!isProduction) {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
-    // In production, serving from the root via server.ts or from dist via node dist/server.js
-    // We determine dist path relative to current working directory or __dirname
-    const distPath = path.join(process.cwd(), 'dist');
     const indexPath = path.join(distPath, "index.html");
-    
-    console.log(`[PROD] Mode detected`);
-    console.log(`[PROD] Static files: ${distPath}`);
-    console.log(`[PROD] Entry point: ${indexPath}`);
+
+    if (!fs.existsSync(indexPath)) {
+      console.error(
+        `[PROD] Missing ${indexPath}. Run "npm run build" before "npm start".`
+      );
+      process.exit(1);
+    }
+
+    console.log(`[PROD] Mode: production`);
+    console.log(`[PROD] Port: ${PORT}`);
+    console.log(`[PROD] Static root: ${distPath}`);
+    console.log(`[PROD] SMTP configured: ${!!(SMTP_HOST && SMTP_USER && SMTP_PASS)}`);
+    console.log(`[PROD] Admin inbox: ${ADMIN_EMAIL}`);
     
     // Serve static files
     app.use(express.static(distPath, {
@@ -405,7 +427,9 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(
+      `[SERVER] ${isProduction ? "Production" : "Development"} listening on port ${PORT}`
+    );
   });
 }
 

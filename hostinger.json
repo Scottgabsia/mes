@@ -1,0 +1,11 @@
+{
+  "framework": "express",
+  "nodeVersion": "20",
+  "buildCommand": "npm run build",
+  "startCommand": "npm start",
+  "outputDirectory": "dist",
+  "entryFile": "dist/server.cjs",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
