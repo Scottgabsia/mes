@@ -17,6 +17,7 @@ import {
   Terminal
 } from 'lucide-react';
 import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { LOGO_URL } from './constants';
 import { HomeView } from './views/HomeView';
 import { ServicesView } from './views/ServicesView';
 import { IntelligenceView } from './views/IntelligenceView';
@@ -241,9 +242,10 @@ export default function App() {
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center">
                 <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-lg group-hover:bg-blue-500/30 transition-all"></div>
                 <img 
-                  src="/logo.png?v=5" 
-                  alt="Crypto Recovery Assets Agency Logo" 
-                  referrerPolicy="no-referrer"
+                  src={LOGO_URL}
+                  alt="Crypto Recovery Assets Agency Logo"
+                  width={40}
+                  height={40}
                   className="w-8 h-8 sm:w-10 sm:h-10 object-contain relative z-10" 
                 />
               </div>
@@ -324,9 +326,10 @@ export default function App() {
                 <div className="flex items-center gap-4 mb-2">
                   <div className="relative w-10 h-10 flex items-center justify-center">
                     <img 
-                      src="/logo.png?v=5" 
-                      alt="Crypto Recovery Assets Agency Logo" 
-                      referrerPolicy="no-referrer"
+                      src={LOGO_URL}
+                      alt="Crypto Recovery Assets Agency Logo"
+                      width={32}
+                      height={32}
                       className="w-8 h-8 object-contain" 
                     />
                   </div>
@@ -579,9 +582,10 @@ export default function App() {
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
               <div className="relative w-12 h-12 flex items-center justify-center">
                 <img 
-                  src="/logo.png?v=5" 
-                  alt="Crypto Recovery Assets Agency Logo" 
-                  referrerPolicy="no-referrer"
+                  src={LOGO_URL}
+                  alt="Crypto Recovery Assets Agency Logo"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 object-contain relative z-10" 
                 />
               </div>

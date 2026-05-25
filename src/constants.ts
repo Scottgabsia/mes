@@ -1,3 +1,6 @@
+/** Cache-bust when logo file changes */
+export const LOGO_URL = "/logo.png?v=6";
+
 export const CRYPTO_CURRENCIES = [
   "Bitcoin (BTC)",
   "Ethereum (ETH)",

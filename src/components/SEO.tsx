@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { LOGO_URL } from '../constants';
 
 interface SEOProps {
   title?: string;
@@ -17,7 +18,7 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   keywords,
   ogType = 'website',
-  ogImage = '/logo.png?v=5',
+  ogImage = LOGO_URL,
   twitterHandle = '@DAForensics'
 }) => {
   const siteTitle = 'Crypto Recovery Assets';
@@ -25,6 +26,8 @@ export const SEO: React.FC<SEOProps> = ({
   const defaultDescription = 'Global leader in professional forensic analysis for digital asset and cryptocurrency recovery. Licensed blockchain investigation services.';
   const metaDescription = description || defaultDescription;
   const url = canonical || 'https://cryptorecoveryasset.com';
+  const siteOrigin = url.replace(/\/$/, '');
+  const imageUrl = ogImage.startsWith('http') ? ogImage : `${siteOrigin}${ogImage}`;
   const defaultKeywords = 'crypto recovery service, bitcoin recovery expert, cryptocurrency recovery tool, scammed crypto recovery, hire crypto recovery specialist, blockchain forensics';
   const metaKeywords = keywords || defaultKeywords;
 
@@ -40,14 +43,14 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:type" content={ogType} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
-      <meta property="og:image" content={ogImage} />
+      <meta property="og:image" content={imageUrl} />
       <meta property="og:url" content={url} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image" content={imageUrl} />
       <meta name="twitter:site" content={twitterHandle} />
       
       {/* Additional SEO Tags */}
