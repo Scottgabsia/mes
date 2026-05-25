@@ -1,5 +1,5 @@
 /** Cache-bust when logo file changes */
-export const LOGO_URL = "/logo.png?v=7";
+export const LOGO_URL = "/logo.png?v=8";
 
 export const CRYPTO_CURRENCIES = [
   "Bitcoin (BTC)",
