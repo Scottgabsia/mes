@@ -8,10 +8,8 @@ const isProduction =
   process.env.NODE_ENV === "production" ||
   process.env.NODE_ENV === "prod";
 
-if (!isProduction) {
-  dotenv.config({ path: ".env" });
-  dotenv.config({ path: ".env.local", override: true });
-}
+dotenv.config({ path: ".env" });
+dotenv.config({ path: ".env.local", override: true });
 
 const distPath = path.join(process.cwd(), "dist");
 

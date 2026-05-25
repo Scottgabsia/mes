@@ -16,6 +16,7 @@ import { CRYPTO_CURRENCIES } from '../constants';
 import { ReviewsSection } from '../components/ReviewsSection';
 import { SEO } from '../components/SEO';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { apiPost } from '../lib/api';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface HomeViewProps {
@@ -106,18 +107,12 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       ...apiData 
     } = submissionData;
 
-    // 2. Call server API for email notification
     try {
-      await fetch('/api/submit-recovery', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...apiData,
-          timestamp: new Date().toISOString()
-        }),
+      const { error } = await apiPost('/api/submit-recovery', {
+        ...apiData,
+        timestamp: new Date().toISOString(),
       });
+      if (error) console.error('Email API:', error);
     } catch (error) {
       console.error("Email API error:", error);
     }

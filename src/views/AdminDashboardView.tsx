@@ -1,4 +1,5 @@
 import React from 'react';
+import { apiUrl } from '../lib/api';
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon, 
@@ -595,7 +596,18 @@ const SMTPDiagnosticsPanel: React.FC = () => {
   const fetchHealth = async () => {
     setHealthLoading(true);
     try {
-      const res = await fetch('/api/health');
+      const res = await fetch(apiUrl('/api/health'));
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        setHealthData({
+          status: 'offline',
+          smtpConfigured: false,
+          adminEmail: 'info@cryptorecoveryasset.com',
+          smtpDetails: { host: '', user: '', passSet: false },
+          staticOnlyHosting: true,
+        });
+        return;
+      }
       const data = await res.json();
       setHealthData(data);
     } catch (err) {
@@ -615,7 +627,9 @@ const SMTPDiagnosticsPanel: React.FC = () => {
     setTestLoading(true);
     setTestResult(null);
     try {
-      const res = await fetch(`/api/debug-email?to=${encodeURIComponent(testEmail.trim())}`);
+      const res = await fetch(
+        apiUrl(`/api/debug-email?to=${encodeURIComponent(testEmail.trim())}`)
+      );
       const data = await res.json();
       setTestResult({
         ok: res.ok,
@@ -723,7 +737,9 @@ const SMTPDiagnosticsPanel: React.FC = () => {
                 <span>ENVIRONMENT STATUS: {healthData?.smtpConfigured ? "ROUTING_ONLINE" : "SMTP_NOT_CONFIGURED"}</span>
               </div>
               <p>
-                {healthData?.smtpConfigured 
+                {healthData?.staticOnlyHosting
+                  ? "CRITICAL: /api/health returned the website HTML, not JSON. You are on static hosting only — emails cannot send. Switch to Hostinger Node.js Web App with npm start, or set VITE_API_BASE_URL to a live API (see HOSTINGER_DEPLOY.md)."
+                  : healthData?.smtpConfigured 
                   ? "All required SMTP environment variables are detected on this container. You are ready to trigger live delivery tests." 
                   : "SMTP credentials are empty. The application is falling back to server-only logging. Standard visitor submission emails cannot be delivered. Follow the setup directions below to add them."
                 }

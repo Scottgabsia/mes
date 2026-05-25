@@ -24,6 +24,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { apiPost } from '../lib/api';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
@@ -178,22 +179,21 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       }
 
       // 2. Call server API for email notification
-      const response = await fetch('/api/submit-recovery', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...apiData,
-          timestamp: new Date().toISOString()
-        }),
-      });
+      const { ok, data, error } = await apiPost<{ emailSent?: boolean }>(
+        '/api/submit-recovery',
+        { ...apiData, timestamp: new Date().toISOString() }
+      );
 
-      if (response.ok) {
+      if (error) {
+        console.error('Email API:', error);
+      } else if (data && !data.emailSent) {
+        console.warn('Form saved; admin email was not sent (SMTP not configured on server).');
+      }
+
+      if (ok) {
         onInitiateRecovery();
       } else {
-        console.error('Email log failed, but Firestore saved.');
-        onInitiateRecovery(); // Still proceed if Firestore succeeded
+        onInitiateRecovery();
       }
     } catch (error) {
       console.error('Error submitting form:', error);

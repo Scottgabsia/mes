@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { SEO } from '../components/SEO';
+import { apiPost } from '../lib/api';
 
 export const BlogView = () => {
   const [activeCategory, setActiveCategory] = React.useState('ALL_POSTS');
@@ -28,13 +29,10 @@ export const BlogView = () => {
     
     setSubmitting(true);
     try {
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subscriberData)
-      });
-      
-      if (response.ok) {
+      const { ok, error } = await apiPost('/api/subscribe', subscriberData);
+      if (error) console.error('Subscribe API:', error);
+
+      if (ok) {
         setSubmitted(true);
         setSubscriberData({ name: '', email: '' });
       }

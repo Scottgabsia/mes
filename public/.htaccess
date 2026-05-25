@@ -1,7 +1,8 @@
-# SPA Fallback for Apache/LiteSpeed hosting (Hostinger, cPanel, GoDaddy, etc.)
+# SPA fallback — do NOT rewrite /api (Node/Express handles email routes)
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+  RewriteRule ^api/ - [L]
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
