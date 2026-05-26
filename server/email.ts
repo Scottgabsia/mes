@@ -2,6 +2,9 @@ import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Resend } from "resend";
 
+const CASE_LOOKUP_URL = "https://cryptorecoveryasset.com/case-lookup";
+const WHATSAPP_URL = "https://wa.me/message/FKM22PP45SVFO1";
+
 export function cleanEnvVar(val: string | undefined): string {
   if (!val) return "";
   let v = val.trim();
@@ -254,10 +257,6 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
   });
 
   if (clientEmail) {
-    const caseUrl = `https://cryptorecoveryasset.com/case-lookup?case=${encodeURIComponent(generatedCaseId)}`;
-    const waText = `Hello, I am enquiring about my case ${generatedCaseId}`;
-    const waUrl = `https://wa.me/2347069151241?text=${encodeURIComponent(waText)}`;
-
     await dispatchEmail({
       to: clientEmail,
       subject: `Case received — ${generatedCaseId}`,
@@ -296,31 +295,20 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
                       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:10px;mso-table-lspace:0pt;mso-table-rspace:0pt;">
                         <tr>
                           <td align="center" style="padding:0 0 12px 0;">
-                            <!-- bulletproof button -->
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr>
-                                <td bgcolor="#2563eb" style="border-radius:12px;">
-                                  <a href="${caseUrl}" target="_blank" rel="noopener noreferrer"
-                                     style="display:inline-block;font-family:Inter,Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;line-height:16px;text-decoration:none;color:#ffffff;padding:14px 22px;border-radius:12px;">
-                                    Check Case Status
-                                  </a>
-                                </td>
-                              </tr>
-                            </table>
+                            <a href="${CASE_LOOKUP_URL}"
+                               target="_blank"
+                               style="display:block;max-width:320px;margin:0 auto;background-color:#2563eb;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-align:center;padding:16px 20px;border-radius:12px;-webkit-text-size-adjust:none;">
+                              Check Case Status
+                            </a>
                           </td>
                         </tr>
                         <tr>
                           <td align="center" style="padding:0;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr>
-                                <td bgcolor="#16a34a" style="border-radius:12px;">
-                                  <a href="${waUrl}" target="_blank" rel="noopener noreferrer"
-                                     style="display:inline-block;font-family:Inter,Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;line-height:16px;text-decoration:none;color:#ffffff;padding:14px 22px;border-radius:12px;">
-                                    Chat with Support on WhatsApp
-                                  </a>
-                                </td>
-                              </tr>
-                            </table>
+                            <a href="${WHATSAPP_URL}"
+                               target="_blank"
+                               style="display:block;max-width:320px;margin:0 auto;background-color:#16a34a;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-align:center;padding:16px 20px;border-radius:12px;-webkit-text-size-adjust:none;">
+                              Chat with Support on WhatsApp
+                            </a>
                           </td>
                         </tr>
                       </table>
@@ -335,11 +323,6 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
                           <li style="margin:0 0 6px 0;">If required, we prepare evidence packages for compliance/KYC requests.</li>
                           <li style="margin:0;">You’ll receive updates via email as milestones are reached.</li>
                         </ul>
-                      </div>
-
-                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#64748b;font-size:12px;line-height:1.5;margin-top:18px;">
-                        If the buttons don’t work, copy and paste this link into your browser:<br/>
-                        <a href="${caseUrl}" style="color:#2563eb;text-decoration:underline;word-break:break-all;">${caseUrl}</a>
                       </div>
                     </td>
                   </tr>
