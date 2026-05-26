@@ -1,31 +1,37 @@
 # Deploy on Hostinger (Node.js + GitHub)
 
-## Why emails did not work (important)
+## Why `/api/health` returns HTML or 404
 
-If `https://yourdomain.com/api/health` shows your **website homepage** (HTML) instead of JSON like `{"smtpConfigured":true}`, the site is **static-only**. The email API never runs — form data may save to Firebase, but **no email is sent**.
+If `https://cryptorecoveryasset.com/api/health` is **not** JSON (`{"status":"online","runtime":"node",...}`), the domain is **not** hitting the Node process. Common causes:
 
-**Fix:** Use **Node.js Web App** (not static website / not “upload dist only”).
+1. **Output directory** set to `dist` → Hostinger serves static files only; the API never runs.
+2. A **separate static website** is still attached to the domain.
+3. **Entry file** wrong (must be `app.cjs` at repo root, not `dist/server.cjs` alone).
+4. Node app not **redeployed** after env or config changes.
 
 ---
 
-## Hostinger hPanel settings (Node.js Web App)
+## Hostinger hPanel — Node.js Web App (correct settings)
 
 | Setting | Value |
 |---------|--------|
-| Type | **Node.js Apps** → Import from GitHub |
+| Type | **Websites** → **Node.js Apps** → Import from GitHub |
+| Repository | `Scottgabsia/mes` |
 | Framework | **Other** |
 | Node.js version | **20** |
 | Install command | `npm ci` or `npm install` |
 | Build command | `npm run build` |
 | Start command | `npm start` |
-| Output directory | `dist` |
-| Entry file | `dist/server.cjs` |
+| **Output directory** | **leave empty** (do not use `dist` for static-only) |
+| **Entry file** | **`app.cjs`** |
 
-Point your domain to this **Node.js app**, not a separate static site.
+**Domain:** In the Node.js app → **Domains**, attach `cryptorecoveryasset.com` (and `www` if used). Remove or disable any **other** website on the same domain (old static upload / “Website Builder”).
+
+After saving, click **Deploy** or **Redeploy**.
 
 ---
 
-## Environment variables (required for email)
+## Environment variables (email via SMTP)
 
 **hPanel → Websites → your Node.js app → Environment variables:**
 
@@ -40,48 +46,41 @@ ADMIN_EMAIL=info@cryptorecoveryasset.com
 
 Do **not** set `PORT` — Hostinger sets it automatically.
 
-After changing env vars, click **Redeploy / Restart** the app.
+Redeploy after changing env vars.
 
 ---
 
 ## Verify after deploy
 
-1. Open `https://yourdomain.com/api/health`  
-   - **Good:** JSON with `"smtpConfigured": true`  
-   - **Bad:** HTML homepage → still static hosting; fix Node.js app + domain
+1. `https://cryptorecoveryasset.com/api/health`  
+   - **Good:** `{"status":"online","runtime":"node","smtpConfigured":true,...}`  
+   - **Bad:** HTML or Hostinger 404 → domain still on static hosting; fix table above
 
 2. Test email:  
-   `https://yourdomain.com/api/debug-email?to=info@cryptorecoveryasset.com`
+   `https://cryptorecoveryasset.com/api/debug-email?to=info@cryptorecoveryasset.com`
 
-3. Submit the intake form and check **info@cryptorecoveryasset.com** (and spam folder).
-
----
-
-## Option B: Static site + Firebase Functions API
-
-If you must keep **static** hosting on Hostinger:
-
-1. Install Firebase CLI, login, and from project root run:
-   ```bash
-   cd functions && npm install && cd ..
-   firebase functions:secrets:set SMTP_PASS
-   firebase deploy --only functions
-   ```
-   Also set other SMTP vars in [Google Cloud Console](https://console.cloud.google.com/functions) → your function → Environment variables.
-
-2. Add to Hostinger **build** environment variables:
-   ```
-   VITE_API_BASE_URL=https://us-central1-mysterybritishsh-1748710084193.cloudfunctions.net/mes
-   ```
-
-3. Rebuild and redeploy the frontend.
+3. Submit the intake form; check **info@cryptorecoveryasset.com** (and spam).
 
 ---
 
-## Titan email tips
+## Option B: Static site + EmailJS (no Node API)
 
-- If 2FA is on, use an **App Password** as `SMTP_PASS`, not your normal login password.
-- Check spam/junk for test messages.
+If you keep static-only hosting, set **build-time** variables in Hostinger and redeploy:
+
+```
+VITE_EMAILJS_SERVICE_ID=...
+VITE_EMAILJS_TEMPLATE_ID=...
+VITE_EMAILJS_PUBLIC_KEY=...
+VITE_ADMIN_EMAIL=info@cryptorecoveryasset.com
+```
+
+The form will send via EmailJS from the browser. SMTP env vars only apply when Node is running.
+
+---
+
+## Option C: Static site + Firebase Functions API
+
+See `EMAIL_SETUP.md` and set `VITE_API_BASE_URL` to your deployed function URL, then rebuild.
 
 ---
 
@@ -92,4 +91,4 @@ npm run build
 npm start
 ```
 
-Visit http://localhost:3000/api/health
+Visit http://localhost:3000/api/health — should return JSON with `"runtime":"node"`.

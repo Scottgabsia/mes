@@ -1,11 +1,8 @@
 {
   "framework": "express",
   "nodeVersion": "20",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm ci && npm run build",
   "startCommand": "npm start",
-  "outputDirectory": "dist",
-  "entryFile": "dist/server.cjs",
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "entryFile": "app.cjs",
+  "note": "Do NOT set Output directory to dist for static-only hosting. This app serves dist via Express (npm start)."
 }

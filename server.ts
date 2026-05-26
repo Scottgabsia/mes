@@ -107,6 +107,7 @@ async function startServer() {
   app.get("/api/health", (req, res) => {
     res.json({ 
       status: "online",
+      runtime: "node",
       smtpConfigured: !!(SMTP_HOST && SMTP_USER && SMTP_PASS),
       adminEmail: ADMIN_EMAIL,
       smtpDetails: {
@@ -115,6 +116,10 @@ async function startServer() {
         passSet: !!SMTP_PASS
       }
     });
+  });
+
+  app.get("/health", (_req, res) => {
+    res.redirect(302, "/api/health");
   });
 
   app.get("/api/debug-email", async (req, res) => {
@@ -397,30 +402,30 @@ async function startServer() {
     console.log(`[PROD] SMTP configured: ${!!(SMTP_HOST && SMTP_USER && SMTP_PASS)}`);
     console.log(`[PROD] Admin inbox: ${ADMIN_EMAIL}`);
     
-    // Serve static files
-    app.use(express.static(distPath, {
-      index: false, // We'll handle the root and fallbacks manually
-    }));
-    
-    // Root route
-    app.get("/", (req, res) => {
+    app.use(express.static(distPath, { index: false }));
+
+    app.get("/", (_req, res) => {
       res.sendFile(indexPath);
     });
 
-    // API 404s
-    app.get("/api/*", (req, res) => {
-      res.status(404).json({ error: "API route not found" });
-    });
-
-    // SPA fallback
-    app.get("*", (req, res) => {
-      // Check if file exists to provide better errors
+    // SPA fallback — never swallow /api (those routes are registered above)
+    app.use((req, res, next) => {
+      if (req.path.startsWith("/api")) {
+        return next();
+      }
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        return next();
+      }
       res.sendFile(indexPath, (err) => {
         if (err) {
           console.error(`[ERROR] Failed to send index.html for ${req.url}:`, err);
           res.status(500).send("Application load error (index.html not found).");
         }
       });
+    });
+
+    app.use("/api", (_req, res) => {
+      res.status(404).json({ error: "API route not found" });
     });
   }
 

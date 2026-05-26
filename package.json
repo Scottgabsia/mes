@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/server.cjs",
+  "main": "app.cjs",
   "engines": {
     "node": ">=18 <=22"
   },
@@ -11,7 +11,8 @@
     "dev": "tsx server.ts",
     "build": "NODE_ENV=production vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "postbuild": "node scripts/verify-build.mjs",
-    "start": "NODE_ENV=production node dist/server.cjs",
+    "prestart": "node scripts/verify-build.mjs",
+    "start": "NODE_ENV=production node app.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
