@@ -254,14 +254,81 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
   });
 
   if (clientEmail) {
+    const caseUrl = `https://cryptorecoveryasset.com/case-lookup?case=${encodeURIComponent(generatedCaseId)}`;
+    const waText = `Hello, I am enquiring about my case ${generatedCaseId}`;
+    const waUrl = `https://wa.me/2347069151241?text=${encodeURIComponent(waText)}`;
+
     await dispatchEmail({
       to: clientEmail,
-      subject: `Intake confirmed: ${generatedCaseId}`,
+      subject: `Case received — ${generatedCaseId}`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <p>Hello <strong>${clientName}</strong>,</p>
-          <p>Your case <strong>${generatedCaseId}</strong> was received.</p>
-          <p><a href="https://cryptorecoveryasset.com/case-lookup?case=${generatedCaseId}">Check case status</a></p>
+        <div style="margin:0;padding:0;background:#f1f5f9;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;background:#f1f5f9;padding:0;margin:0;">
+            <tr>
+              <td align="center" style="padding:28px 16px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;border-collapse:collapse;">
+                  <tr>
+                    <td style="background:#0b1220;border-radius:16px 16px 0 0;padding:26px 26px 18px 26px;">
+                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#e2e8f0;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;">
+                        Crypto Recovery Asset
+                      </div>
+                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#ffffff;font-size:22px;font-weight:700;line-height:1.25;margin-top:10px;">
+                        We received your case
+                      </div>
+                      <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#93c5fd;font-size:13px;margin-top:10px;">
+                        Case ID: <strong style="color:#bfdbfe;">${generatedCaseId}</strong>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="background:#ffffff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;padding:26px;">
+                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#0f172a;font-size:15px;line-height:1.6;">
+                        <p style="margin:0 0 12px 0;">Hello <strong>${clientName}</strong>,</p>
+                        <p style="margin:0 0 12px 0;">
+                          Your request has been securely registered in our recovery queue. Our team will review the details and contact you through the email you provided.
+                        </p>
+                        <p style="margin:0 0 18px 0;color:#475569;">
+                          Keep this Case ID for reference: <span style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${generatedCaseId}</span>
+                        </p>
+                      </div>
+
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:6px;">
+                        <tr>
+                          <td align="center" style="padding:0 0 12px 0;">
+                            <a href="${caseUrl}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:700;font-size:14px;padding:14px 18px;border-radius:12px;width:100%;max-width:320px;text-align:center;">
+                              Check Case Status
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" style="padding:0;">
+                            <a href="${waUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:700;font-size:14px;padding:14px 18px;border-radius:12px;width:100%;max-width:320px;text-align:center;">
+                              Chat with Support on WhatsApp
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#64748b;font-size:12px;line-height:1.5;margin-top:18px;">
+                        If the buttons don’t work, copy and paste this link into your browser:<br/>
+                        <a href="${caseUrl}" style="color:#2563eb;text-decoration:underline;word-break:break-all;">${caseUrl}</a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;padding:18px 26px;">
+                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#94a3b8;font-size:11px;line-height:1.45;text-align:center;">
+                        Private & Confidential • If you did not submit this request, you can ignore this email.<br/>
+                        © ${new Date().getFullYear()} Crypto Recovery Asset
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
         </div>
       `,
     });
