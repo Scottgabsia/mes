@@ -24,6 +24,17 @@ ADMIN_EMAIL=info@cryptorecoveryasset.com
 - If 2FA is on, create an **App Password** in Titan (Settings → Security) and use it as `SMTP_PASS`.
 - Remove `RESEND_API_KEY` if you only want SMTP (SMTP wins when both are set).
 
+**Hostinger “IPv4 resolve” warning:** If logs show `535 authentication failed`, DNS is fine — Titan rejected the password. Only use the IP workaround below for `ENOTFOUND` / timeout errors.
+
+**Optional DNS workaround** (only if connection fails, not for 535):
+
+```
+SMTP_HOST=smtp.titan.email
+SMTP_HOST_IP=3.234.93.86
+```
+
+(Titan may change IPs; prefer hostname when DNS works.)
+
 **Test after redeploy:**
 
 1. `https://cryptorecoveryasset.com/api/health` → `"emailProvider":"smtp"`

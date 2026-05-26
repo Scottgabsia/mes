@@ -16,6 +16,8 @@ export function cleanEnvVar(val: string | undefined): string {
 
 export function getEmailConfig() {
   const SMTP_HOST = cleanEnvVar(process.env.SMTP_HOST);
+  /** Optional: set to Titan SMTP IP if Hostinger DNS is flaky (see EMAIL_SETUP.md) */
+  const SMTP_HOST_IP = cleanEnvVar(process.env.SMTP_HOST_IP);
   const SMTP_PORT = parseInt(cleanEnvVar(process.env.SMTP_PORT) || "465", 10);
   const SMTP_USER = cleanEnvVar(process.env.SMTP_USER);
   const SMTP_PASS = cleanEnvVar(process.env.SMTP_PASS);
@@ -28,6 +30,7 @@ export function getEmailConfig() {
 
   return {
     SMTP_HOST,
+    SMTP_HOST_IP,
     SMTP_PORT,
     SMTP_USER,
     SMTP_PASS,
@@ -58,15 +61,26 @@ export function isEmailConfigured(): boolean {
 }
 
 function getSmtpTransporter(): Transporter | null {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = getEmailConfig();
+  const { SMTP_HOST, SMTP_HOST_IP, SMTP_PORT, SMTP_USER, SMTP_PASS } =
+    getEmailConfig();
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
 
+  const host = SMTP_HOST_IP || SMTP_HOST;
+
   return nodemailer.createTransport({
-    host: SMTP_HOST,
+    host,
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
-    tls: { rejectUnauthorized: false },
+    // Prefer IPv4 on shared hosts (Hostinger sometimes logs IPv6 resolve warnings)
+    family: 4,
+    connectionTimeout: 20_000,
+    greetingTimeout: 20_000,
+    socketTimeout: 30_000,
+    tls: {
+      rejectUnauthorized: false,
+      servername: SMTP_HOST,
+    },
   });
 }
 
@@ -149,8 +163,25 @@ export function logEmailStartup(): void {
     );
     const t = getSmtpTransporter();
     t?.verify((err) => {
-      if (err) console.error("[SMTP] Verification failed:", err.message);
-      else console.log("[SMTP] Connection verified");
+      if (err) {
+        const msg = err.message || String(err);
+        if (msg.includes("535") || msg.toLowerCase().includes("authentication")) {
+          console.error(
+            "[SMTP] Login rejected (535) — fix SMTP_PASS (Titan app password if 2FA). Not a DNS issue."
+          );
+        } else if (
+          msg.includes("ENOTFOUND") ||
+          msg.includes("ETIMEDOUT") ||
+          msg.includes("ECONNREFUSED")
+        ) {
+          console.error(
+            "[SMTP] Cannot reach mail server — try SMTP_HOST_IP=3.234.93.86 or check outbound port 465."
+          );
+        }
+        console.error("[SMTP] Verification failed:", msg);
+      } else {
+        console.log("[SMTP] Connection and login verified");
+      }
     });
   } else if (provider === "resend") {
     console.log(`[Resend] Ready — ${cfg.RESEND_FROM} → admin ${cfg.ADMIN_EMAIL}`);
