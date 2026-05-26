@@ -295,23 +295,38 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
                       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:10px;mso-table-lspace:0pt;mso-table-rspace:0pt;">
                         <tr>
                           <td align="center" style="padding:0 0 12px 0;">
-                            <a href="${CASE_LOOKUP_URL}"
-                               target="_blank"
-                               style="display:block;max-width:320px;margin:0 auto;background-color:#2563eb;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-align:center;padding:16px 20px;border-radius:12px;-webkit-text-size-adjust:none;">
-                              Check Case Status
-                            </a>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse:separate;">
+                              <tr>
+                                <td align="center" bgcolor="#2563eb" style="border-radius:12px;">
+                                  <a href="${CASE_LOOKUP_URL}" target="_blank" rel="noopener noreferrer"
+                                     style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:18px;font-weight:bold;color:#ffffff;text-decoration:none;display:inline-block;padding:16px 24px;">
+                                    Check Case Status
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
                           </td>
                         </tr>
                         <tr>
                           <td align="center" style="padding:0;">
-                            <a href="${WHATSAPP_URL}"
-                               target="_blank"
-                               style="display:block;max-width:320px;margin:0 auto;background-color:#16a34a;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-align:center;padding:16px 20px;border-radius:12px;-webkit-text-size-adjust:none;">
-                              Chat with Support on WhatsApp
-                            </a>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse:separate;">
+                              <tr>
+                                <td align="center" bgcolor="#16a34a" style="border-radius:12px;">
+                                  <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
+                                     style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:18px;font-weight:bold;color:#ffffff;text-decoration:none;display:inline-block;padding:16px 24px;">
+                                    Chat with Support on WhatsApp
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
                           </td>
                         </tr>
                       </table>
+
+                      <div style="font-family:Arial,Helvetica,sans-serif;color:#64748b;font-size:12px;line-height:1.5;text-align:center;margin-top:12px;">
+                        Case portal: <a href="${CASE_LOOKUP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:underline;">${CASE_LOOKUP_URL}</a><br/>
+                        WhatsApp: <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" style="color:#16a34a;text-decoration:underline;">${WHATSAPP_URL}</a>
+                      </div>
 
                       <div style="margin-top:18px;padding:16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
                         <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#0f172a;font-size:13px;font-weight:700;margin:0 0 10px 0;">
@@ -319,7 +334,7 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
                         </div>
                         <ul style="margin:0;padding:0 0 0 18px;font-family:Inter,Segoe UI,Arial,sans-serif;color:#334155;font-size:13px;line-height:1.6;">
                           <li style="margin:0 0 6px 0;">We validate your submission and assign an analyst to your case.</li>
-                          <li style="margin:0 0 6px 0;">We trace asset movement and identify potential exchange/off‑ramp touchpoints.</li>
+                          <li style="margin:0 0 6px 0;">We trace asset movement and identify potential exchange/off-ramp touchpoints.</li>
                           <li style="margin:0 0 6px 0;">If required, we prepare evidence packages for compliance/KYC requests.</li>
                           <li style="margin:0;">You’ll receive updates via email as milestones are reached.</li>
                         </ul>
