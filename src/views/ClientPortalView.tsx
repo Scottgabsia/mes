@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { apiPost } from '../lib/api';
+import { isEmailJsConfigured, sendIntakeEmailViaEmailJs } from '../lib/emailjs';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
@@ -179,15 +180,30 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       }
 
       // 2. Email notification (best effort)
-      const { data, error } = await apiPost<{ emailSent?: boolean }>(
-        '/api/submit-recovery',
-        { ...apiData, timestamp: new Date().toISOString() }
-      );
+      const payload = { ...apiData, timestamp: new Date().toISOString() };
 
-      if (error) {
-        console.warn('Email API:', error);
-      } else if (data && !data.emailSent) {
-        console.warn('Form submitted; admin email was not sent (SMTP not configured).');
+      // Prefer EmailJS on static hosting (works without a server)
+      if (isEmailJsConfigured()) {
+        try {
+          await sendIntakeEmailViaEmailJs(payload);
+        } catch (err) {
+          console.warn("EmailJS send failed:", err);
+        }
+      }
+
+      // Keep API attempt as backup when a server exists
+      try {
+        const { data, error } = await apiPost<{ emailSent?: boolean }>(
+          '/api/submit-recovery',
+          payload
+        );
+        if (error) {
+          console.warn('Email API:', error);
+        } else if (data && !data.emailSent) {
+          console.warn('Form submitted; admin email was not sent (SMTP not configured).');
+        }
+      } catch (err) {
+        console.warn("Email API request failed:", err);
       }
 
       onInitiateRecovery();

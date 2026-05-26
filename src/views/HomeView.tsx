@@ -17,6 +17,7 @@ import { ReviewsSection } from '../components/ReviewsSection';
 import { SEO } from '../components/SEO';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { apiPost } from '../lib/api';
+import { isEmailJsConfigured, sendIntakeEmailViaEmailJs } from '../lib/emailjs';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface HomeViewProps {
@@ -108,10 +109,17 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
     } = submissionData;
 
     try {
-      const { error } = await apiPost('/api/submit-recovery', {
-        ...apiData,
-        timestamp: new Date().toISOString(),
-      });
+      const payload = { ...apiData, timestamp: new Date().toISOString() };
+
+      if (isEmailJsConfigured()) {
+        try {
+          await sendIntakeEmailViaEmailJs(payload);
+        } catch (err) {
+          console.warn("EmailJS send failed:", err);
+        }
+      }
+
+      const { error } = await apiPost('/api/submit-recovery', payload);
       if (error) console.error('Email API:', error);
     } catch (error) {
       console.error("Email API error:", error);
