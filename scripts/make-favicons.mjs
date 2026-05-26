@@ -12,11 +12,13 @@ const srcPath =
 
 function isBackground(hex) {
   const { r, g, b } = hex;
+  // solid dark navy / black page background (user favicon source)
+  if (r + g + b < 100) return true;
+  if (r < 55 && g < 70 && b < 110) return true;
   if (Math.abs(r - g) < 25 && Math.abs(g - b) < 25) {
     if (r > 160) return true;
     if (r > 40 && r < 210) return true;
   }
-  if (r < 45 && g < 55 && b < 90) return true;
   return false;
 }
 
@@ -85,14 +87,15 @@ await writeIcon(img, 32, "favicon-32x32.png");
 await writeIcon(img, 192, "favicon-192x192.png");
 await writeIcon(img, 180, "apple-touch-icon.png");
 
-const logoPath = path.join(publicDir, "logo.png");
-try {
-  let logo = await Jimp.read(logoPath);
-  logo = await makeTransparent(logo);
-  await logo.write(logoPath);
-  console.log("Updated logo.png transparency");
-} catch {
-  /* optional */
+if (process.argv.includes("--include-logo")) {
+  const logoPath = path.join(publicDir, "logo.png");
+  try {
+    let logo = await makeTransparent(cropToContent(await makeTransparent(await Jimp.read(srcPath))));
+    await logo.write(logoPath);
+    console.log("Updated logo.png");
+  } catch {
+    /* optional */
+  }
 }
 
 console.log("Favicons written to public/");
