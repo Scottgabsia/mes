@@ -265,8 +265,8 @@ const CaseManagerView: React.FC = () => {
               <div className="flex items-center gap-3">
                 <SendIcon className="text-amber-500 shrink-0" size={18} />
                 <div className="min-w-0">
-                  <h4 className="text-xs font-mono tracking-widest uppercase truncate">SMTP Diagnostics</h4>
-                  <p className="text-[9px] text-slate-500 font-mono mt-0.5 uppercase">Test Email Server Setup</p>
+                  <h4 className="text-xs font-mono tracking-widest uppercase truncate">Resend Diagnostics</h4>
+                  <p className="text-[9px] text-slate-500 font-mono mt-0.5 uppercase">Test Resend Email Setup</p>
                 </div>
               </div>
               <ChevronIcon size={16} className={selectedCase?.id === 'smtp_diagnostics' ? 'text-amber-500 animate-pulse' : 'text-slate-700'} />
@@ -574,7 +574,7 @@ const CaseManagerView: React.FC = () => {
                     className="w-full bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/30 hover:border-amber-500 text-amber-200 font-mono font-bold text-xs uppercase tracking-widest py-4 px-6 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-3"
                   >
                     <SendIcon size={14} className="text-amber-500" />
-                    Run SMTP Diagnostics
+                    Run Email Diagnostics
                   </button>
                 </div>
               </div>
@@ -664,7 +664,7 @@ const SMTPDiagnosticsPanel: React.FC = () => {
           <div className="flex items-center gap-2">
             <ServerIcon className="text-amber-500 shrink-0" size={20} />
             <h2 className="text-base sm:text-lg md:text-xl font-manrope font-black text-white uppercase tracking-tight">
-              SYSTEM_SMTP_DIAGNOSTICS
+              RESEND_EMAIL_DIAGNOSTICS
             </h2>
           </div>
           <p className="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-widest leading-relaxed">
@@ -694,26 +694,26 @@ const SMTPDiagnosticsPanel: React.FC = () => {
             <div className="space-y-4">
               {/* Host validation */}
               <DiagnosticField 
-                label="SMTP_HOST" 
-                value={healthLoading ? "SCANNING_HOST..." : (healthData?.smtpDetails?.host || "NOT_DEFINED")} 
-                status={healthLoading ? "PENDING" : (healthData?.smtpDetails?.host ? "VALID" : "MISSING")}
-                onCopy={() => copyToClipboard("SMTP_HOST")}
+                label="EMAIL_PROVIDER" 
+                value={healthLoading ? "..." : (healthData?.emailProvider || healthData?.smtpDetails?.host || "NOT_DEFINED")} 
+                status={healthLoading ? "PENDING" : ((healthData as { emailProvider?: string })?.emailProvider || healthData?.smtpDetails?.host ? "VALID" : "MISSING")}
+                onCopy={() => copyToClipboard("resend")}
               />
               
               {/* User Validation */}
               <DiagnosticField 
-                label="SMTP_USER" 
-                value={healthLoading ? "IDENTIFYING..." : (healthData?.smtpDetails?.user || "NOT_DEFINED")} 
+                label="RESEND_FROM" 
+                value={healthLoading ? "..." : ((healthData as { resendFrom?: string })?.resendFrom || healthData?.smtpDetails?.user || "NOT_DEFINED")} 
                 status={healthLoading ? "PENDING" : (healthData?.smtpDetails?.user ? "VALID" : "MISSING")}
-                onCopy={() => copyToClipboard("SMTP_USER")}
+                onCopy={() => copyToClipboard("RESEND_FROM")}
               />
 
               {/* Password Validation */}
               <DiagnosticField 
-                label="SMTP_PASS" 
-                value={healthLoading ? "VERIFYING_DECRYPT..." : (healthData?.smtpDetails?.passSet ? "•••••••••••••••• (Active)" : "PASSWORD_NOT_SET")} 
+                label="RESEND_API_KEY" 
+                value={healthLoading ? "..." : (healthData?.smtpDetails?.passSet ? "•••••••• (set on server)" : "NOT_SET")} 
                 status={healthLoading ? "PENDING" : (healthData?.smtpDetails?.passSet ? "VALID" : "MISSING")}
-                onCopy={() => copyToClipboard("SMTP_PASS")}
+                onCopy={() => copyToClipboard("RESEND_API_KEY")}
               />
 
               {/* Admin Target Email */}
@@ -734,14 +734,14 @@ const SMTPDiagnosticsPanel: React.FC = () => {
             }`}>
               <div className="flex items-center gap-2 mb-2 font-bold">
                 <AlertIcon size={14} />
-                <span>ENVIRONMENT STATUS: {healthData?.smtpConfigured ? "ROUTING_ONLINE" : "SMTP_NOT_CONFIGURED"}</span>
+                <span>ENVIRONMENT STATUS: {healthData?.smtpConfigured ? "RESEND_ONLINE" : "RESEND_NOT_CONFIGURED"}</span>
               </div>
               <p>
                 {healthData?.staticOnlyHosting
                   ? "CRITICAL: /api/health returned the website HTML, not JSON. You are on static hosting only — emails cannot send. Switch to Hostinger Node.js Web App with npm start, or set VITE_API_BASE_URL to a live API (see HOSTINGER_DEPLOY.md)."
                   : healthData?.smtpConfigured 
-                  ? "All required SMTP environment variables are detected on this container. You are ready to trigger live delivery tests." 
-                  : "SMTP credentials are empty. The application is falling back to server-only logging. Standard visitor submission emails cannot be delivered. Follow the setup directions below to add them."
+                  ? "Resend is configured on this server. You can run a live delivery test below." 
+                  : "RESEND_API_KEY is missing. Set it in Hostinger env vars (see EMAIL_SETUP.md). Form data still saves to Firestore."
                 }
               </p>
             </div>
@@ -792,7 +792,7 @@ const SMTPDiagnosticsPanel: React.FC = () => {
               </div>
               {!healthData?.smtpDetails?.user && (
                 <p className="text-[9px] text-red-400 font-mono uppercase tracking-widest">
-                  ⚠ Test blocked: SMTP environment configuration missing
+                  ⚠ Test blocked: RESEND_API_KEY not configured on server
                 </p>
               )}
             </form>
@@ -859,7 +859,7 @@ const SMTPDiagnosticsPanel: React.FC = () => {
       {/* Secrets Setup Step-by-Step Walkthrough Guide */}
       <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 space-y-6">
         <h3 className="text-sm font-manrope font-black text-white uppercase tracking-tight flex items-center gap-2">
-          <AlertIcon size={18} className="text-amber-500" /> HOW TO DEFINE SMTP ENVIRONMENT CONFIGURATIONS
+          <AlertIcon size={18} className="text-amber-500" /> RESEND SETUP (HOSTINGER ENV VARS)
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono text-xs text-slate-400 leading-relaxed">
@@ -876,10 +876,9 @@ const SMTPDiagnosticsPanel: React.FC = () => {
               Input the required keys precisely (Capitalization and structure matter):
             </p>
             <div className="bg-[#05070a]/80 p-2.5 rounded border border-white/5 space-y-1 text-[9px] text-blue-400 select-all">
-              <p>• SMTP_HOST</p>
-              <p>• SMTP_PORT</p>
-              <p>• SMTP_USER</p>
-              <p>• SMTP_PASS</p>
+              <p>• RESEND_API_KEY</p>
+              <p>• RESEND_FROM</p>
+              <p>• ADMIN_EMAIL</p>
               <p>• ADMIN_EMAIL</p>
             </div>
           </div>

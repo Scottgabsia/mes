@@ -31,18 +31,18 @@ After saving, click **Deploy** or **Redeploy**.
 
 ---
 
-## Environment variables (email via SMTP)
+## Environment variables (email via Resend)
 
 **hPanel → Websites → your Node.js app → Environment variables:**
 
 ```
 NODE_ENV=production
-SMTP_HOST=smtp.titan.email
-SMTP_PORT=465
-SMTP_USER=info@cryptorecoveryasset.com
-SMTP_PASS=your_titan_password_or_app_password
+RESEND_API_KEY=re_your_key_from_resend.com
+RESEND_FROM=Crypto Recovery <info@cryptorecoveryasset.com>
 ADMIN_EMAIL=info@cryptorecoveryasset.com
 ```
+
+Verify `cryptorecoveryasset.com` in Resend before using your domain in `RESEND_FROM`. See **EMAIL_SETUP.md**.
 
 Do **not** set `PORT` — Hostinger sets it automatically.
 

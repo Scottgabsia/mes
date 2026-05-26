@@ -200,7 +200,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
         if (error) {
           console.warn('Email API:', error);
         } else if (data && !data.emailSent) {
-          console.warn('Form submitted; admin email was not sent (SMTP not configured).');
+          console.warn('Form submitted; admin email was not sent (Resend/API not configured).');
         }
       } catch (err) {
         console.warn("Email API request failed:", err);
