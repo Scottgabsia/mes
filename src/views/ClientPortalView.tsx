@@ -23,7 +23,7 @@ import {
   Star,
   RefreshCw
 } from 'lucide-react';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { apiPost } from '../lib/api';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { CRYPTO_CURRENCIES } from '../constants';
@@ -65,7 +65,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     operatorAlias: '',
     phone: '',
     secureComms: '',
-    incidentVector: 'VECTOR_SELECT_...',
+    incidentVector: 'WALLET_RECOVERY',
     targetNetwork: 'BTC',
     customNetwork: '',
     transactionHash: '',
@@ -171,32 +171,29 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
         ...apiData 
       } = submissionData;
 
-      // 1. Save to Firestore
+      // 1. Save to Firestore (best effort — do not block confirmation page)
       try {
         await addDoc(collection(db, 'recovery_requests'), submissionData);
       } catch (fsError) {
-        handleFirestoreError(fsError, OperationType.CREATE, 'recovery_requests');
+        console.error('Firestore save failed:', fsError);
       }
 
-      // 2. Call server API for email notification
-      const { ok, data, error } = await apiPost<{ emailSent?: boolean }>(
+      // 2. Email notification (best effort)
+      const { data, error } = await apiPost<{ emailSent?: boolean }>(
         '/api/submit-recovery',
         { ...apiData, timestamp: new Date().toISOString() }
       );
 
       if (error) {
-        console.error('Email API:', error);
+        console.warn('Email API:', error);
       } else if (data && !data.emailSent) {
-        console.warn('Form saved; admin email was not sent (SMTP not configured on server).');
+        console.warn('Form submitted; admin email was not sent (SMTP not configured).');
       }
 
-      if (ok) {
-        onInitiateRecovery();
-      } else {
-        onInitiateRecovery();
-      }
+      onInitiateRecovery();
     } catch (error) {
       console.error('Error submitting form:', error);
+      alert('Something went wrong. Please try again or contact us directly at info@cryptorecoveryasset.com.');
     } finally {
       setIsSubmitting(false);
     }

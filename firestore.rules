@@ -1,43 +1,27 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Global helpers
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function incoming() {
-      return request.resource.data;
-    }
-
-    function existing() {
-      return resource.data;
-    }
-
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.email == 'contact@vr-astrovision.com' || 
+        request.auth.token.email == 'contact@vr-astrovision.com' ||
         request.auth.token.email == 'admin@forensic.io'
       );
     }
 
     match /recovery_requests/{requestId} {
-      allow read, write: if isAdmin();
-      
+      allow create: if true;
+      allow get: if true;
+      allow read, update, delete: if isAdmin();
+
       match /messages/{messageId} {
         allow read, write: if isAdmin();
       }
     }
-    
-    // Explicitly allow users to look up their own requests if they provide the ID
-    // (In this app, lookup is done by ID directly without auth, so we allow get)
-    // For list, we still restrict.
-    match /recovery_requests/{requestId} {
-      allow get: if true;
-      allow create: if true; // Allow anyone to submit a recovery request
-    }
-    
-    // Explicit deny for everything else
+
     match /{document=**} {
       allow read, write: if false;
     }
