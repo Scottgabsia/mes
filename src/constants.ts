@@ -1,5 +1,12 @@
 export const SITE_URL = "https://cryptorecoveryasset.com";
 
+/**
+ * Email API on Firebase (used when Hostinger serves static files only).
+ * After deploy: firebase deploy --only functions
+ */
+export const FIREBASE_API_URL =
+  "https://us-central1-mysterybritishsh-1748710084193.cloudfunctions.net/mes";
+
 /** Header/footer logo */
 export const LOGO_URL = "/logo.png?v=8";
 

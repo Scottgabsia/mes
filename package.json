@@ -14,7 +14,8 @@
     "start": "NODE_ENV=production node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "deploy:functions": "cd functions && npm install && cd .. && firebase deploy --only functions"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

@@ -1,7 +1,12 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(
-  /\/$/,
-  ""
-) ?? "";
+import { FIREBASE_API_URL } from "../constants";
+
+const envBase =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, "") ??
+  "";
+
+/** Production static hosting has no /api — use Firebase unless overridden */
+const API_BASE =
+  envBase || (import.meta.env.PROD ? FIREBASE_API_URL.replace(/\/$/, "") : "");
 
 export function apiUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
@@ -35,7 +40,7 @@ export async function apiPost<T = unknown>(
       ok: false,
       data: null,
       error:
-        "Email API is offline (site is static-only). Use Hostinger Node.js app with npm start, or set VITE_API_BASE_URL to your API server.",
+        "Email API is offline. Deploy Firebase functions or use Hostinger Node.js with npm start.",
     };
   }
 

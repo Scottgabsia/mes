@@ -4,11 +4,21 @@ const {
   getSmtpConfig,
   sendRecoveryEmails,
   sendSubscribeEmail,
-} = require("./lib/mail.js");
+} = require("./lib/mail.cjs");
 
 function createApiApp() {
   const app = express();
   app.use(express.json());
+
+  app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
+    next();
+  });
 
   app.get("/api/health", (req, res) => {
     const { SMTP_HOST, SMTP_USER, SMTP_PASS, ADMIN_EMAIL } = getSmtpConfig();
@@ -59,5 +69,7 @@ function createApiApp() {
   return app;
 }
 
-/** https://REGION-PROJECT.cloudfunctions.net/mes/api/health */
-exports.mes = onRequest({ cors: true, region: "us-central1" }, createApiApp());
+exports.mes = onRequest(
+  { cors: true, region: "us-central1", memory: "256MiB" },
+  createApiApp()
+);
