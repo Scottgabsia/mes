@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { LOGO_URL } from '../constants';
+import { OG_IMAGE_URL, SITE_URL } from '../constants';
 
 interface SEOProps {
   title?: string;
@@ -18,14 +18,14 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   keywords,
   ogType = 'website',
-  ogImage = LOGO_URL,
+  ogImage = OG_IMAGE_URL,
   twitterHandle = '@DAForensics'
 }) => {
   const siteTitle = 'Crypto Recovery Assets';
   const fullTitle = title ? `${title} | ${siteTitle}` : `${siteTitle} | Professional Crypto Recovery & Blockchain Analysis`;
   const defaultDescription = 'Global leader in professional forensic analysis for digital asset and cryptocurrency recovery. Licensed blockchain investigation services.';
   const metaDescription = description || defaultDescription;
-  const url = canonical || 'https://cryptorecoveryasset.com';
+  const url = canonical || SITE_URL;
   const siteOrigin = url.replace(/\/$/, '');
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${siteOrigin}${ogImage}`;
   const defaultKeywords = 'crypto recovery service, bitcoin recovery expert, cryptocurrency recovery tool, scammed crypto recovery, hire crypto recovery specialist, blockchain forensics';
@@ -44,6 +44,8 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:url" content={url} />
 
       {/* Twitter */}

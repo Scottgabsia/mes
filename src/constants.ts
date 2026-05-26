@@ -1,5 +1,10 @@
-/** Cache-bust when logo file changes */
+export const SITE_URL = "https://cryptorecoveryasset.com";
+
+/** Header/footer logo */
 export const LOGO_URL = "/logo.png?v=8";
+
+/** WhatsApp, Facebook, Twitter link previews — image with dark background */
+export const OG_IMAGE_URL = `${SITE_URL}/og-image.png?v=1`;
 
 export const CRYPTO_CURRENCIES = [
   "Bitcoin (BTC)",
