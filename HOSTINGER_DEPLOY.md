@@ -35,18 +35,20 @@ Hostinger started the app before a build finished. **Fix:** set Build command to
 
 ---
 
-## Environment variables (email via Resend)
+## Environment variables (email)
 
-**hPanel → Websites → your Node.js app → Environment variables:**
+**Titan SMTP (recommended):**
 
 ```
 NODE_ENV=production
-RESEND_API_KEY=re_your_key_from_resend.com
-RESEND_FROM=Crypto Recovery <info@cryptorecoveryasset.com>
+SMTP_HOST=smtp.titan.email
+SMTP_PORT=465
+SMTP_USER=info@cryptorecoveryasset.com
+SMTP_PASS=your_titan_app_password
 ADMIN_EMAIL=info@cryptorecoveryasset.com
 ```
 
-Verify `cryptorecoveryasset.com` in Resend before using your domain in `RESEND_FROM`. See **EMAIL_SETUP.md**.
+Or **Resend** — see **EMAIL_SETUP.md**. SMTP is used when both are set.
 
 Do **not** set `PORT` — Hostinger sets it automatically.
 

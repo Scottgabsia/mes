@@ -1,69 +1,51 @@
-# Email setup (Resend)
+# Email setup
 
-Form emails are sent through **[Resend](https://resend.com)** when your **Node API** is running (`npm start` on Hostinger).
+The Node server sends form emails when `/api/health` shows `"emailConfigured": true`.
 
-Firestore still saves every submission even if email fails.
-
----
-
-## 1. Create a Resend account
-
-1. Sign up at [resend.com](https://resend.com).
-2. **API Keys** → Create key → copy `re_...`.
+**SMTP (Titan) is used first** if `SMTP_HOST`, `SMTP_USER`, and `SMTP_PASS` are set.  
+Otherwise **Resend** is used if `RESEND_API_KEY` is set.
 
 ---
 
-## 2. Verify your domain (production)
-
-1. Resend → **Domains** → Add `cryptorecoveryasset.com`.
-2. Add the DNS records Resend shows (SPF/DKIM) in Hostinger DNS.
-3. Wait until status is **Verified**.
-
-Then set:
-
-```
-RESEND_FROM=Crypto Recovery <info@cryptorecoveryasset.com>
-```
-
----
-
-## 3. Environment variables
+## Option A — Titan SMTP (recommended for your inbox)
 
 **Hostinger → Node.js app → Environment variables:**
 
 ```
-NODE_ENV=production
-RESEND_API_KEY=re_your_key_here
+SMTP_HOST=smtp.titan.email
+SMTP_PORT=465
+SMTP_USER=info@cryptorecoveryasset.com
+SMTP_PASS=your_app_password
+ADMIN_EMAIL=info@cryptorecoveryasset.com
+```
+
+**Titan tips:**
+
+- If 2FA is on, create an **App Password** in Titan (Settings → Security) and use it as `SMTP_PASS`.
+- Remove `RESEND_API_KEY` if you only want SMTP (SMTP wins when both are set).
+
+**Test after redeploy:**
+
+1. `https://cryptorecoveryasset.com/api/health` → `"emailProvider":"smtp"`
+2. `https://cryptorecoveryasset.com/api/debug-email?to=info@cryptorecoveryasset.com`
+3. Check Titan inbox + spam for `info@cryptorecoveryasset.com`
+
+---
+
+## Option B — Resend
+
+```
+RESEND_API_KEY=re_...
 RESEND_FROM=Crypto Recovery <info@cryptorecoveryasset.com>
 ADMIN_EMAIL=info@cryptorecoveryasset.com
 ```
 
-Redeploy after saving.
-
-**Testing before domain verify:** use  
-`RESEND_FROM=Crypto Recovery <onboarding@resend.dev>`  
-(Resend only delivers test mail to the email on your Resend account.)
+Verify domain at resend.com. Used only when SMTP is not configured.
 
 ---
 
-## 4. Node app must be running
+## Logs
 
-Open: `https://cryptorecoveryasset.com/api/health`
-
-- **Good:** JSON with `"emailProvider":"resend"` and `"emailConfigured":true`
-- **Bad:** HTML or 404 → static hosting only; see `HOSTINGER_DEPLOY.md`
-
-Test send:  
-`https://cryptorecoveryasset.com/api/debug-email?to=info@cryptorecoveryasset.com`
-
----
-
-## 5. Static hosting only (no Node API)
-
-Either:
-
-- Fix Hostinger Node (recommended), **or**
-- Set **EmailJS** build vars (`VITE_EMAILJS_*`) — see `.env.example`, **or**
-- Deploy Firebase Functions (see repo `functions/`)
-
-Resend cannot run from the browser (API key must stay on the server).
+- `[SMTP] Ready — ...` → Titan SMTP active
+- `[Resend] Ready — ...` → Resend active (no SMTP vars)
+- `[Email] Not configured` → add env vars and restart

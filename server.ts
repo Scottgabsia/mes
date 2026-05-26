@@ -4,7 +4,9 @@ import path from "path";
 import dotenv from "dotenv";
 import {
   getEmailConfig,
-  isResendConfigured,
+  getHealthEmailPayload,
+  isEmailConfigured,
+  logEmailStartup,
   sendDebugEmail,
   sendRecoveryEmails,
   sendSubscribeEmail,
@@ -27,31 +29,14 @@ async function startServer() {
   app.set("trust proxy", 1);
   app.use(express.json());
 
-  const { RESEND_FROM, ADMIN_EMAIL } = getEmailConfig();
-
-  if (isResendConfigured()) {
-    console.log(`[Resend] Ready — from ${RESEND_FROM} → admin ${ADMIN_EMAIL}`);
-  } else {
-    console.warn(
-      "[Resend] RESEND_API_KEY not set — form emails will not send (Firestore still saves)."
-    );
-  }
+  const { ADMIN_EMAIL } = getEmailConfig();
+  logEmailStartup();
 
   app.get("/api/health", (_req, res) => {
-    const configured = isResendConfigured();
     res.json({
       status: "online",
       runtime: "node",
-      emailProvider: "resend",
-      emailConfigured: configured,
-      resendFrom: RESEND_FROM,
-      adminEmail: ADMIN_EMAIL,
-      smtpConfigured: configured,
-      smtpDetails: {
-        host: "resend.com",
-        user: RESEND_FROM,
-        passSet: configured,
-      },
+      ...getHealthEmailPayload(),
     });
   });
 
@@ -60,33 +45,33 @@ async function startServer() {
   });
 
   app.get("/api/debug-email", async (req, res) => {
-    if (!isResendConfigured()) {
+    if (!isEmailConfigured()) {
       return res.status(500).json({
         success: false,
         error:
-          "Resend not configured. Set RESEND_API_KEY and RESEND_FROM in environment variables.",
+          "Email not configured. Set SMTP_* (Titan) or RESEND_API_KEY in Hostinger env vars.",
       });
     }
 
     try {
-      const target =
-        (req.query.to as string) || ADMIN_EMAIL;
+      const target = (req.query.to as string) || ADMIN_EMAIL;
       const result = await sendDebugEmail(target);
       res.json({
         success: true,
-        messageId: result.id,
+        messageId: result.messageId ?? result.id,
         recipient: target,
+        provider: getHealthEmailPayload().emailProvider,
       });
     } catch (error) {
-      console.error("[Resend] debug-email failed:", error);
+      console.error("[Email] debug-email failed:", error);
       const errMsg = error instanceof Error ? error.message : String(error);
       res.status(200).json({
         success: false,
         error: errMsg,
         suggestions: [
-          "Verify RESEND_API_KEY at https://resend.com/api-keys",
-          "Use RESEND_FROM with a domain verified in Resend (or onboarding@resend.dev for tests)",
-          "Free tier only sends to your own email until domain is verified",
+          "Titan SMTP: use App Password as SMTP_PASS if 2FA is on",
+          "SMTP_HOST=smtp.titan.email SMTP_PORT=465 SMTP_USER=info@cryptorecoveryasset.com",
+          "Or remove SMTP_* and use RESEND_API_KEY instead",
         ],
       });
     }
@@ -99,7 +84,7 @@ async function startServer() {
     try {
       const { createdAt, ...safeData } = formData;
 
-      if (isResendConfigured()) {
+      if (isEmailConfigured()) {
         const result = await sendRecoveryEmails(safeData);
         res.status(200).json({
           success: true,
@@ -110,13 +95,13 @@ async function startServer() {
       } else {
         res.status(200).json({
           success: true,
-          message: "Data logged (Resend not configured).",
+          message: "Data logged (email not configured).",
           caseId: generateCaseId(),
           emailSent: false,
         });
       }
     } catch (error) {
-      console.error("[Resend] submit-recovery failed:", error);
+      console.error("[Email] submit-recovery failed:", error);
       res.status(200).json({
         success: true,
         message: "Data registered. Email notification failed.",
@@ -132,7 +117,7 @@ async function startServer() {
     console.log("NEW BLOG SUBSCRIPTION:", name, email);
 
     try {
-      if (isResendConfigured()) {
+      if (isEmailConfigured()) {
         await sendSubscribeEmail(name, email);
       }
       res.status(200).json({
@@ -140,7 +125,7 @@ async function startServer() {
         message: "Successfully subscribed to the intelligence stream.",
       });
     } catch (error) {
-      console.error("[Resend] subscribe failed:", error);
+      console.error("[Email] subscribe failed:", error);
       res.status(200).json({
         success: true,
         message: "Subscribed (notification email failed).",
@@ -165,10 +150,11 @@ async function startServer() {
       process.exit(1);
     }
 
+    const health = getHealthEmailPayload();
     console.log(`[PROD] Mode: production`);
     console.log(`[PROD] Port: ${PORT}`);
     console.log(`[PROD] Static root: ${distPath}`);
-    console.log(`[PROD] Resend configured: ${isResendConfigured()}`);
+    console.log(`[PROD] Email provider: ${health.emailProvider}`);
     console.log(`[PROD] Admin inbox: ${ADMIN_EMAIL}`);
 
     app.use(express.static(distPath, { index: false }));

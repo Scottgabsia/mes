@@ -1,3 +1,5 @@
+import nodemailer from "nodemailer";
+import type { Transporter } from "nodemailer";
 import { Resend } from "resend";
 
 export function cleanEnvVar(val: string | undefined): string {
@@ -13,6 +15,10 @@ export function cleanEnvVar(val: string | undefined): string {
 }
 
 export function getEmailConfig() {
+  const SMTP_HOST = cleanEnvVar(process.env.SMTP_HOST);
+  const SMTP_PORT = parseInt(cleanEnvVar(process.env.SMTP_PORT) || "465", 10);
+  const SMTP_USER = cleanEnvVar(process.env.SMTP_USER);
+  const SMTP_PASS = cleanEnvVar(process.env.SMTP_PASS);
   const RESEND_API_KEY = cleanEnvVar(process.env.RESEND_API_KEY);
   const RESEND_FROM =
     cleanEnvVar(process.env.RESEND_FROM) ||
@@ -20,68 +26,158 @@ export function getEmailConfig() {
   const ADMIN_EMAIL =
     cleanEnvVar(process.env.ADMIN_EMAIL) || "info@cryptorecoveryasset.com";
 
-  return { RESEND_API_KEY, RESEND_FROM, ADMIN_EMAIL };
+  return {
+    SMTP_HOST,
+    SMTP_PORT,
+    SMTP_USER,
+    SMTP_PASS,
+    RESEND_API_KEY,
+    RESEND_FROM,
+    ADMIN_EMAIL,
+  };
+}
+
+export function isSmtpConfigured(): boolean {
+  const { SMTP_HOST, SMTP_USER, SMTP_PASS } = getEmailConfig();
+  return !!(SMTP_HOST && SMTP_USER && SMTP_PASS);
 }
 
 export function isResendConfigured(): boolean {
   return !!getEmailConfig().RESEND_API_KEY;
 }
 
-function getClient(): Resend | null {
+/** SMTP (Titan) is preferred when both are set */
+export function getEmailProvider(): "smtp" | "resend" | null {
+  if (isSmtpConfigured()) return "smtp";
+  if (isResendConfigured()) return "resend";
+  return null;
+}
+
+export function isEmailConfigured(): boolean {
+  return getEmailProvider() !== null;
+}
+
+function getSmtpTransporter(): Transporter | null {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = getEmailConfig();
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
+
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    tls: { rejectUnauthorized: false },
+  });
+}
+
+function getResendClient(): Resend | null {
   const { RESEND_API_KEY } = getEmailConfig();
   if (!RESEND_API_KEY) return null;
   return new Resend(RESEND_API_KEY);
+}
+
+async function dispatchEmail(options: {
+  to: string | string[];
+  subject: string;
+  html: string;
+  replyTo?: string;
+}): Promise<{ id?: string; messageId?: string }> {
+  const provider = getEmailProvider();
+  const cfg = getEmailConfig();
+
+  if (provider === "smtp") {
+    const transporter = getSmtpTransporter();
+    if (!transporter) throw new Error("SMTP not configured");
+
+    const info = await transporter.sendMail({
+      from: `"Crypto Recovery" <${cfg.SMTP_USER}>`,
+      to: options.to,
+      replyTo: options.replyTo,
+      subject: options.subject,
+      html: options.html,
+    });
+    return { messageId: info.messageId };
+  }
+
+  if (provider === "resend") {
+    const client = getResendClient();
+    if (!client) throw new Error("Resend not configured");
+
+    const { data, error } = await client.emails.send({
+      from: cfg.RESEND_FROM,
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      replyTo: options.replyTo,
+    });
+    if (error) throw new Error(error.message);
+    return { id: data?.id };
+  }
+
+  throw new Error(
+    "No email provider configured. Set SMTP_* (Titan) or RESEND_API_KEY."
+  );
+}
+
+export function getHealthEmailPayload() {
+  const cfg = getEmailConfig();
+  const provider = getEmailProvider();
+  const configured = provider !== null;
+
+  return {
+    emailProvider: provider ?? "none",
+    emailConfigured: configured,
+    adminEmail: cfg.ADMIN_EMAIL,
+    resendFrom: cfg.RESEND_FROM,
+    smtpConfigured: configured,
+    smtpDetails: {
+      host: provider === "smtp" ? cfg.SMTP_HOST : provider === "resend" ? "resend.com" : "",
+      user: provider === "smtp" ? cfg.SMTP_USER : cfg.RESEND_FROM,
+      passSet:
+        provider === "smtp" ? !!cfg.SMTP_PASS : provider === "resend" ? !!cfg.RESEND_API_KEY : false,
+    },
+  };
+}
+
+export function logEmailStartup(): void {
+  const cfg = getEmailConfig();
+  const provider = getEmailProvider();
+
+  if (provider === "smtp") {
+    console.log(
+      `[SMTP] Ready — ${cfg.SMTP_USER} @ ${cfg.SMTP_HOST}:${cfg.SMTP_PORT} → admin ${cfg.ADMIN_EMAIL}`
+    );
+    const t = getSmtpTransporter();
+    t?.verify((err) => {
+      if (err) console.error("[SMTP] Verification failed:", err.message);
+      else console.log("[SMTP] Connection verified");
+    });
+  } else if (provider === "resend") {
+    console.log(`[Resend] Ready — ${cfg.RESEND_FROM} → admin ${cfg.ADMIN_EMAIL}`);
+  } else {
+    console.warn(
+      "[Email] Not configured — set SMTP_* (Titan) or RESEND_API_KEY. Firestore still saves."
+    );
+  }
 }
 
 export function generateCaseId(): string {
   return `DF-${Math.floor(1000 + Math.random() * 9000)}-${Buffer.from(Date.now().toString()).toString("base64").substring(0, 4).toUpperCase()}`;
 }
 
-async function sendEmail(options: {
-  to: string | string[];
-  subject: string;
-  html: string;
-  replyTo?: string;
-}): Promise<{ id: string | undefined }> {
-  const client = getClient();
-  const { RESEND_FROM, ADMIN_EMAIL } = getEmailConfig();
-
-  if (!client) {
-    throw new Error(
-      "Resend not configured. Set RESEND_API_KEY in environment variables."
-    );
-  }
-
-  const { data, error } = await client.emails.send({
-    from: RESEND_FROM,
-    to: options.to,
-    subject: options.subject,
-    html: options.html,
-    replyTo: options.replyTo,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return { id: data?.id };
-}
-
 export async function sendDebugEmail(to: string) {
-  const { RESEND_FROM, ADMIN_EMAIL } = getEmailConfig();
+  const { ADMIN_EMAIL } = getEmailConfig();
   const target = to || ADMIN_EMAIL;
+  const provider = getEmailProvider();
 
-  return sendEmail({
+  return dispatchEmail({
     to: target,
-    subject: `Resend test — ${new Date().toLocaleTimeString()}`,
+    subject: `${provider?.toUpperCase() ?? "EMAIL"} test — ${new Date().toLocaleTimeString()}`,
     html: `
-      <div style="font-family: sans-serif; padding: 30px; border-radius: 12px; background: #0f172a; color: #f8fafc; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #3b82f6;">Email test OK</h2>
-        <p>If you received this, Resend is configured correctly.</p>
-        <p style="font-family: monospace; font-size: 12px; color: #94a3b8;">
-          From: ${RESEND_FROM}<br/>
-          To: ${target}
-        </p>
+      <div style="font-family: sans-serif; padding: 24px;">
+        <h2>Email test OK</h2>
+        <p>Provider: <strong>${provider}</strong></p>
+        <p>If you see this in your Titan inbox, outbound mail is working.</p>
       </div>
     `,
   });
@@ -99,7 +195,7 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
     ? new Date(String(safeData.timestamp)).toLocaleString()
     : new Date().toLocaleString();
 
-  await sendEmail({
+  await dispatchEmail({
     to: ADMIN_EMAIL,
     replyTo: clientEmail || undefined,
     subject: `[${formSource}] New Recovery Inquiry — ${generatedCaseId}`,
@@ -127,13 +223,13 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
   });
 
   if (clientEmail) {
-    await sendEmail({
+    await dispatchEmail({
       to: clientEmail,
       subject: `Intake confirmed: ${generatedCaseId}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <p>Hello <strong>${clientName}</strong>,</p>
-          <p>Your case <strong>${generatedCaseId}</strong> was received. Our team will review it shortly.</p>
+          <p>Your case <strong>${generatedCaseId}</strong> was received.</p>
           <p><a href="https://cryptorecoveryasset.com/case-lookup?case=${generatedCaseId}">Check case status</a></p>
         </div>
       `,
@@ -146,7 +242,7 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
 export async function sendSubscribeEmail(name: string, email: string) {
   const { ADMIN_EMAIL } = getEmailConfig();
 
-  await sendEmail({
+  await dispatchEmail({
     to: ADMIN_EMAIL,
     subject: `Newsletter: ${name}`,
     html: `
