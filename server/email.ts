@@ -347,8 +347,8 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
                   <tr>
                     <td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;padding:18px 26px;">
                       <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#94a3b8;font-size:11px;line-height:1.45;text-align:center;">
-                        Private & Confidential • If you did not submit this request, you can ignore this email.<br/>
-                        © ${new Date().getFullYear()} Crypto Recovery Asset
+                        © Crypto Recovery Asset All rights reserved.<br/>
+                        Private & Confidential • Forensic Intelligence Services
                       </div>
                     </td>
                   </tr>
