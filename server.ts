@@ -11,7 +11,7 @@ const isProduction =
 dotenv.config({ path: ".env" });
 dotenv.config({ path: ".env.local", override: true });
 
-const distPath = path.join(process.cwd(), "dist");
+const staticRoot = path.join(process.cwd(), "dist", "browser");
 
 async function startServer() {
   const app = express();
@@ -387,7 +387,7 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const indexPath = path.join(distPath, "index.html");
+    const indexPath = path.join(staticRoot, "index.html");
 
     if (!fs.existsSync(indexPath)) {
       console.error(
@@ -398,11 +398,11 @@ async function startServer() {
 
     console.log(`[PROD] Mode: production`);
     console.log(`[PROD] Port: ${PORT}`);
-    console.log(`[PROD] Static root: ${distPath}`);
+    console.log(`[PROD] Static root: ${staticRoot}`);
     console.log(`[PROD] SMTP configured: ${!!(SMTP_HOST && SMTP_USER && SMTP_PASS)}`);
     console.log(`[PROD] Admin inbox: ${ADMIN_EMAIL}`);
     
-    app.use(express.static(distPath, { index: false }));
+    app.use(express.static(staticRoot, { index: false }));
 
     app.get("/", (_req, res) => {
       res.sendFile(indexPath);
