@@ -20,14 +20,18 @@ If `https://cryptorecoveryasset.com/api/health` is **not** JSON (`{"status":"onl
 | Framework | **Other** |
 | Node.js version | **20** |
 | Install command | `npm ci` or `npm install` |
-| Build command | `npm run build` |
-| Start command | `npm start` |
+| Build command | `npm install && npm run build` |
+| Start command | `npm start` (uses `app.cjs`; builds automatically if `dist/` is missing) |
 | **Output directory** | **leave empty** (do not use `dist` for static-only) |
 | **Entry file** | **`app.cjs`** |
 
 **Domain:** In the Node.js app → **Domains**, attach `cryptorecoveryasset.com` (and `www` if used). Remove or disable any **other** website on the same domain (old static upload / “Website Builder”).
 
 After saving, click **Deploy** or **Redeploy**.
+
+### Log: `dist/server.cjs not found`
+
+Hostinger started the app before a build finished. **Fix:** set Build command to `npm install && npm run build`, Entry file to `app.cjs`, pull latest GitHub (auto-build on start). Then **Redeploy**.
 
 ---
 
