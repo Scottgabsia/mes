@@ -7,8 +7,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     build: {
-      // dist/browser matches Hostinger Angular preset output layout
-      outDir: 'dist/browser',
+      outDir: 'dist',
       emptyOutDir: true,
     },
     plugins: [react(), tailwindcss()],

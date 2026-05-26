@@ -1,9 +1,8 @@
 {
-  "framework": "angular",
+  "framework": "express",
   "nodeVersion": "20",
   "buildCommand": "npm ci && npm run build",
   "startCommand": "npm start",
   "entryFile": "app.cjs",
-  "outputDirectory": "dist/browser",
-  "note": "React+Vite app using Angular-style dist/browser. Entry app.cjs runs Express (API + SPA). Override ng build with npm run build in hPanel if needed."
+  "note": "Do NOT set Output directory to dist for static-only hosting. This app serves dist via Express (npm start)."
 }

@@ -4,32 +4,26 @@
 
 If `https://cryptorecoveryasset.com/api/health` is **not** JSON (`{"status":"online","runtime":"node",...}`), the domain is **not** hitting the Node process. Common causes:
 
-1. **Entry file** missing or wrong → Hostinger serves **only** the output folder (`dist/browser`) with no Node API.
-2. **Build command** is `ng build` → build fails or wrong output (this repo uses `npm run build`).
-3. A **separate static website** is still attached to the domain.
+1. **Output directory** set to `dist` → Hostinger serves static files only; the API never runs.
+2. A **separate static website** is still attached to the domain.
+3. **Entry file** wrong (must be `app.cjs` at repo root, not `dist/server.cjs` alone).
 4. Node app not **redeployed** after env or config changes.
 
 ---
 
-## Hostinger hPanel — Angular framework preset (this repo)
-
-This site is **React + Vite + Express**, not Angular CLI. Using the **Angular** preset in hPanel is fine — use these **exact** overrides (Hostinger may pre-fill `ng build` and `dist/.../browser`; change them):
+## Hostinger hPanel — Node.js Web App (correct settings)
 
 | Setting | Value |
 |---------|--------|
 | Type | **Websites** → **Node.js Apps** → Import from GitHub |
 | Repository | `Scottgabsia/mes` |
-| Framework | **Angular** (preset) |
+| Framework | **Other** |
 | Node.js version | **20** |
 | Install command | `npm ci` or `npm install` |
-| **Build command** | **`npm run build`** — not `ng build` |
-| **Start command** | **`npm start`** |
-| **Output directory** | **`dist/browser`** |
-| **Entry file** | **`app.cjs`** (repo root) |
-
-If build logs show `ng: command not found`, the build command is still set to Angular CLI — switch it to `npm run build` and redeploy.
-
-**Better preset (optional):** **Vite** or **Express** with the same build/start/entry values above.
+| Build command | `npm run build` |
+| Start command | `npm start` |
+| **Output directory** | **leave empty** (do not use `dist` for static-only) |
+| **Entry file** | **`app.cjs`** |
 
 **Domain:** In the Node.js app → **Domains**, attach `cryptorecoveryasset.com` (and `www` if used). Remove or disable any **other** website on the same domain (old static upload / “Website Builder”).
 
