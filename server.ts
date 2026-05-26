@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 import {
+  buildClientCaseEmailHtml,
   getEmailConfig,
   getHealthEmailPayload,
   isEmailConfigured,
@@ -42,6 +43,12 @@ async function startServer() {
 
   app.get("/health", (_req, res) => {
     res.redirect(302, "/api/health");
+  });
+
+  /** Open in browser to verify email links work outside Titan/Gmail */
+  app.get("/api/preview-case-email", (_req, res) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(buildClientCaseEmailHtml("Preview User", "DF-0000-PREVIEW"));
   });
 
   app.get("/api/debug-email", async (req, res) => {

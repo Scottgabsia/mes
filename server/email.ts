@@ -1,9 +1,17 @@
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Resend } from "resend";
+import {
+  buildClientCaseEmailHtml,
+  buildClientCaseEmailText,
+} from "./clientCaseEmail";
 
-const CASE_LOOKUP_URL = "https://cryptorecoveryasset.com/case-lookup";
-const WHATSAPP_URL = "https://wa.me/message/FKM22PP45SVFO1";
+export {
+  buildClientCaseEmailHtml,
+  buildClientCaseEmailText,
+  CASE_LOOKUP_URL,
+  WHATSAPP_URL,
+} from "./clientCaseEmail";
 
 export function cleanEnvVar(val: string | undefined): string {
   if (!val) return "";
@@ -97,6 +105,7 @@ async function dispatchEmail(options: {
   to: string | string[];
   subject: string;
   html: string;
+  text?: string;
   replyTo?: string;
 }): Promise<{ id?: string; messageId?: string }> {
   const provider = getEmailProvider();
@@ -112,6 +121,7 @@ async function dispatchEmail(options: {
       replyTo: options.replyTo,
       subject: options.subject,
       html: options.html,
+      text: options.text,
     });
     return { messageId: info.messageId };
   }
@@ -125,6 +135,7 @@ async function dispatchEmail(options: {
       to: options.to,
       subject: options.subject,
       html: options.html,
+      text: options.text,
       replyTo: options.replyTo,
     });
     if (error) throw new Error(error.message);
@@ -203,17 +214,13 @@ export async function sendDebugEmail(to: string) {
   const { ADMIN_EMAIL } = getEmailConfig();
   const target = to || ADMIN_EMAIL;
   const provider = getEmailProvider();
+  const caseId = generateCaseId();
 
   return dispatchEmail({
     to: target,
-    subject: `${provider?.toUpperCase() ?? "EMAIL"} test — ${new Date().toLocaleTimeString()}`,
-    html: `
-      <div style="font-family: sans-serif; padding: 24px;">
-        <h2>Email test OK</h2>
-        <p>Provider: <strong>${provider}</strong></p>
-        <p>If you see this in your Titan inbox, outbound mail is working.</p>
-      </div>
-    `,
+    subject: `Case email test — ${caseId}`,
+    html: buildClientCaseEmailHtml("Test User", caseId),
+    text: buildClientCaseEmailText("Test User", caseId),
   });
 }
 
@@ -260,102 +267,8 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
     await dispatchEmail({
       to: clientEmail,
       subject: `Case received — ${generatedCaseId}`,
-      html: `
-        <div style="margin:0;padding:0;background:#f1f5f9;">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;background:#f1f5f9;padding:0;margin:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-            <tr>
-              <td align="center" style="padding:28px 16px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:600px;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                  <tr>
-                    <td style="background:#0b1220;border-radius:16px 16px 0 0;padding:26px 26px 18px 26px;">
-                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#e2e8f0;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;">
-                        Crypto Recovery Asset
-                      </div>
-                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#ffffff;font-size:22px;font-weight:700;line-height:1.25;margin-top:10px;">
-                        We received your case
-                      </div>
-                      <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#93c5fd;font-size:13px;margin-top:10px;">
-                        Case ID: <strong style="color:#bfdbfe;">${generatedCaseId}</strong>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td style="background:#ffffff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;padding:26px;">
-                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#0f172a;font-size:15px;line-height:1.6;">
-                        <p style="margin:0 0 12px 0;">Hello <strong>${clientName}</strong>,</p>
-                        <p style="margin:0 0 12px 0;">
-                          Your request has been securely registered in our recovery queue. Our team will review the details and contact you through the email you provided.
-                        </p>
-                        <p style="margin:0 0 18px 0;color:#475569;">
-                          Keep this Case ID for reference: <span style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${generatedCaseId}</span>
-                        </p>
-                      </div>
-
-                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:10px;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                        <tr>
-                          <td align="center" style="padding:0 0 12px 0;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse:separate;">
-                              <tr>
-                                <td align="center" bgcolor="#2563eb" style="border-radius:12px;">
-                                  <a href="${CASE_LOOKUP_URL}" target="_blank" rel="noopener noreferrer"
-                                     style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:18px;font-weight:bold;color:#ffffff;text-decoration:none;display:inline-block;padding:16px 24px;">
-                                    Check Case Status
-                                  </a>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td align="center" style="padding:0;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse:separate;">
-                              <tr>
-                                <td align="center" bgcolor="#16a34a" style="border-radius:12px;">
-                                  <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer"
-                                     style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:18px;font-weight:bold;color:#ffffff;text-decoration:none;display:inline-block;padding:16px 24px;">
-                                    Chat with Support on WhatsApp
-                                  </a>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-
-                      <div style="font-family:Arial,Helvetica,sans-serif;color:#64748b;font-size:12px;line-height:1.5;text-align:center;margin-top:12px;">
-                        Case portal: <a href="${CASE_LOOKUP_URL}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:underline;">${CASE_LOOKUP_URL}</a><br/>
-                        WhatsApp: <a href="${WHATSAPP_URL}" target="_blank" rel="noopener noreferrer" style="color:#16a34a;text-decoration:underline;">${WHATSAPP_URL}</a>
-                      </div>
-
-                      <div style="margin-top:18px;padding:16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
-                        <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#0f172a;font-size:13px;font-weight:700;margin:0 0 10px 0;">
-                          Next steps in your recovery
-                        </div>
-                        <ul style="margin:0;padding:0 0 0 18px;font-family:Inter,Segoe UI,Arial,sans-serif;color:#334155;font-size:13px;line-height:1.6;">
-                          <li style="margin:0 0 6px 0;">We validate your submission and assign an analyst to your case.</li>
-                          <li style="margin:0 0 6px 0;">We trace asset movement and identify potential exchange/off-ramp touchpoints.</li>
-                          <li style="margin:0 0 6px 0;">If required, we prepare evidence packages for compliance/KYC requests.</li>
-                          <li style="margin:0;">You’ll receive updates via email as milestones are reached.</li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;padding:18px 26px;">
-                      <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#94a3b8;font-size:11px;line-height:1.45;text-align:center;">
-                        © Crypto Recovery Asset All rights reserved.<br/>
-                        Private & Confidential • Forensic Intelligence Services
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </div>
-      `,
+      html: buildClientCaseEmailHtml(clientName, generatedCaseId),
+      text: buildClientCaseEmailText(clientName, generatedCaseId),
     });
   }
 
