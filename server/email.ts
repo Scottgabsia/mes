@@ -263,10 +263,10 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
       subject: `Case received — ${generatedCaseId}`,
       html: `
         <div style="margin:0;padding:0;background:#f1f5f9;">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;background:#f1f5f9;padding:0;margin:0;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;background:#f1f5f9;padding:0;margin:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
             <tr>
               <td align="center" style="padding:28px 16px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;border-collapse:collapse;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:600px;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;">
                   <tr>
                     <td style="background:#0b1220;border-radius:16px 16px 0 0;padding:26px 26px 18px 26px;">
                       <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#e2e8f0;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;">
@@ -293,22 +293,49 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
                         </p>
                       </div>
 
-                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:6px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:10px;mso-table-lspace:0pt;mso-table-rspace:0pt;">
                         <tr>
                           <td align="center" style="padding:0 0 12px 0;">
-                            <a href="${caseUrl}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:700;font-size:14px;padding:14px 18px;border-radius:12px;width:100%;max-width:320px;text-align:center;">
-                              Check Case Status
-                            </a>
+                            <!-- bulletproof button -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                              <tr>
+                                <td bgcolor="#2563eb" style="border-radius:12px;">
+                                  <a href="${caseUrl}" target="_blank" rel="noopener noreferrer"
+                                     style="display:inline-block;font-family:Inter,Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;line-height:16px;text-decoration:none;color:#ffffff;padding:14px 22px;border-radius:12px;">
+                                    Check Case Status
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
                           </td>
                         </tr>
                         <tr>
                           <td align="center" style="padding:0;">
-                            <a href="${waUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:700;font-size:14px;padding:14px 18px;border-radius:12px;width:100%;max-width:320px;text-align:center;">
-                              Chat with Support on WhatsApp
-                            </a>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                              <tr>
+                                <td bgcolor="#16a34a" style="border-radius:12px;">
+                                  <a href="${waUrl}" target="_blank" rel="noopener noreferrer"
+                                     style="display:inline-block;font-family:Inter,Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;line-height:16px;text-decoration:none;color:#ffffff;padding:14px 22px;border-radius:12px;">
+                                    Chat with Support on WhatsApp
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
                           </td>
                         </tr>
                       </table>
+
+                      <div style="margin-top:18px;padding:16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+                        <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#0f172a;font-size:13px;font-weight:700;margin:0 0 10px 0;">
+                          Next steps in your recovery
+                        </div>
+                        <ul style="margin:0;padding:0 0 0 18px;font-family:Inter,Segoe UI,Arial,sans-serif;color:#334155;font-size:13px;line-height:1.6;">
+                          <li style="margin:0 0 6px 0;">We validate your submission and assign an analyst to your case.</li>
+                          <li style="margin:0 0 6px 0;">We trace asset movement and identify potential exchange/off‑ramp touchpoints.</li>
+                          <li style="margin:0 0 6px 0;">If required, we prepare evidence packages for compliance/KYC requests.</li>
+                          <li style="margin:0;">You’ll receive updates via email as milestones are reached.</li>
+                        </ul>
+                      </div>
 
                       <div style="font-family:Inter,Segoe UI,Arial,sans-serif;color:#64748b;font-size:12px;line-height:1.5;margin-top:18px;">
                         If the buttons don’t work, copy and paste this link into your browser:<br/>
