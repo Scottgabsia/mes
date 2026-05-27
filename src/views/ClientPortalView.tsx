@@ -22,10 +22,8 @@ import {
   Star,
   RefreshCw
 } from 'lucide-react';
-import { db } from '../lib/firebase';
-import { apiPost } from '../lib/api';
-import { isEmailJsConfigured, sendIntakeEmailViaEmailJs } from '../lib/emailjs';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
+import { submitRecoveryCase } from '../lib/submitRecoveryCase';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReviewsSection } from '../components/ReviewsSection';
@@ -194,43 +192,11 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     };
 
     try {
-      const { 
-        createdAt,
-        ...apiData 
-      } = submissionData;
-
-      // 1. Save to Firestore (best effort — do not block confirmation page)
-      try {
-        await addDoc(collection(db, 'recovery_requests'), submissionData);
-      } catch (fsError) {
-        console.error('Firestore save failed:', fsError);
-      }
-
-      // 2. Email notification (best effort)
-      const payload = { ...apiData, timestamp: new Date().toISOString() };
-
-      // Prefer EmailJS on static hosting (works without a server)
-      if (isEmailJsConfigured()) {
-        try {
-          await sendIntakeEmailViaEmailJs(payload);
-        } catch (err) {
-          console.warn("EmailJS send failed:", err);
-        }
-      }
-
-      // Keep API attempt as backup when a server exists
-      try {
-        const { data, error } = await apiPost<{ emailSent?: boolean }>(
-          '/api/submit-recovery',
-          payload
+      const result = await submitRecoveryCase(submissionData);
+      if (!result.serverSaved && !result.emailSent) {
+        console.warn(
+          'Intake saved with limited delivery — ensure Node hosting is active.'
         );
-        if (error) {
-          console.warn('Email API:', error);
-        } else if (data && !data.emailSent) {
-          console.warn('Form submitted; admin email was not sent (Resend/API not configured).');
-        }
-      } catch (err) {
-        console.warn("Email API request failed:", err);
       }
 
       onInitiateRecovery();

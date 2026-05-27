@@ -17,4 +17,19 @@ if (missing.length || missingRoot.length) {
   process.exit(1);
 }
 
+const serverBundle = fs.readFileSync(path.join(dist, "server.cjs"), "utf8");
+const requiredRoutes = [
+  "/api/submit-recovery",
+  "/api/case-lookup",
+  "/api/case/",
+  "/api/admin/cases",
+  "keyphrase",
+];
+const missingRoutes = requiredRoutes.filter((r) => !serverBundle.includes(r));
+
+if (missingRoutes.length) {
+  console.error("[build] Server bundle missing routes:", missingRoutes.join(", "));
+  process.exit(1);
+}
+
 console.log("[build] OK:", [...rootFiles, ...required.map((f) => `dist/${f}`)].join(", "));

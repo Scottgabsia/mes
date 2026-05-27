@@ -26,7 +26,9 @@ import {
   appendRecoveryCase,
   caseMatchesEmail,
   findRecoveryCaseByEmail,
+  getCaseStoreDiagnostics,
   getRecoveryCaseById,
+  initCaseStore,
   listRecoveryCases,
   markNotificationsRead,
   submitCaseKeyphrase,
@@ -53,12 +55,28 @@ async function startServer() {
 
   const { ADMIN_EMAIL } = getEmailConfig();
   logEmailStartup();
+  initCaseStore();
+  const caseStore = getCaseStoreDiagnostics();
+  console.log(
+    `[CaseStore] ${caseStore.caseCount} case(s) at ${caseStore.casesFile} (writable: ${caseStore.writable})`
+  );
 
   app.get("/api/health", (_req, res) => {
     res.json({
       status: "online",
       runtime: "node",
       ...getHealthEmailPayload(),
+      caseStore: getCaseStoreDiagnostics(),
+      platform: {
+        intakeSubmit: true,
+        caseLookup: true,
+        clientMessaging: true,
+        clientKeyphrase: true,
+        adminCases: true,
+        adminMessaging: true,
+        adminMilestones: true,
+        keyphraseAdminEmail: isEmailConfigured(),
+      },
     });
   });
 
@@ -109,51 +127,46 @@ async function startServer() {
     const formData = req.body;
     console.log("NEW RECOVERY REQUEST:", JSON.stringify(formData, null, 2));
 
+    const { createdAt, ...safeData } = formData;
+    const caseId = generateCaseId();
+    const createdAtIso =
+      typeof createdAt === "string"
+        ? createdAt
+        : new Date().toISOString();
+
     try {
-      const { createdAt, ...safeData } = formData;
-      let caseId = generateCaseId();
-      let emailSent = false;
-
-      if (isEmailConfigured()) {
-        const result = await sendRecoveryEmails(safeData);
-        caseId = result.caseId;
-        emailSent = true;
-      }
-
       appendRecoveryCase({
         ...safeData,
         caseId,
-        createdAt: createdAt || new Date().toISOString(),
+        createdAt: createdAtIso,
         status: safeData.status || "PENDING",
       });
-
-      res.status(200).json({
-        success: true,
-        message: "Data securely processed.",
-        caseId,
-        emailSent,
-      });
-    } catch (error) {
-      console.error("[Email] submit-recovery failed:", error);
-      const caseId = generateCaseId();
-      try {
-        appendRecoveryCase({
-          ...(req.body || {}),
-          caseId,
-          createdAt: new Date().toISOString(),
-          status: "PENDING",
-        });
-      } catch (storeErr) {
-        console.error("[CaseStore] backup save failed:", storeErr);
-      }
-      res.status(200).json({
-        success: true,
-        message: "Data registered. Email notification failed.",
-        caseId,
-        emailSent: false,
-        error: error instanceof Error ? error.message : String(error),
+    } catch (storeErr) {
+      console.error("[CaseStore] submit-recovery save failed:", storeErr);
+      return res.status(500).json({
+        success: false,
+        error: "Could not save case. Check server data directory permissions.",
       });
     }
+
+    let emailSent = false;
+    if (isEmailConfigured()) {
+      try {
+        await sendRecoveryEmails(safeData, caseId);
+        emailSent = true;
+      } catch (error) {
+        console.error("[Email] submit-recovery notify failed:", error);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: emailSent
+        ? "Data securely processed."
+        : "Case saved. Email notification was not sent.",
+      caseId,
+      emailSent,
+    });
   });
 
   function toPublicCase(found: StoredCase) {

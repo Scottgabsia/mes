@@ -240,9 +240,12 @@ export async function sendDebugEmail(to: string) {
   });
 }
 
-export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
+export async function sendRecoveryEmails(
+  safeData: Record<string, unknown>,
+  existingCaseId?: string
+) {
   const { ADMIN_EMAIL } = getEmailConfig();
-  const generatedCaseId = generateCaseId();
+  const generatedCaseId = existingCaseId || generateCaseId();
   const clientEmail = String(safeData.secureComms ?? safeData.email ?? "");
   const clientName = String(
     safeData.operatorAlias ?? safeData.name ?? "Valued Client"

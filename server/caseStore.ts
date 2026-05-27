@@ -104,6 +104,42 @@ function resolveDataDir(): string {
 const DATA_DIR = resolveDataDir();
 const CASES_FILE = path.join(DATA_DIR, "recovery-cases.json");
 
+export function getCaseStorePath(): string {
+  return CASES_FILE;
+}
+
+export function initCaseStore(): void {
+  ensureStore();
+  try {
+    fs.accessSync(DATA_DIR, fs.constants.W_OK);
+  } catch {
+    console.warn(
+      `[CaseStore] Directory may not be writable: ${DATA_DIR}. Set CASE_DATA_DIR to a persistent path on Hostinger.`
+    );
+  }
+}
+
+export function getCaseStoreDiagnostics(): {
+  dataDir: string;
+  casesFile: string;
+  caseCount: number;
+  writable: boolean;
+} {
+  const store = ensureStore();
+  let writable = true;
+  try {
+    fs.accessSync(DATA_DIR, fs.constants.W_OK);
+  } catch {
+    writable = false;
+  }
+  return {
+    dataDir: DATA_DIR,
+    casesFile: CASES_FILE,
+    caseCount: store.cases.length,
+    writable,
+  };
+}
+
 function ensureStore(): { cases: StoredCase[] } {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });

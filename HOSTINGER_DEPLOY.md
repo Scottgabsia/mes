@@ -56,16 +56,34 @@ Redeploy after changing env vars.
 
 ---
 
+## Persistent case data (important)
+
+All client cases, messages, milestones, and keyphrases are stored in **`recovery-cases.json`** on the server.
+
+Set a persistent folder so redeploys do not wipe cases:
+
+```env
+CASE_DATA_DIR=/home/YOUR_USER/domains/cryptorecoveryasset.com/data
+```
+
+Create the `data` folder in Hostinger File Manager. After deploy, `/api/health` should show `"caseStore": { "writable": true }`.
+
+Full feature checklist: **`docs/PRODUCTION_CHECKLIST.md`**
+
 ## Verify after deploy
 
 1. `https://cryptorecoveryasset.com/api/health`  
-   - **Good:** `{"status":"online","runtime":"node","smtpConfigured":true,...}`  
+   - **Good:** `{"status":"online","runtime":"node","smtpConfigured":true,"caseStore":{"writable":true},...}`  
    - **Bad:** HTML or Hostinger 404 → domain still on static hosting; fix table above
 
 2. Test email:  
    `https://cryptorecoveryasset.com/api/debug-email?to=info@cryptorecoveryasset.com`
 
 3. Submit the intake form; check **info@cryptorecoveryasset.com** (and spam).
+
+4. Admin: `/admin/login` → cases list → messaging + milestones on a test case.
+
+5. Client: case lookup by email → messages + keyphrase (when status is ANALYSIS).
 
 ---
 

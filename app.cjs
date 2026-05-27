@@ -40,4 +40,14 @@ function ensureBuild() {
 }
 
 ensureBuild();
+
+const dataDir = process.env.CASE_DATA_DIR
+  ? path.resolve(process.env.CASE_DATA_DIR)
+  : path.join(root, "data");
+try {
+  fs.mkdirSync(dataDir, { recursive: true });
+} catch (err) {
+  console.warn("[app] Could not create data directory:", dataDir, err.message);
+}
+
 require(serverPath);

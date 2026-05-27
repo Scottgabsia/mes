@@ -15,10 +15,8 @@ import { ProgressBar, ForensicAgent } from '../components/Common';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { ReviewsSection } from '../components/ReviewsSection';
 import { SEO } from '../components/SEO';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { apiPost } from '../lib/api';
-import { isEmailJsConfigured, sendIntakeEmailViaEmailJs } from '../lib/emailjs';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
+import { submitRecoveryCase } from '../lib/submitRecoveryCase';
 
 interface HomeViewProps {
   onNavigate: (view: any) => void;
@@ -131,36 +129,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       service: formData.service
     };
 
-    // 1. Save to Firestore
-    try {
-      await addDoc(collection(db, 'recovery_requests'), submissionData);
-    } catch (fsError) {
-      console.error("Firestore submission error:", fsError);
-    }
-
-    const { 
-      createdAt,
-      ...apiData 
-    } = submissionData;
-
-    try {
-      const payload = { ...apiData, timestamp: new Date().toISOString() };
-
-      if (isEmailJsConfigured()) {
-        try {
-          await sendIntakeEmailViaEmailJs(payload);
-        } catch (err) {
-          console.warn("EmailJS send failed:", err);
-        }
-      }
-
-      const { error } = await apiPost('/api/submit-recovery', payload);
-      if (error) console.error('Email API:', error);
-    } catch (error) {
-      console.error("Email API error:", error);
-    }
-
-    // Always navigate to confirmation after submit
+    await submitRecoveryCase(submissionData);
     onNavigate('recoveryConfirmation');
   };
 
