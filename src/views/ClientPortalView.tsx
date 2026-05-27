@@ -1,7 +1,6 @@
 import React from 'react';
 import { 
   ShieldCheck, 
-  Search, 
   Lock, 
   ChevronDown, 
   Rocket, 
@@ -69,7 +68,6 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     incidentVector: 'WALLET_RECOVERY',
     targetNetwork: 'BTC',
     customNetwork: '',
-    transactionHash: '',
     caseNarrative: ''
   });
   const [isCustomNetwork, setIsCustomNetwork] = React.useState(false);
@@ -160,6 +158,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       ...formData,
       secureComms: normalizedEmail,
       targetNetwork: isCustomNetwork ? formData.customNetwork : formData.targetNetwork,
+      transactionHash: 'NOT_PROVIDED',
       estimatedValue: typeof assetValue === 'number' ? assetValue : 0,
       createdAt: serverTimestamp(),
       status: 'PENDING',
@@ -221,8 +220,9 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       setAssetValue('');
       return;
     }
-    // Remove leading zeros
-    const sanitized = val.replace(/^0+/, '');
+    // Keep numeric characters only and normalize
+    const cleaned = val.replace(/[^\d]/g, '');
+    const sanitized = cleaned.replace(/^0+/, '');
     const num = parseInt(sanitized || '0');
     if (!isNaN(num)) {
       setAssetValue(Math.min(100000000, num)); // Cap at 100M for stability
@@ -458,31 +458,6 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                 </div>
               </div>
  
-              {/* Transaction Hash */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="font-mono text-[11px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1 h-3 bg-blue-500/50"></span> TRANSACTION_HASH
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_10px_#60a5fa]"></div>
-                    <span className="text-[9px] font-bold text-blue-400 tracking-wider uppercase">VALIDATION_LINK_ACTIVE</span>
-                  </div>
-                </div>
-                <div className="relative">
-                  <input 
-                    required
-                    name="transactionHash"
-                    value={formData.transactionHash}
-                    onChange={handleInputChange}
-                    type="text"
-                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-4 rounded-xl font-mono pr-12 focus:border-blue-500/50 outline-none transition-all placeholder:text-white/10"
-                    placeholder="0x... [ENTER_TXID_HEX]"
-                  />
-                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-500/50 w-5 h-5" />
-                </div>
-              </div>
- 
               {/* Asset Value Estimate */}
               <div className="space-y-4 pt-2">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
@@ -541,6 +516,25 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     </div>
                     <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">MAX_SCALE: $1M</span>
                   </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-[220px_auto] gap-3 items-center">
+                  <label className="text-[10px] font-mono text-blue-400 uppercase tracking-widest">
+                    OR TYPE AMOUNT (USD)
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    max={1000000}
+                    step={100}
+                    value={typeof assetValue === 'number' ? assetValue : 0}
+                    onChange={(e) => {
+                      const next = parseInt(e.target.value || '0', 10);
+                      setAssetValue(Number.isNaN(next) ? 0 : Math.min(1000000, Math.max(0, next)));
+                    }}
+                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-3 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all"
+                    placeholder="ENTER_AMOUNT"
+                  />
                 </div>
               </div>
  
