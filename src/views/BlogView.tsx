@@ -15,7 +15,7 @@ import {
 import { SEO } from '../components/SEO';
 import { BlogContent } from '../components/BlogContent';
 import { apiPost } from '../lib/api';
-import { BLOG_KEYWORD_LINKS, TOP_10_SCAMS_2026 } from '../data/blogPosts';
+import { BLOG_KEYWORD_LINKS, FEATURED_BLOG_POSTS } from '../data/blogPosts';
 import { SITE_URL } from '../constants';
 
 export const BlogView = () => {
@@ -47,7 +47,7 @@ export const BlogView = () => {
   };
 
   const posts = [
-    TOP_10_SCAMS_2026,
+    ...FEATURED_BLOG_POSTS,
     {
       id: 1,
       title: "What to do immediately after a crypto hack",
