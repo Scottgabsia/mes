@@ -13,7 +13,10 @@ import {
 } from 'lucide-react';
 
 import { SEO } from '../components/SEO';
+import { BlogContent } from '../components/BlogContent';
 import { apiPost } from '../lib/api';
+import { BLOG_KEYWORD_LINKS, TOP_10_SCAMS_2026 } from '../data/blogPosts';
+import { SITE_URL } from '../constants';
 
 export const BlogView = () => {
   const [activeCategory, setActiveCategory] = React.useState('ALL_POSTS');
@@ -44,6 +47,7 @@ export const BlogView = () => {
   };
 
   const posts = [
+    TOP_10_SCAMS_2026,
     {
       id: 1,
       title: "What to do immediately after a crypto hack",
@@ -220,9 +224,11 @@ export const BlogView = () => {
   if (selectedPost) {
     return (
       <main className="pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1000px] mx-auto min-h-screen relative z-10 transition-all">
-        <SEO 
-          title={selectedPost.title} 
+        <SEO
+          title={selectedPost.title}
           description={selectedPost.excerpt}
+          canonical={`${SITE_URL}/blog`}
+          keywords={selectedPost.keywords?.join(', ') || 'crypto recovery, blockchain forensics, scam recovery'}
         />
         <motion.button 
           initial={{ opacity: 0, x: -10 }}
@@ -266,22 +272,42 @@ export const BlogView = () => {
           </div>
 
           <div className="rounded-3xl overflow-hidden border border-white/5 mb-16 aspect-video">
-            <img 
-              src={selectedPost.image} 
-              alt={selectedPost.title} 
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover grayscale brightness-75" 
+            <img
+              src={selectedPost.image}
+              alt={selectedPost.title}
+              className="w-full h-full object-cover"
             />
           </div>
 
           <div className="prose prose-invert prose-slate max-w-none">
-            <div className="text-slate-300 font-manrope text-lg leading-relaxed space-y-8 whitespace-pre-line">
-              {selectedPost.content}
-            </div>
+            <BlogContent content={selectedPost.content} />
           </div>
 
-          <div className="mt-20 pt-12 border-t border-white/5">
-            <h3 className="font-mono text-xs font-bold text-white uppercase tracking-widest mb-6">RECOVERY_KEYWORDS & METADATA</h3>
+          {selectedPost.keywords?.length > 0 && (
+            <div className="mt-16 p-8 rounded-2xl border border-blue-500/20 bg-blue-600/5">
+              <h3 className="font-mono text-xs font-bold text-white uppercase tracking-widest mb-4">
+                Recovery services — click to learn more
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedPost.keywords.map((kw: string) => {
+                  const path = BLOG_KEYWORD_LINKS[kw] || '/contact';
+                  const href = `${SITE_URL.replace(/\/$/, '')}${path}`;
+                  return (
+                    <a
+                      key={kw}
+                      href={href}
+                      className="px-3 py-2 bg-slate-950/80 border border-white/10 rounded-lg text-blue-400 hover:text-white hover:border-blue-500/50 font-mono text-[10px] transition-colors"
+                    >
+                      {kw}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-12 pt-12 border-t border-white/5">
+            <h3 className="font-mono text-xs font-bold text-white uppercase tracking-widest mb-6">TAGS & METADATA</h3>
             <div className="flex flex-wrap gap-3">
               {selectedPost.tags.map((tag: string) => (
                 <span key={tag} className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-blue-400 font-mono text-[10px] uppercase">
