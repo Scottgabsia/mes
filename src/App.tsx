@@ -672,7 +672,12 @@ export default function App() {
               </div>
               <div className="flex gap-4">
                 <Phone className="text-blue-500 w-5 h-5 flex-shrink-0" />
-                <p className="font-fira font-bold text-slate-300">+1 (800) 555-DFNS</p>
+                <a
+                  href="tel:+14016844683"
+                  className="font-fira font-bold text-slate-300 hover:text-blue-400 transition-colors"
+                >
+                  +1 (401) 684-4683
+                </a>
               </div>
             </div>
           </div>
@@ -703,12 +708,6 @@ export default function App() {
               className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
             >
               FAQ
-            </button>
-            <button 
-              onClick={() => navigate('/admin/login')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
-            >
-              Admin Portal
             </button>
             <button 
               onClick={() => handleNavClick('privacyPolicy')}
