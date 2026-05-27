@@ -1,0 +1,18 @@
+---
+description: Commit and push to origin after completing work on this repo
+alwaysApply: true
+---
+
+# Auto-push updates
+
+When you finish meaningful changes in this repository (features, fixes, config, assets):
+
+1. Run `git status` and commit all related changes with a clear message.
+2. Push to `origin` on the current branch (usually `main`) unless the user says not to push.
+3. Report the commit hash and confirm the push succeeded.
+
+Do not commit or push:
+- Files that likely contain secrets (`.env`, credentials)
+- When the user explicitly says not to commit/push, or only asked a question with no code changes
+
+If push fails (auth, conflicts), report the error and what the user should do.
