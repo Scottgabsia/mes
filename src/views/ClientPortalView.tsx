@@ -307,7 +307,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
  
           <div className="glass-panel rounded-2xl p-5 md:p-8 relative overflow-hidden group border border-white/5">
             <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #fff 0.5px, transparent 0.5px)', backgroundSize: '15px 15px' }}></div>
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/80 to-transparent animate-scan"></div>
+            <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/80 to-transparent animate-scan"></div>
             
             <form id="recoveryForm" onSubmit={handleSubmit} className="space-y-8 relative z-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -399,38 +399,52 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                   </div>
                 </div>
  
-                {/* Target Network */}
-                <div className="space-y-2">
+                {/* Target Network — full row on md+ so chips are not squeezed; radios for reliable desktop taps */}
+                <div className="space-y-2 md:col-span-2">
                   <label className="font-mono text-[11px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
                     <span className="w-1 h-3 bg-blue-500/50"></span> TARGET_NETWORK
                   </label>
                   <div className="space-y-4">
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div
+                      className="relative z-20 flex flex-wrap gap-2 pt-1"
+                      role="radiogroup"
+                      aria-label="Target network"
+                    >
                       {['BTC', 'ETH', 'SOL', 'BSC', 'ARB', 'USDT', 'XRP', 'ADA', 'TRX', 'MATIC'].map((net) => (
-                        <button 
+                        <label
                           key={net}
-                          type="button"
-                          onClick={() => handlePresetNetworkSelect(net)}
-                          className={`px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold transition-all ${
+                          className={`cursor-pointer select-none px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold transition-all ${
                             formData.targetNetwork === net && !isCustomNetwork
-                              ? 'border-blue-500 bg-blue-500/20 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]' 
+                              ? 'border-blue-500 bg-blue-500/20 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]'
                               : 'border-white/10 bg-white/5 text-slate-500 hover:border-blue-500/50 hover:text-white'
                           }`}
                         >
+                          <input
+                            type="radio"
+                            name="portalTargetNetwork"
+                            className="sr-only"
+                            checked={!isCustomNetwork && formData.targetNetwork === net}
+                            onChange={() => handlePresetNetworkSelect(net)}
+                          />
                           {net}
-                        </button>
+                        </label>
                       ))}
-                      <button 
-                        type="button"
-                        onClick={() => setIsCustomNetwork(true)}
-                        className={`px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold transition-all ${
+                      <label
+                        className={`cursor-pointer select-none px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold transition-all ${
                           isCustomNetwork
-                            ? 'border-blue-500 bg-blue-500/20 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]' 
+                            ? 'border-blue-500 bg-blue-500/20 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]'
                             : 'border-white/10 bg-white/5 text-slate-500 hover:border-blue-500/50 hover:text-white'
                         }`}
                       >
+                        <input
+                          type="radio"
+                          name="portalTargetNetwork"
+                          className="sr-only"
+                          checked={isCustomNetwork}
+                          onChange={() => setIsCustomNetwork(true)}
+                        />
                         OTHER+
-                      </button>
+                      </label>
                     </div>
                     
                     {isCustomNetwork && (
