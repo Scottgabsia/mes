@@ -25,7 +25,7 @@ interface HomeViewProps {
 }
 
 export const HomeView = ({ onNavigate }: HomeViewProps) => {
-  const [balance, setBalance] = React.useState(500000);
+  const [balance, setBalance] = React.useState<number | string>(50000);
   const [traceCount, setTraceCount] = React.useState(2841);
   const [secondsSinceLast, setSecondsSinceLast] = React.useState(12.4);
 
@@ -54,9 +54,24 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
     name: '',
     email: '',
     phone: '',
-    entityId: '',
     service: 'Wallet Recovery'
   });
+
+  const handleAssetInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === '') {
+      setBalance('');
+      return;
+    }
+    const cleaned = val.replace(/[^\d]/g, '');
+    const sanitized = cleaned.replace(/^0+/, '') || '0';
+    const num = parseInt(sanitized, 10);
+    if (!isNaN(num)) {
+      setBalance(Math.min(1_000_000, num));
+    }
+  };
+
+  const numericBalance = typeof balance === 'number' ? balance : balance === '' ? 0 : parseInt(String(balance), 10) || 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -84,15 +99,14 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       phone: formData.phone,
       incidentVector: formData.service.toUpperCase().replace(/\s/g, '_'),
       targetNetwork: network === 'Other' ? customNetwork : network,
-      transactionHash: formData.entityId || 'HOME_TRIAGE_REF',
-      caseNarrative: `Submitted via Home Triage Form. Entity ID: ${formData.entityId || 'N/A'}. Network: ${network}. Service: ${formData.service}.`,
-      estimatedValue: parseFloat(balance.toString()) || 0,
+      transactionHash: 'NOT_PROVIDED',
+      caseNarrative: `Submitted via Home Triage Form. Network: ${isOtherNetwork ? customNetwork : network}. Service: ${formData.service}.`,
+      estimatedValue: numericBalance,
       createdAt: serverTimestamp(),
       status: 'PENDING',
       formSource: 'Home_Triage_Form',
       name: formData.name,
       email: normalizedEmail,
-      entityId: formData.entityId,
       service: formData.service
     };
 
@@ -401,18 +415,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="space-y-3">
-                <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Entity / ID</label>
-                <input 
-                  name="entityId"
-                  value={formData.entityId}
-                  onChange={handleInputChange}
-                  className="w-full bg-slate-950/50 border border-white/10 rounded-sm px-4 py-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-fira text-sm outline-none" 
-                  placeholder="ID: 0x..." 
-                  type="text" 
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="space-y-3">
                 <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Asset Network</label>
                 <div className="space-y-3">
@@ -479,31 +482,42 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                   <option>Custom Protocol</option>
                 </select>
               </div>
-              <div className="space-y-3">
-                <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Wallet Balance (USD Estimate)</label>
-                <div className="px-2 pt-4">
-                  <input 
-                    className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600" 
-                    max="1000000" 
-                    min="1000" 
-                    step="1000" 
-                    type="range"
+              <div className="space-y-3 md:col-span-2 lg:col-span-1">
+                <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">
+                  Estimated Amount (USD)
+                </label>
+                <p className="text-[10px] text-slate-500 font-manrope leading-snug">
+                  Type your loss amount below or use the slider to adjust.
+                </p>
+                <div className="flex items-center gap-2 w-full bg-slate-950/50 border border-white/10 rounded-sm px-4 py-4 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all">
+                  <span className="text-blue-400 font-fira text-sm font-bold">$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
                     value={balance}
-                    onChange={(e) => setBalance(parseInt(e.target.value))}
+                    onChange={handleAssetInputChange}
+                    placeholder="Enter amount (e.g. 25000)"
+                    className="flex-1 bg-transparent border-none outline-none focus:ring-0 p-0 font-fira text-sm text-white placeholder:text-slate-600 min-w-0"
+                    aria-label="Estimated amount in US dollars"
                   />
-                  <div className="flex justify-between mt-3 font-fira text-[10px] text-slate-500 items-center">
-                    <span>$1K</span>
-                    <div className="flex items-center gap-0.5 text-blue-400 bg-blue-400/5 px-2 py-0.5 rounded border border-blue-500/20">
-                      <span>$</span>
-                      <input 
-                        type="number"
-                        min="1000"
-                        value={balance}
-                        onChange={(e) => setBalance(parseInt(e.target.value) || 0)}
-                        className="bg-transparent border-none outline-none focus:ring-0 p-0 w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-text font-bold"
-                      />
-                      {balance >= 1000000 && <span>+</span>}
-                    </div>
+                  {numericBalance >= 1_000_000 && (
+                    <span className="text-blue-400 font-fira text-xs font-bold">+</span>
+                  )}
+                </div>
+                <div className="px-1 pt-2">
+                  <input
+                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                    max={1_000_000}
+                    min={0}
+                    step={500}
+                    type="range"
+                    value={numericBalance}
+                    onChange={(e) => setBalance(parseInt(e.target.value, 10))}
+                    aria-label="Adjust estimated amount with slider"
+                  />
+                  <div className="flex justify-between mt-2 font-fira text-[10px] text-slate-500">
+                    <span>$0</span>
+                    <span className="text-blue-400/80">Slide or type above</span>
                     <span>$1M+</span>
                   </div>
                 </div>
