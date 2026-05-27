@@ -54,7 +54,8 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
     name: '',
     email: '',
     phone: '',
-    service: 'Wallet Recovery'
+    service: '',
+    caseNarrative: '',
   });
 
   const handleAssetInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +74,9 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
 
   const numericBalance = typeof balance === 'number' ? balance : balance === '' ? 0 : parseInt(String(balance), 10) || 0;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -91,16 +94,34 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const resolvedNetwork = isOtherNetwork ? customNetwork.trim() : network;
+    if (!resolvedNetwork) {
+      alert('Please select or specify your asset network.');
+      return;
+    }
+    if (!formData.service) {
+      alert('Please select a service.');
+      return;
+    }
+    if (numericBalance <= 0) {
+      alert('Please enter an estimated amount in USD (must be greater than zero).');
+      return;
+    }
+    if (!formData.caseNarrative.trim()) {
+      alert('Please describe your case in the Case Narrative Log.');
+      return;
+    }
+
     const normalizedEmail = formData.email.trim().toLowerCase();
     const submissionData = {
       operatorAlias: formData.name,
       secureComms: normalizedEmail,
       phone: formData.phone,
       incidentVector: formData.service.toUpperCase().replace(/\s/g, '_'),
-      targetNetwork: network === 'Other' ? customNetwork : network,
+      targetNetwork: resolvedNetwork,
       transactionHash: 'NOT_PROVIDED',
-      caseNarrative: `Submitted via Home Triage Form. Network: ${isOtherNetwork ? customNetwork : network}. Service: ${formData.service}.`,
+      caseNarrative: formData.caseNarrative.trim(),
       estimatedValue: numericBalance,
       createdAt: serverTimestamp(),
       status: 'PENDING',
@@ -420,9 +441,12 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                 <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Asset Network</label>
                 <div className="space-y-3">
                   <select 
+                    required
+                    value={isOtherNetwork ? 'OTHER' : network}
                     onChange={handleNetworkChange}
                     className="w-full bg-slate-950/50 border border-white/10 rounded-sm px-4 py-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-fira text-sm outline-none appearance-none cursor-pointer"
                   >
+                    <option disabled value="">SELECT_NETWORK...</option>
                     <option value="Bitcoin (BTC)">Bitcoin (BTC)</option>
                     <option value="Ethereum (ETH)">Ethereum (ETH)</option>
                     <option value="Solana (SOL)">Solana (SOL)</option>
@@ -446,6 +470,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                     >
                       <input 
                         type="text"
+                        required
                         list="crypto-suggestions"
                         placeholder="SPECIFY_NETWORK_NAME..."
                         value={customNetwork}
@@ -469,11 +494,13 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
               <div className="space-y-3">
                 <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">Service Selection</label>
                 <select 
+                  required
                   name="service"
                   value={formData.service}
                   onChange={handleInputChange}
                   className="w-full bg-slate-950/50 border border-white/10 rounded-sm px-4 py-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-fira text-sm outline-none appearance-none cursor-pointer"
                 >
+                  <option disabled value="">SELECT_SERVICE...</option>
                   <option>Wallet Recovery</option>
                   <option>Scam & Fraud Assistance</option>
                   <option>Forensic Tracking</option>
@@ -494,6 +521,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                   <input
                     type="text"
                     inputMode="numeric"
+                    required
                     value={balance}
                     onChange={handleAssetInputChange}
                     placeholder="Enter amount (e.g. 25000)"
@@ -523,6 +551,22 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                 </div>
               </div>
             </div>
+
+            <div className="space-y-3">
+              <label className="text-blue-400 text-[10px] uppercase font-bold tracking-widest">
+                Case Narrative Log
+              </label>
+              <textarea
+                required
+                name="caseNarrative"
+                value={formData.caseNarrative}
+                onChange={handleInputChange}
+                rows={5}
+                placeholder="Describe what happened: timeline, amounts, platforms, wallet addresses, and any suspicious contacts..."
+                className="w-full bg-slate-950/50 border border-white/10 rounded-sm px-4 py-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-fira text-sm outline-none resize-y min-h-[120px] placeholder:text-slate-600"
+              />
+            </div>
+
             <div className="flex justify-end pt-4 border-t border-white/5">
               <button 
                 type="submit"

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { LOGO_URL } from './constants';
+import { FooterSocialLinks } from './components/SocialIcons';
 import { HomeView } from './views/HomeView';
 import { ServicesView } from './views/ServicesView';
 import { IntelligenceView } from './views/IntelligenceView';
@@ -602,7 +603,7 @@ export default function App() {
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
               Global leader in cryptocurrency investigation and recovery. Licensed and regulated to provide forensic services worldwide.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3 items-center">
               <button 
                 onClick={() => handleNavClick('clientPortal')}
                 className="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:bg-blue-600 transition-colors group cursor-pointer border-none"
@@ -617,6 +618,7 @@ export default function App() {
               >
                 <Mail className="text-slate-300 w-5 h-5 group-hover:text-white" />
               </a>
+              <FooterSocialLinks />
             </div>
           </div>
           

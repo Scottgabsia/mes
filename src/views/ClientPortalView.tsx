@@ -65,7 +65,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     operatorAlias: '',
     phone: '',
     secureComms: '',
-    incidentVector: 'WALLET_RECOVERY',
+    incidentVector: '',
     targetNetwork: 'BTC',
     customNetwork: '',
     caseNarrative: ''
@@ -145,10 +145,37 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     });
   };
 
+  const resolvedAssetValue =
+    typeof assetValue === 'number'
+      ? assetValue
+      : assetValue === ''
+        ? 0
+        : parseInt(String(assetValue), 10) || 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isVerified) {
       alert("Please complete the human verification process.");
+      return;
+    }
+    if (!formData.incidentVector) {
+      alert('Please select a service.');
+      return;
+    }
+    if (isCustomNetwork && !formData.customNetwork.trim()) {
+      alert('Please specify your target network.');
+      return;
+    }
+    if (!formData.targetNetwork && !isCustomNetwork) {
+      alert('Please select a target network.');
+      return;
+    }
+    if (resolvedAssetValue <= 0) {
+      alert('Please enter an estimated asset value greater than zero.');
+      return;
+    }
+    if (!formData.caseNarrative.trim()) {
+      alert('Please complete the Case Narrative Log.');
       return;
     }
     setIsSubmitting(true);
@@ -157,9 +184,10 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     const submissionData = {
       ...formData,
       secureComms: normalizedEmail,
-      targetNetwork: isCustomNetwork ? formData.customNetwork : formData.targetNetwork,
+      targetNetwork: isCustomNetwork ? formData.customNetwork.trim() : formData.targetNetwork,
       transactionHash: 'NOT_PROVIDED',
-      estimatedValue: typeof assetValue === 'number' ? assetValue : 0,
+      caseNarrative: formData.caseNarrative.trim(),
+      estimatedValue: resolvedAssetValue,
       createdAt: serverTimestamp(),
       status: 'PENDING',
       formSource: 'INTAKE_INITIALIZATION',
@@ -391,12 +419,13 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                   </label>
                   <div className="relative">
                     <select 
+                      required
                       name="incidentVector"
                       value={formData.incidentVector}
                       onChange={handleInputChange}
                       className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-4 rounded-xl font-mono text-sm appearance-none focus:border-blue-500/50 outline-none transition-all cursor-pointer"
                     >
-                      <option disabled value="VECTOR_SELECT_...">SELECT_SERVICE_...</option>
+                      <option disabled value="">SELECT_SERVICE_...</option>
                       <option value="WALLET_RECOVERY">WALLET_RECOVERY</option>
                       <option value="SCAM_FRAUD_ASSISTANCE">SCAM_FRAUD_ASSISTANCE</option>
                       <option value="FORENSIC_TRACKING">FORENSIC_TRACKING</option>
@@ -411,8 +440,17 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                 {/* Target Network — full row on md+ so chips are not squeezed; radios for reliable desktop taps */}
                 <div className="space-y-2 md:col-span-2">
                   <label className="font-mono text-[11px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1 h-3 bg-blue-500/50"></span> TARGET_NETWORK
+                    <span className="w-1 h-3 bg-blue-500/50"></span> TARGET_NETWORK <span className="text-red-400/80">*</span>
                   </label>
+                  <input
+                    type="text"
+                    className="sr-only"
+                    tabIndex={-1}
+                    aria-hidden
+                    readOnly
+                    required
+                    value={isCustomNetwork ? formData.customNetwork.trim() : formData.targetNetwork}
+                  />
                   <div className="space-y-4">
                     <div
                       className="relative z-50 flex flex-wrap gap-2 pt-1 pl-1"
@@ -493,10 +531,11 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                       <input 
                         type="text"
                         inputMode="numeric"
+                        required
                         value={assetValue}
                         onChange={handleAssetInputChange}
                         className="bg-transparent border-none outline-none focus:ring-0 p-0 w-32 md:w-64 font-mono text-white placeholder:text-white/5"
-                        placeholder="0.00"
+                        placeholder="Enter amount"
                       />
                       <span className="text-[10px] text-blue-400/50 ml-1 font-normal uppercase tracking-widest">USD_EQUIVALENT</span>
                     </div>
@@ -545,18 +584,13 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     TYPE AMOUNT
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     inputMode="numeric"
-                    min={0}
-                    max={1000000}
-                    step={100}
-                    value={typeof assetValue === 'number' ? assetValue : 0}
-                    onChange={(e) => {
-                      const next = parseInt(e.target.value || '0', 10);
-                      setAssetValue(Number.isNaN(next) ? 0 : Math.min(1000000, Math.max(0, next)));
-                    }}
-                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-3 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    placeholder="ENTER_AMOUNT"
+                    required
+                    value={assetValue}
+                    onChange={handleAssetInputChange}
+                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-3 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all"
+                    placeholder="ENTER_AMOUNT (required)"
                   />
                 </div>
               </div>

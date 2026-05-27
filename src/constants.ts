@@ -10,6 +10,24 @@ export const FIREBASE_API_URL =
 /** Header/footer logo */
 export const LOGO_URL = "/logo.png?v=8";
 
+export const SOCIAL_LINKS = [
+  {
+    id: "facebook",
+    label: "Facebook",
+    href: "https://www.facebook.com/share/18j9xTsdgN/?mibextid=wwXIfr",
+  },
+  {
+    id: "quora",
+    label: "Quora",
+    href: "https://www.quora.com/profile/Crypto-Recovery-Asset?ch=17&oid=3197810077&share=b07007ed&srid=5DlkEm&target_type=user",
+  },
+  {
+    id: "tiktok",
+    label: "TikTok",
+    href: "https://www.tiktok.com/@crypto_recovery_asset?_r=1&_t=ZT-96hRxLCgTdN",
+  },
+] as const;
+
 /** WhatsApp, Facebook, Twitter link previews — image with dark background */
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.png?v=1`;
 
