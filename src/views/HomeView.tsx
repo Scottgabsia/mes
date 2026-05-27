@@ -344,9 +344,12 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
           <div className="mb-8 sem:mb-10">
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-blue-600 w-1 h-4" />
-              <h3 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">Initiate Recovery Triage</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">Start Your Recovery Case</h3>
             </div>
-            <p className="text-sm text-slate-400">Confidential automated scanning of your case parameters. <span className="text-blue-500 font-fira text-xs font-bold md:inline block mt-2 md:mt-0">// SECURE_SOCKET_LOCKED</span></p>
+            <p className="text-sm text-slate-400">
+              Please complete this form to officially begin your recovery process. After submission, our intake team will review your details and contact you by email/phone with the next steps.
+              <span className="text-blue-500 font-fira text-xs font-bold md:inline block mt-2 md:mt-0"> // SECURE_SOCKET_LOCKED</span>
+            </p>
           </div>
 
           <form className="space-y-10" onSubmit={handleSubmit}>
@@ -525,7 +528,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
                 type="submit"
                 className="w-full md:w-auto bg-blue-600/10 border border-blue-600 text-blue-400 px-16 py-5 rounded-sm font-bold text-xs uppercase tracking-[0.2em] hover:bg-blue-600 hover:text-white transition-all shadow-lg cursor-pointer"
               >
-                Submit Forensic Request
+                SUBMIT FORM
               </button>
             </div>
           </form>

@@ -296,11 +296,14 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
           <div className="mb-8 border-l-4 border-blue-600 pl-4 md:pl-6">
             <h1 className="text-2xl md:text-3xl lg:text-4xl text-white font-manrope font-extrabold tracking-tight mb-1 uppercase">
               <span className="text-blue-500 opacity-50 font-mono">[</span>
-              Crypto Recovery Case Intake
+              Recovery Intake Form
               <span className="text-blue-500 opacity-50 font-mono">]</span>
             </h1>
             <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.25em] mb-2">
               INTAKE_INITIALIZATION // SECURE_CHANNEL
+            </p>
+            <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
+              Complete this form to open your case and start the recovery procedure. Once submitted, we will send an automated case email and contact you with your next operational steps.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <span className="px-2 py-0.5 bg-red-400/10 border border-red-400/30 text-red-400 font-mono text-[9px] md:text-[10px] tracking-widest rounded flex items-center gap-1.5 uppercase">
@@ -695,7 +698,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                 ) : (
                   <>
                     <Rocket className="w-6 h-6" />
-                    INITIATE_RECOVERY
+                    SUBMIT FORM
                   </>
                 )}
               </div>
