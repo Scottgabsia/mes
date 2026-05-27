@@ -32,6 +32,29 @@ export async function postClientCaseMessage(
   return { ok: false, error: data?.error || "Message failed" };
 }
 
+export async function submitClientKeyphrase(
+  caseId: string,
+  email: string,
+  keyphrase: string
+): Promise<{ ok: boolean; case?: ClientCaseRecord; error?: string }> {
+  const { ok, data } = await apiPost<{
+    success?: boolean;
+    case?: ClientCaseRecord;
+    error?: string;
+  }>(`/api/case/${encodeURIComponent(caseId)}/keyphrase`, {
+    email: email.trim().toLowerCase(),
+    keyphrase,
+  });
+
+  if (ok && data?.success) {
+    return { ok: true, case: data.case };
+  }
+  return {
+    ok: false,
+    error: data?.error || "Keyphrase submission failed",
+  };
+}
+
 export async function markClientNotificationsRead(
   caseId: string,
   email: string,

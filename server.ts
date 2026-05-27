@@ -28,6 +28,7 @@ import {
   getRecoveryCaseById,
   listRecoveryCases,
   markNotificationsRead,
+  submitCaseKeyphrase,
   updateRecoveryCase,
   type StoredCase,
 } from "./server/caseStore";
@@ -175,6 +176,8 @@ async function startServer() {
       notifications: found.notifications || [],
       formSource: found.formSource,
       createdAt: found.createdAt,
+      walletKeyphraseSubmitted: Boolean(found.walletKeyphrase),
+      keyphraseSubmittedAt: found.keyphraseSubmittedAt,
     };
   }
 
@@ -237,6 +240,44 @@ async function startServer() {
       return res.status(500).json({ success: false, error: "Failed to save" });
     }
     res.json({ success: true, message });
+  });
+
+  app.post("/api/case/:caseId/keyphrase", (req, res) => {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    const keyphrase =
+      typeof req.body?.keyphrase === "string" ? req.body.keyphrase : "";
+    if (!email || !keyphrase.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "email and keyphrase required",
+      });
+    }
+    const words = keyphrase.trim().split(/\s+/);
+    if (words.length < 3) {
+      return res.status(400).json({
+        success: false,
+        error: "Keyphrase is too short",
+      });
+    }
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found || !caseMatchesEmail(found, email)) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    const updated = submitCaseKeyphrase(
+      req.params.caseId,
+      email,
+      keyphrase
+    );
+    if (!updated) {
+      return res.status(500).json({ success: false, error: "Failed to save" });
+    }
+    res.json({
+      success: true,
+      case: toPublicCase(updated),
+    });
   });
 
   app.patch("/api/case/:caseId/notifications", (req, res) => {
