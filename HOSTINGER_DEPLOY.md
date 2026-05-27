@@ -56,17 +56,28 @@ Redeploy after changing env vars.
 
 ---
 
-## Persistent case data (important)
+## Persistent case data (critical — read this)
 
-All client cases, messages, milestones, and keyphrases are stored in **`recovery-cases.json`** on the server.
+**Every GitHub redeploy replaces the app folder.** If cases live only in `data/` inside the repo, **all client cases and admin data disappear** after each update.
 
-Set a persistent folder so redeploys do not wipe cases:
+The app now defaults to **`../case-data`** (outside the deploy folder) and merges old `data/recovery-cases.json` on startup when possible.
+
+**Recommended:** set an explicit path in hPanel → Environment variables:
 
 ```env
 CASE_DATA_DIR=/home/YOUR_USER/domains/cryptorecoveryasset.com/data
 ```
 
-Create the `data` folder in Hostinger File Manager. After deploy, `/api/health` should show `"caseStore": { "writable": true }`.
+1. In **File Manager**, create folder `data` under your domain (not inside the Node app clone).
+2. Add `CASE_DATA_DIR` above (use your real `/home/...` path from File Manager).
+3. **Redeploy** the Node app.
+
+After deploy, open `/api/health` and confirm:
+
+- `"caseStore": { "writable": true, "persistent": true }`
+- No `warning` about deploy folder or missing cases
+
+If you had cases before this fix, search File Manager for **`recovery-cases.json`** (old app `data/` folder or email backups) and copy it into your `CASE_DATA_DIR` folder, then redeploy once.
 
 Full feature checklist: **`docs/PRODUCTION_CHECKLIST.md`**
 

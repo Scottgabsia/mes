@@ -39,15 +39,56 @@ function ensureBuild() {
   }
 }
 
+function pickWritableDir(candidates) {
+  for (const dir of candidates) {
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      const probe = path.join(dir, ".write-test");
+      fs.writeFileSync(probe, "ok", "utf8");
+      fs.unlinkSync(probe);
+      return dir;
+    } catch {
+      /* try next */
+    }
+  }
+  return candidates[candidates.length - 1];
+}
+
 ensureBuild();
 
-const dataDir = process.env.CASE_DATA_DIR
-  ? path.resolve(process.env.CASE_DATA_DIR)
-  : path.join(root, "data");
+// App root for legacy case-file migration (server/caseStore.ts)
+process.env.APP_ROOT = root;
+
+/**
+ * Cases must live OUTSIDE the git deploy folder — Hostinger replaces the app on each push.
+ * Default: domains/yoursite.com/case-data (two levels above app root).
+ */
+if (!process.env.CASE_DATA_DIR?.trim()) {
+  const autoDir = pickWritableDir([
+    path.join(root, "..", "..", "case-data"),
+    path.join(root, "..", "case-data"),
+    path.join(root, "data"),
+  ]);
+  process.env.CASE_DATA_DIR = autoDir;
+  console.log(
+    "[app] CASE_DATA_DIR not set — using persistent path:",
+    autoDir
+  );
+  console.log(
+    "[app] Tip: set CASE_DATA_DIR in hPanel to e.g. /home/USER/domains/cryptorecoveryasset.com/data"
+  );
+} else {
+  process.env.CASE_DATA_DIR = path.resolve(process.env.CASE_DATA_DIR.trim());
+}
+
 try {
-  fs.mkdirSync(dataDir, { recursive: true });
+  fs.mkdirSync(process.env.CASE_DATA_DIR, { recursive: true });
 } catch (err) {
-  console.warn("[app] Could not create data directory:", dataDir, err.message);
+  console.warn(
+    "[app] Could not create CASE_DATA_DIR:",
+    process.env.CASE_DATA_DIR,
+    err.message
+  );
 }
 
 require(serverPath);

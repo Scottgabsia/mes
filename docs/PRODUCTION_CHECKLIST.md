@@ -26,13 +26,13 @@ SMTP_USER=info@cryptorecoveryasset.com
 SMTP_PASS=your_app_password
 ```
 
-Optional but recommended on Hostinger:
+**Required on Hostinger** (cases are erased on every GitHub redeploy without this):
 
 ```env
 CASE_DATA_DIR=/home/u123456789/domains/cryptorecoveryasset.com/data
 ```
 
-Create that folder in File Manager so **cases survive redeploys**. Without it, cases live in `data/` under the app root (may reset on some hosts).
+Create that folder in File Manager (under your domain, not inside the Node app clone). New deploys auto-use `../case-data` if unset, but setting `CASE_DATA_DIR` explicitly is safest.
 
 Do **not** set `VITE_API_BASE_URL` to Firebase unless you intentionally use Functions as backup — the live case store runs on **same-origin Node**.
 
@@ -44,7 +44,7 @@ Expected JSON includes:
 
 - `"runtime": "node"`
 - `"smtpConfigured": true` (or Resend configured)
-- `"caseStore": { "writable": true, "casesFile": "..." }`
+- `"caseStore": { "writable": true, "persistent": true, "casesFile": "..." }` (no `warning`)
 - `"platform": { "intakeSubmit": true, "caseLookup": true, ... }`
 
 If you see **HTML** instead of JSON, the domain is not on Node — fix Hostinger settings.
