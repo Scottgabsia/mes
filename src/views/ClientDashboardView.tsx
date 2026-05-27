@@ -6,7 +6,6 @@ import {
   Clock, 
   FileText, 
   Activity, 
-  Download, 
   Send,
   MoreVertical,
   ChevronRight,
@@ -36,7 +35,7 @@ interface ClientDashboardViewProps {
 }
 
 export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
-  const [activeTab, setActiveTab] = React.useState<'overview' | 'messages' | 'documents'>('overview');
+  const [activeTab, setActiveTab] = React.useState<'overview' | 'messages'>('overview');
   const [message, setMessage] = React.useState('');
   const [messages, setMessages] = React.useState<any[]>([]);
   const [liveCaseData, setLiveCaseData] = React.useState<any>(caseData);
@@ -526,12 +525,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           >
             Comms
           </button>
-          <button 
-            onClick={() => setActiveTab('documents')}
-            className={`px-4 sm:px-6 py-2 rounded-lg font-mono text-[10px] sm:text-xs font-bold transition-all uppercase tracking-widest whitespace-nowrap ${activeTab === 'documents' ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(0,98,255,0.4)]' : 'text-slate-500 hover:text-white'}`}
-          >
-            Repository
-          </button>
         </div>
       </div>
     </div>
@@ -941,37 +934,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           </motion.div>
         )}
 
-        {activeTab === 'documents' && (
-          <motion.div 
-            key="documents"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {[
-              { name: 'Initial_Case_Intake.pdf', size: '2.4 MB', date: '04.05.2024' },
-              { name: 'Forensic_Report_Draft_v1.pdf', size: '1.8 MB', date: '04.05.2024' },
-              { name: 'Node_Extraction_Data.xlsx', size: '14.2 MB', date: '04.05.2024' },
-              { name: 'Authority_Submission_Form.pdf', size: '420 KB', status: 'Draft' },
-            ].map((doc, i) => (
-              <div key={i} className="glass-panel p-6 rounded-2xl border border-white/5 group hover:border-blue-500/50 transition-all bg-slate-900/40">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
-                    <FileText size={20} />
-                  </div>
-                  <button className="text-slate-600 hover:text-white cursor-pointer">
-                    <Download size={16} />
-                  </button>
-                </div>
-                <h4 className="text-sm font-manrope font-black text-white uppercase tracking-wider mb-1 truncate">{doc.name}</h4>
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] font-mono text-slate-500 uppercase">{doc.size} // {doc.date || doc.status}</p>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        )}
       </AnimatePresence>
 
       {/* Security Banner */}
