@@ -9,11 +9,10 @@ function buildUrl(base: string, path: string): string {
   return `${base}${normalized}`;
 }
 
-/** Try same-origin first, then optional Firebase fallback */
-function getApiBases(): string[] {
-  const bases: string[] = [];
-  if (envBase) bases.push(envBase);
-  bases.push(""); // same-origin — localhost dev or Hostinger Node
+/** Same-origin (Hostinger Node) first — case store + admin API live there. */
+export function getApiBases(): string[] {
+  const bases: string[] = [""];
+  if (envBase && !bases.includes(envBase)) bases.push(envBase);
   const firebase = FIREBASE_API_URL.replace(/\/$/, "");
   if (firebase && !bases.includes(firebase)) bases.push(firebase);
   return bases;
@@ -65,4 +64,42 @@ export async function apiPost<T = unknown>(
   }
 
   return { ok: false, data: null, error: lastError };
+}
+
+/** GET/PATCH/etc. across API bases (same order as apiPost). */
+export async function apiFetch<T = unknown>(
+  path: string,
+  init?: RequestInit
+): Promise<{ ok: boolean; data: T | null; error?: string; status?: number }> {
+  let lastError = "API unavailable";
+  let lastStatus: number | undefined;
+
+  for (const base of getApiBases()) {
+    const url = buildUrl(base, path);
+    try {
+      const res = await fetch(url, init);
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("text/html")) {
+        lastError = "API returned HTML (wrong host — not Node server)";
+        continue;
+      }
+
+      const data = (await res.json()) as T;
+      if (res.ok) {
+        return { ok: true, data, status: res.status };
+      }
+
+      lastStatus = res.status;
+      lastError =
+        (data as { error?: string })?.error || `HTTP ${res.status}`;
+      if (res.status === 401 || res.status === 403) {
+        continue;
+      }
+      return { ok: false, data, error: lastError, status: res.status };
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
+  return { ok: false, data: null, error: lastError, status: lastStatus };
 }

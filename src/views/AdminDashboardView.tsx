@@ -96,6 +96,10 @@ const CaseManagerView: React.FC = () => {
   React.useEffect(() => {
     if (!isAuthorized || authChecking) return;
 
+    const refreshInterval = window.setInterval(() => {
+      loadServerCases();
+    }, 20000);
+
     let firestoreReady = false;
     let serverReady = false;
     const maybeDoneLoading = () => {
@@ -143,7 +147,10 @@ const CaseManagerView: React.FC = () => {
       }
     );
 
-    return () => unsubscribe();
+    return () => {
+      window.clearInterval(refreshInterval);
+      unsubscribe();
+    };
   }, [isAuthorized, authChecking, loadServerCases]);
 
   React.useEffect(() => {

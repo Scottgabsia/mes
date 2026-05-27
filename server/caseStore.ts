@@ -9,7 +9,33 @@ export type StoredCase = Record<string, unknown> & {
   status: string;
 };
 
-const DATA_DIR = path.join(process.cwd(), "data");
+function resolveDataDir(): string {
+  const fromEnv = process.env.CASE_DATA_DIR?.trim();
+  if (fromEnv) return path.resolve(fromEnv);
+
+  const cwd = process.cwd();
+  const candidates = [
+    path.join(cwd, "data"),
+    path.join(cwd, "..", "data"),
+  ];
+
+  for (const dir of candidates) {
+    if (fs.existsSync(path.join(dir, "recovery-cases.json"))) {
+      return dir;
+    }
+  }
+
+  if (fs.existsSync(path.join(cwd, "package.json"))) {
+    return candidates[0];
+  }
+  if (fs.existsSync(path.join(cwd, "..", "package.json"))) {
+    return candidates[1];
+  }
+
+  return candidates[0];
+}
+
+const DATA_DIR = resolveDataDir();
 const CASES_FILE = path.join(DATA_DIR, "recovery-cases.json");
 
 function ensureStore(): { cases: StoredCase[] } {
@@ -62,6 +88,9 @@ export function appendRecoveryCase(
     store.cases = store.cases.slice(0, 500);
   }
   writeStore(store);
+  console.log(
+    `[CaseStore] Saved case ${caseId} for ${String(payload.secureComms || payload.email || "unknown")} → ${CASES_FILE}`
+  );
   return entry;
 }
 

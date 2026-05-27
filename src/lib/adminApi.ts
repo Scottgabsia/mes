@@ -1,4 +1,4 @@
-import { apiUrl } from "./api";
+import { apiFetch } from "./api";
 import { auth } from "./firebase";
 
 export type AdminCaseRecord = Record<string, unknown> & {
@@ -31,28 +31,26 @@ export async function fetchAdminCases(): Promise<{
     return { ok: false, cases: [], error: "Not signed in" };
   }
 
-  try {
-    const res = await fetch(apiUrl("/api/admin/cases"), { headers });
-    const data = (await res.json()) as {
-      success?: boolean;
-      cases?: AdminCaseRecord[];
-      error?: string;
-    };
-    if (!res.ok || !data.success) {
-      return {
-        ok: false,
-        cases: [],
-        error: data.error || `HTTP ${res.status}`,
-      };
-    }
+  const { ok, data, error, status } = await apiFetch<{
+    success?: boolean;
+    cases?: AdminCaseRecord[];
+    error?: string;
+  }>("/api/admin/cases", { headers });
+
+  if (ok && data?.success) {
     return { ok: true, cases: data.cases || [] };
-  } catch (err) {
-    return {
-      ok: false,
-      cases: [],
-      error: err instanceof Error ? err.message : String(err),
-    };
   }
+
+  return {
+    ok: false,
+    cases: [],
+    error:
+      error ||
+      data?.error ||
+      (status === 401
+        ? "Unauthorized — sign in with an admin email (e.g. info@cryptorecoveryasset.com)"
+        : "Could not load server cases"),
+  };
 }
 
 export async function patchAdminCaseStatus(
@@ -64,23 +62,17 @@ export async function patchAdminCaseStatus(
     return { ok: false, error: "Not signed in" };
   }
 
-  try {
-    const res = await fetch(apiUrl(`/api/admin/cases/${encodeURIComponent(caseId)}`), {
+  const { ok, data, error } = await apiFetch<{ success?: boolean; error?: string }>(
+    `/api/admin/cases/${encodeURIComponent(caseId)}`,
+    {
       method: "PATCH",
       headers,
       body: JSON.stringify({ status }),
-    });
-    const data = (await res.json()) as { success?: boolean; error?: string };
-    if (!res.ok || !data.success) {
-      return { ok: false, error: data.error || `HTTP ${res.status}` };
     }
-    return { ok: true };
-  } catch (err) {
-    return {
-      ok: false,
-      error: err instanceof Error ? err.message : String(err),
-    };
-  }
+  );
+
+  if (ok && data?.success) return { ok: true };
+  return { ok: false, error: error || data?.error || "Update failed" };
 }
 
 function caseTime(c: AdminCaseRecord): number {

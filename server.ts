@@ -197,6 +197,9 @@ async function startServer() {
       return res.status(401).json({ success: false, error: "Unauthorized" });
     }
     const cases = listRecoveryCases();
+    console.log(
+      `[Admin] ${admin.email} loaded ${cases.length} case(s) from server store`
+    );
     res.json({ success: true, cases, count: cases.length });
   });
 
