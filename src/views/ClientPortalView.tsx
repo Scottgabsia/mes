@@ -48,6 +48,7 @@ interface ClientPortalViewProps {
 
 export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPortalViewProps) => {
   const [assetValue, setAssetValue] = React.useState<number | string>(42500);
+  const [assetCurrency, setAssetCurrency] = React.useState('USD');
   const [buffer, setBuffer] = React.useState(72);
 
   React.useEffect(() => {
@@ -160,6 +161,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       targetNetwork: isCustomNetwork ? formData.customNetwork : formData.targetNetwork,
       transactionHash: 'NOT_PROVIDED',
       estimatedValue: typeof assetValue === 'number' ? assetValue : 0,
+      estimatedCurrency: assetCurrency,
       createdAt: serverTimestamp(),
       status: 'PENDING',
       formSource: 'INTAKE_INITIALIZATION',
@@ -517,7 +519,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     <span className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">MAX_SCALE: $1M</span>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-[220px_auto] gap-3 items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-[220px_auto_auto] gap-3 items-center">
                   <label className="text-[10px] font-mono text-blue-400 uppercase tracking-widest">
                     OR TYPE AMOUNT (USD)
                   </label>
@@ -532,9 +534,21 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                       const next = parseInt(e.target.value || '0', 10);
                       setAssetValue(Number.isNaN(next) ? 0 : Math.min(1000000, Math.max(0, next)));
                     }}
-                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-3 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all"
+                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white px-4 py-3 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     placeholder="ENTER_AMOUNT"
                   />
+                  <select
+                    value={assetCurrency}
+                    onChange={(e) => setAssetCurrency(e.target.value)}
+                    className="w-full sm:w-[120px] bg-[#0a0e16]/60 border border-white/10 text-white px-3 py-3 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all"
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="BTC">BTC</option>
+                    <option value="ETH">ETH</option>
+                    <option value="USDT">USDT</option>
+                  </select>
                 </div>
               </div>
  
