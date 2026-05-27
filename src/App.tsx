@@ -14,7 +14,8 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
-  Terminal
+  Terminal,
+  Star,
 } from 'lucide-react';
 import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { LOGO_URL } from './constants';
@@ -398,6 +399,26 @@ export default function App() {
                   </div>
                 </button>
                 <button 
+                  onClick={() => handleNavClick('faq')}
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                    currentView === 'faq' ? 'text-blue-500' : 'text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5" /> FAQ
+                  </div>
+                </button>
+                <button 
+                  onClick={() => handleNavClick('reviews')}
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                    currentView === 'reviews' ? 'text-blue-500' : 'text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Star className="w-5 h-5" /> Reviews
+                  </div>
+                </button>
+                <button 
                   onClick={() => handleNavClick('clientPortal')}
                   className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
                     currentView === 'clientPortal' ? 'text-blue-500' : 'text-slate-400'
@@ -521,6 +542,14 @@ export default function App() {
                 }`}
               >
                 <FileText className="w-4 h-4" /> Check Status
+              </button>
+              <button 
+                onClick={() => handleNavClick('reviews')}
+                className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
+                  currentView === 'reviews' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
+                }`}
+              >
+                <Star className="w-4 h-4" /> Reviews
               </button>
             </nav>
             {/* Collapse Trigger (internal when open) */}
@@ -717,6 +746,12 @@ export default function App() {
               className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
             >
               Blog
+            </button>
+            <button 
+              onClick={() => handleNavClick('reviews')}
+              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
+            >
+              Reviews
             </button>
             <button 
               onClick={() => handleNavClick('faq')}
