@@ -716,21 +716,21 @@ export default function App() {
               </div>
               <div className="flex gap-4">
                 <Phone className="text-blue-500 w-5 h-5 flex-shrink-0" />
-                <div className="space-y-3">
-                  <a
-                    href="tel:+14016844683"
-                    className="block font-fira font-bold text-slate-300 hover:text-blue-400 transition-colors"
-                  >
-                    +1 (401) 684-4683
-                  </a>
-                  <a
-                    href={`mailto:${CONTACT_EMAIL}`}
-                    className="flex items-center gap-2 font-fira text-sm text-slate-400 hover:text-blue-400 transition-colors break-all"
-                  >
-                    <Mail className="text-blue-500 w-4 h-4 flex-shrink-0" />
-                    {CONTACT_EMAIL}
-                  </a>
-                </div>
+                <a
+                  href="tel:+14016844683"
+                  className="font-fira font-bold text-slate-300 hover:text-blue-400 transition-colors"
+                >
+                  +1 (401) 684-4683
+                </a>
+              </div>
+              <div className="flex gap-4">
+                <Mail className="text-blue-500 w-5 h-5 flex-shrink-0" />
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="font-fira font-bold text-slate-300 hover:text-blue-400 transition-colors break-all leading-relaxed"
+                >
+                  {CONTACT_EMAIL}
+                </a>
               </div>
             </div>
           </div>
