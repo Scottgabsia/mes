@@ -72,6 +72,17 @@ type View =
   | 'gdpr'
   | 'amlkyc';
 
+/** Full-width pages — no left sidebar or EXPLORE tab */
+const VIEWS_WITHOUT_SIDEBAR: View[] = [
+  'home',
+  'reviews',
+  'submitReview',
+  'privacyPolicy',
+  'termsOfService',
+  'faq',
+  'admin',
+];
+
 const NavLink = ({ 
   children, 
   active = false, 
@@ -448,7 +459,7 @@ export default function App() {
       )}
 
       {/* Services/Intelligence/ClientPortal/Confirmation Sidebar */}
-      {currentView !== 'home' && (
+      {!VIEWS_WITHOUT_SIDEBAR.includes(currentView) && (
         <>
           <aside 
             className={`fixed left-0 top-0 h-full z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-32 transition-all duration-500 ease-in-out ${
@@ -539,9 +550,9 @@ export default function App() {
       )}
 
       <div className={`transition-all duration-500 ease-in-out ${
-        currentView !== 'home' && !isSidebarCollapsed ? 'md:ml-72 md:pl-8' : ''
+        !VIEWS_WITHOUT_SIDEBAR.includes(currentView) && !isSidebarCollapsed ? 'md:ml-72 md:pl-8' : ''
       } ${
-        currentView !== 'home' && isSidebarCollapsed ? 'md:pl-12' : ''
+        !VIEWS_WITHOUT_SIDEBAR.includes(currentView) && isSidebarCollapsed ? 'md:pl-12' : ''
       }`}>
         <AnimatePresence mode="wait">
           <motion.div

@@ -1,5 +1,8 @@
 export const SITE_URL = "https://cryptorecoveryasset.com";
 
+/** Primary contact / admin inbox (privacy, support mailto links) */
+export const CONTACT_EMAIL = "info@cryptorecoveryasset.com";
+
 /**
  * Email API on Firebase (used when Hostinger serves static files only).
  * After deploy: firebase deploy --only functions

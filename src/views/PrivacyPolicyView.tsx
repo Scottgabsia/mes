@@ -1,9 +1,10 @@
 import React from 'react';
-import { Shield, Lock, Eye, FileText, Database, Globe } from 'lucide-react';
+import { Shield, Lock, Eye, Database } from 'lucide-react';
+import { CONTACT_EMAIL } from '../constants';
 
 export const PrivacyPolicyView = () => {
   return (
-    <div className="pt-40 pb-32 px-6 md:px-12 max-w-[1200px] mx-auto">
+    <div className="pt-36 sm:pt-40 pb-32 px-6 md:px-12 max-w-[1200px] mx-auto scroll-mt-28">
       <div className="mb-16">
         <h2 className="text-primary font-fira text-xs font-bold tracking-[0.4em] mb-4 uppercase">
           // LEGAL PROTOCOL
@@ -92,11 +93,15 @@ export const PrivacyPolicyView = () => {
 
         <div className="pt-16 border-t border-white/10 text-center">
           <p className="text-slate-500 text-xs font-fira uppercase tracking-widest mb-8">Questions regarding data handled?</p>
-          <button 
-            className="border border-primary/30 text-primary px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+          <a
+            href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Privacy inquiry — Crypto Recovery Assets')}&body=${encodeURIComponent('Please describe your privacy question.\n\n')}`}
+            className="inline-block border border-primary/30 text-primary px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all cursor-pointer"
           >
             Contact Privacy Officer
-          </button>
+          </a>
+          <p className="text-slate-600 text-[10px] font-mono mt-4 uppercase tracking-wider">
+            {CONTACT_EMAIL}
+          </p>
         </div>
       </div>
     </div>
