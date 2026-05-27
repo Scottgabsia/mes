@@ -576,7 +576,7 @@ export default function App() {
             {currentView === 'termsOfService' && <TermsOfServiceView />}
             {currentView === 'reviews' && <ReviewsView onNavigate={(view) => handleNavClick(view as any)} />}
             {currentView === 'submitReview' && <SubmitReviewView onBack={() => handleNavClick('reviews')} />}
-            {currentView === 'faq' && <FAQView />}
+            {currentView === 'faq' && <FAQView onNavigate={handleNavClick} />}
           </motion.div>
         </AnimatePresence>
 

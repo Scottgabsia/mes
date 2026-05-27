@@ -77,7 +77,11 @@ const FAQ_DATA = [
   }
 ];
 
-export const FAQView = () => {
+type FAQViewProps = {
+  onNavigate?: (view: 'clientPortal') => void;
+};
+
+export const FAQView = ({ onNavigate }: FAQViewProps) => {
   const [openIndex, setOpenIndex] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -181,12 +185,13 @@ export const FAQView = () => {
         <p className="text-slate-400 max-w-xl mx-auto mb-10 leading-relaxed font-manrope">
           Our specialized agents are available 24/7 for a confidential intake session. No upfront fees are ever required for technical assessment.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-emerald-600 text-white px-10 py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] hover:brightness-110 transition-all">
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => onNavigate?.('clientPortal')}
+            className="bg-emerald-600 text-white px-10 py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] hover:brightness-110 transition-all cursor-pointer"
+          >
             Initiate Crisis Triage
-          </button>
-          <button className="bg-white/5 border border-white/10 text-white px-10 py-4 rounded-sm font-bold text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
-            Secure Consult
           </button>
         </div>
       </div>
