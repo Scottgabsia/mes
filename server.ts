@@ -1,4 +1,5 @@
 import express from "express";
+import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -13,6 +14,11 @@ import {
   sendSubscribeEmail,
   generateCaseId,
 } from "./server/email";
+import {
+  getForensicPgpPublicKey,
+  MAX_INTEGRITY_UPLOAD_BYTES,
+  sendIntegrityVerifierEmail,
+} from "./server/forensic";
 
 const isProduction =
   process.env.NODE_ENV === "production" ||
@@ -28,7 +34,7 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || "3000", 10);
 
   app.set("trust proxy", 1);
-  app.use(express.json());
+  app.use(express.json({ limit: "12mb" }));
 
   const { ADMIN_EMAIL } = getEmailConfig();
   logEmailStartup();
@@ -114,6 +120,79 @@ async function startServer() {
         message: "Data registered. Email notification failed.",
         caseId: generateCaseId(),
         emailSent: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+
+  app.get("/api/forensic/config", (_req, res) => {
+    res.json({
+      pgpPublicKey: getForensicPgpPublicKey(),
+      maxUploadBytes: MAX_INTEGRITY_UPLOAD_BYTES,
+      emailConfigured: isEmailConfigured(),
+    });
+  });
+
+  app.post("/api/forensic/integrity-upload", async (req, res) => {
+    const { filename, contentBase64, sha256, mimeType, notifierEmail } =
+      req.body ?? {};
+
+    if (!filename || !contentBase64 || !sha256) {
+      return res.status(400).json({
+        success: false,
+        error: "filename, contentBase64, and sha256 are required",
+      });
+    }
+
+    if (!isEmailConfigured()) {
+      return res.status(503).json({
+        success: false,
+        error:
+          "Email is not configured on the server. Set RESEND_API_KEY or SMTP_* in Hostinger.",
+      });
+    }
+
+    try {
+      const buffer = Buffer.from(String(contentBase64), "base64");
+      if (!buffer.length) {
+        return res.status(400).json({ success: false, error: "Empty file" });
+      }
+      if (buffer.length > MAX_INTEGRITY_UPLOAD_BYTES) {
+        return res.status(400).json({
+          success: false,
+          error: `File exceeds ${MAX_INTEGRITY_UPLOAD_BYTES / (1024 * 1024)}MB limit`,
+        });
+      }
+
+      const computed = crypto
+        .createHash("sha256")
+        .update(buffer)
+        .digest("hex");
+      if (computed !== String(sha256).toLowerCase()) {
+        return res.status(400).json({
+          success: false,
+          error: "SHA-256 checksum mismatch — re-upload the file",
+        });
+      }
+
+      const result = await sendIntegrityVerifierEmail({
+        filename: String(filename),
+        sha256: computed,
+        fileSize: buffer.length,
+        mimeType: String(mimeType || "application/octet-stream"),
+        fileBuffer: buffer,
+        notifierEmail: notifierEmail ? String(notifierEmail) : undefined,
+      });
+
+      res.status(200).json({
+        success: true,
+        caseRef: result.caseRef,
+        message: "File verified and sent to the forensic inbox.",
+      });
+    } catch (error) {
+      console.error("[Forensic] integrity-upload failed:", error);
+      res.status(500).json({
+        success: false,
         error: error instanceof Error ? error.message : String(error),
       });
     }

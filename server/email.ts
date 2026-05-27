@@ -101,12 +101,19 @@ function getResendClient(): Resend | null {
   return new Resend(RESEND_API_KEY);
 }
 
-async function dispatchEmail(options: {
+export type EmailAttachment = {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+};
+
+export async function dispatchEmail(options: {
   to: string | string[];
   subject: string;
   html: string;
   text?: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 }): Promise<{ id?: string; messageId?: string }> {
   const provider = getEmailProvider();
   const cfg = getEmailConfig();
@@ -122,6 +129,11 @@ async function dispatchEmail(options: {
       subject: options.subject,
       html: options.html,
       text: options.text,
+      attachments: options.attachments?.map((a) => ({
+        filename: a.filename,
+        content: a.content,
+        contentType: a.contentType,
+      })),
     });
     return { messageId: info.messageId };
   }
@@ -137,6 +149,10 @@ async function dispatchEmail(options: {
       html: options.html,
       text: options.text,
       replyTo: options.replyTo,
+      attachments: options.attachments?.map((a) => ({
+        filename: a.filename,
+        content: a.content,
+      })),
     });
     if (error) throw new Error(error.message);
     return { id: data?.id };
