@@ -19,6 +19,13 @@ import {
   MAX_INTEGRITY_UPLOAD_BYTES,
   sendIntegrityVerifierEmail,
 } from "./server/forensic";
+import {
+  appendRecoveryCase,
+  findRecoveryCaseByEmail,
+  listRecoveryCases,
+  updateRecoveryCaseStatus,
+} from "./server/caseStore";
+import { requireAdminFromRequest } from "./server/adminAuth";
 
 const isProduction =
   process.env.NODE_ENV === "production" ||
@@ -96,33 +103,118 @@ async function startServer() {
 
     try {
       const { createdAt, ...safeData } = formData;
+      let caseId = generateCaseId();
+      let emailSent = false;
 
       if (isEmailConfigured()) {
         const result = await sendRecoveryEmails(safeData);
-        res.status(200).json({
-          success: true,
-          message: "Data securely processed.",
-          caseId: result.caseId,
-          emailSent: true,
-        });
-      } else {
-        res.status(200).json({
-          success: true,
-          message: "Data logged (email not configured).",
-          caseId: generateCaseId(),
-          emailSent: false,
-        });
+        caseId = result.caseId;
+        emailSent = true;
       }
+
+      appendRecoveryCase({
+        ...safeData,
+        caseId,
+        createdAt: createdAt || new Date().toISOString(),
+        status: safeData.status || "PENDING",
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Data securely processed.",
+        caseId,
+        emailSent,
+      });
     } catch (error) {
       console.error("[Email] submit-recovery failed:", error);
+      const caseId = generateCaseId();
+      try {
+        appendRecoveryCase({
+          ...(req.body || {}),
+          caseId,
+          createdAt: new Date().toISOString(),
+          status: "PENDING",
+        });
+      } catch (storeErr) {
+        console.error("[CaseStore] backup save failed:", storeErr);
+      }
       res.status(200).json({
         success: true,
         message: "Data registered. Email notification failed.",
-        caseId: generateCaseId(),
+        caseId,
         emailSent: false,
         error: error instanceof Error ? error.message : String(error),
       });
     }
+  });
+
+  app.post("/api/case-lookup", (req, res) => {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    if (!email || !email.includes("@")) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Valid email required" });
+    }
+
+    const found = findRecoveryCaseByEmail(email);
+    if (!found) {
+      return res.status(404).json({
+        success: false,
+        error: "No active recovery case found for this email address.",
+      });
+    }
+
+    const caseId = String(found.caseId || found.id);
+    res.json({
+      success: true,
+      case: {
+        id: caseId,
+        caseId,
+        storageSource: "server",
+        firestoreDocId: null,
+        operatorAlias: found.operatorAlias,
+        secureComms: found.secureComms || found.email,
+        email: found.email || found.secureComms,
+        status: found.status || "PENDING",
+        incidentVector: found.incidentVector,
+        targetNetwork: found.targetNetwork,
+        transactionHash: found.transactionHash,
+        caseNarrative: found.caseNarrative,
+        estimatedValue: found.estimatedValue,
+        completedSteps: found.completedSteps || [],
+        formSource: found.formSource,
+        createdAt: found.createdAt,
+      },
+    });
+  });
+
+  app.get("/api/admin/cases", async (req, res) => {
+    const admin = await requireAdminFromRequest(req.headers.authorization);
+    if (!admin) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+    const cases = listRecoveryCases();
+    res.json({ success: true, cases, count: cases.length });
+  });
+
+  app.patch("/api/admin/cases/:caseId", async (req, res) => {
+    const admin = await requireAdminFromRequest(req.headers.authorization);
+    if (!admin) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+    const caseId = req.params.caseId;
+    const { status } = req.body || {};
+    if (!status) {
+      return res.status(400).json({ success: false, error: "status required" });
+    }
+    const updated = updateRecoveryCaseStatus(caseId, status);
+    if (!updated) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    res.json({ success: true, case: updated });
   });
 
   app.get("/api/forensic/config", (_req, res) => {

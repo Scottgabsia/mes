@@ -10,6 +10,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { lookupCaseByEmail } from '../lib/caseLookupApi';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 
 interface CaseLookupViewProps {
@@ -30,25 +31,49 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
+
+      const apiResult = await lookupCaseByEmail(normalizedEmail);
+      if (apiResult.ok && apiResult.case) {
+        onCaseFound(apiResult.case);
+        return;
+      }
+      if (apiResult.notFound) {
+        setError('No active recovery case found for this email address.');
+        return;
+      }
+
       const q = query(
-        collection(db, 'recovery_requests'), 
+        collection(db, 'recovery_requests'),
         where('secureComms', '==', normalizedEmail),
         limit(1)
       );
 
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const caseDoc = querySnapshot.docs[0];
-        onCaseFound({ id: caseDoc.id, ...caseDoc.data() });
+        onCaseFound({
+          id: caseDoc.id,
+          firestoreDocId: caseDoc.id,
+          storageSource: 'firestore',
+          ...caseDoc.data(),
+        });
+      } else if (apiResult.error?.toLowerCase().includes('unavailable')) {
+        setError(
+          'Case lookup service is unavailable. Please try again shortly or contact support.'
+        );
       } else {
-        setError('No active recovery case found for this email address.');
+        setError(
+          apiResult.error ||
+            'No active recovery case found for this email address.'
+        );
       }
     } catch (err) {
       console.error('Lookup error details:', err instanceof Error ? err.message : err);
-      // More descriptive error for common issues
       if (err instanceof Error && err.message.includes('permission')) {
-        setError('Access denied. Please ensure you are using the correct secure email.');
+        setError(
+          'No case found for this email. Use the same address you submitted with, or contact support if you just filed a case.'
+        );
       } else {
         setError('A system error occurred. Please try again later.');
       }

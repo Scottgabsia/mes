@@ -53,21 +53,28 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   React.useEffect(() => {
     if (!caseData?.id) return;
 
-    // Listen to messages
+    const firestoreDocId =
+      caseData.firestoreDocId ||
+      (caseData.storageSource === 'server' ? null : caseData.id);
+
+    if (!firestoreDocId) {
+      setLiveCaseData(caseData);
+      return;
+    }
+
     const qMessages = query(
-      collection(db, 'recovery_requests', caseData.id, 'messages'),
+      collection(db, 'recovery_requests', firestoreDocId, 'messages'),
       orderBy('createdAt', 'asc')
     );
 
     const unsubMessages = onSnapshot(qMessages, (snapshot) => {
       setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, `recovery_requests/${caseData.id}/messages`);
+      handleFirestoreError(error, OperationType.LIST, `recovery_requests/${firestoreDocId}/messages`);
     });
 
-    // Listen to notifications
     const qNotifications = query(
-      collection(db, 'recovery_requests', caseData.id, 'notifications'),
+      collection(db, 'recovery_requests', firestoreDocId, 'notifications'),
       orderBy('createdAt', 'desc')
     );
 
@@ -76,16 +83,15 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       setNotifications(docs);
       setUnreadCount(docs.filter((n: any) => !n.read).length);
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, `recovery_requests/${caseData.id}/notifications`);
+      handleFirestoreError(error, OperationType.LIST, `recovery_requests/${firestoreDocId}/notifications`);
     });
 
-    // Listen to case document itself for live status updates
-    const unsubCase = onSnapshot(doc(db, 'recovery_requests', caseData.id), (snapshot) => {
+    const unsubCase = onSnapshot(doc(db, 'recovery_requests', firestoreDocId), (snapshot) => {
       if (snapshot.exists()) {
-        setLiveCaseData({ id: snapshot.id, ...snapshot.data() });
+        setLiveCaseData({ id: snapshot.id, firestoreDocId: snapshot.id, ...snapshot.data() });
       }
     }, (error) => {
-      handleFirestoreError(error, OperationType.GET, `recovery_requests/${caseData.id}`);
+      handleFirestoreError(error, OperationType.GET, `recovery_requests/${firestoreDocId}`);
     });
 
     return () => {
@@ -93,15 +99,20 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       unsubNotifications();
       unsubCase();
     };
-  }, [caseData?.id]);
+  }, [caseData]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !caseData?.id) return;
 
+    const firestoreDocId =
+      caseData.firestoreDocId ||
+      (caseData.storageSource === 'server' ? null : caseData.id);
+    if (!firestoreDocId) return;
+
     setSendingMessage(true);
     try {
-      await addDoc(collection(db, 'recovery_requests', caseData.id, 'messages'), {
+      await addDoc(collection(db, 'recovery_requests', firestoreDocId, 'messages'), {
         text: message,
         sender: 'Client',
         senderId: 'client',
@@ -110,7 +121,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       });
       setMessage('');
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${caseData.id}/messages`);
+      handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${firestoreDocId}/messages`);
     } finally {
       setSendingMessage(false);
     }

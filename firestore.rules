@@ -8,16 +8,23 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.email == 'contact@vr-astrovision.com' ||
-        request.auth.token.email == 'admin@forensic.io'
+        request.auth.token.email == 'admin@forensic.io' ||
+        request.auth.token.email == 'info@cryptorecoveryasset.com' ||
+        request.auth.token.email.matches('.*@cryptorecoveryasset\\.com$') ||
+        request.auth.token.email.matches('.*@forensic\\.io$')
       );
     }
 
     match /recovery_requests/{requestId} {
       allow create: if true;
       allow get: if true;
-      allow read, update, delete: if isAdmin();
+      allow list, read, update, delete: if isAdmin();
 
       match /messages/{messageId} {
+        allow read, write: if isAdmin();
+      }
+
+      match /notifications/{notificationId} {
         allow read, write: if isAdmin();
       }
     }

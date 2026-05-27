@@ -35,13 +35,26 @@ import {
   collectionGroup
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, auth } from '../lib/firebase';
+import { isAdminEmail } from '../lib/adminConfig';
+import {
+  fetchAdminCases,
+  mergeAdminCases,
+  patchAdminCaseStatus,
+  type AdminCaseRecord,
+} from '../lib/adminApi';
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
 
 const CaseManagerView: React.FC = () => {
-  const [requests, setRequests] = React.useState<any[]>([]);
+  const [firestoreCases, setFirestoreCases] = React.useState<AdminCaseRecord[]>([]);
+  const [serverCases, setServerCases] = React.useState<AdminCaseRecord[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [serverLoadError, setServerLoadError] = React.useState<string | null>(null);
   const [errorStatus, setErrorStatus] = React.useState<string | null>(null);
+  const requests = React.useMemo(
+    () => mergeAdminCases(firestoreCases, serverCases),
+    [firestoreCases, serverCases]
+  );
   const [selectedCase, setSelectedCase] = React.useState<any>(null);
   const [message, setMessage] = React.useState('');
   const [sendingMessage, setSendingMessage] = React.useState(false);
@@ -58,56 +71,85 @@ const CaseManagerView: React.FC = () => {
     { id: 'COMPLETED', label: 'Restoration Ready' }
   ];
 
+  const loadServerCases = React.useCallback(async () => {
+    const result = await fetchAdminCases();
+    if (result.ok) {
+      setServerCases(result.cases);
+      setServerLoadError(null);
+      if (result.cases.length > 0) {
+        setErrorStatus(null);
+      }
+    } else {
+      setServerLoadError(result.error || 'Server cases unavailable');
+    }
+    return result;
+  }, []);
+
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthChecking(false);
-      // For this demo, we check if the user is the admin email or has the forensic.io domain
-      if (user && (
-        user.email === 'contact@vr-astrovision.com' || 
-        user.email?.endsWith('@forensic.io') ||
-        user.email?.includes('admin')
-      )) {
-        setIsAuthorized(true);
-      } else {
-        setIsAuthorized(false);
-      }
+      setIsAuthorized(Boolean(user && isAdminEmail(user.email)));
     });
     return () => unsubscribe();
   }, []);
 
   React.useEffect(() => {
     if (!isAuthorized || authChecking) return;
-    
+
+    let firestoreReady = false;
+    let serverReady = false;
+    const maybeDoneLoading = () => {
+      if (firestoreReady && serverReady) setLoading(false);
+    };
+
     setLoading(true);
     setErrorStatus(null);
-    
-    // Establishing direct uplink
-    const q = collection(db, 'recovery_requests'); 
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Sort in memory for now to avoid index requirements while debugging
-      const sortedDocs = docs.sort((a: any, b: any) => {
-        const timeA = a.createdAt?.toMillis?.() || 0;
-        const timeB = b.createdAt?.toMillis?.() || 0;
-        return timeB - timeA;
-      });
-      setRequests(sortedDocs);
-      setLoading(false);
-      setErrorStatus(docs.length === 0 ? 'NO_DATA_CONNECTED' : null);
-    }, (error) => {
-      console.error('List error:', error);
-      setErrorStatus(`UPLINK_FAILURE: ${error.message}`);
-      setLoading(false);
-      try {
-        handleFirestoreError(error, OperationType.LIST, 'recovery_requests');
-      } catch (e) {
-        // Log JSON error for system diagnosis
-      }
+
+    loadServerCases().finally(() => {
+      serverReady = true;
+      maybeDoneLoading();
     });
 
+    const q = collection(db, 'recovery_requests');
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const docs = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        })) as AdminCaseRecord[];
+        setFirestoreCases(docs);
+        firestoreReady = true;
+        maybeDoneLoading();
+        if (docs.length === 0) {
+          setErrorStatus((prev) =>
+            prev?.startsWith('FIRESTORE') ? prev : 'NO_DATA_CONNECTED'
+          );
+        } else {
+          setErrorStatus(null);
+        }
+      },
+      (error) => {
+        console.error('List error:', error);
+        setErrorStatus(`FIRESTORE: ${error.message}`);
+        firestoreReady = true;
+        maybeDoneLoading();
+        try {
+          handleFirestoreError(error, OperationType.LIST, 'recovery_requests');
+        } catch {
+          /* logged */
+        }
+      }
+    );
+
     return () => unsubscribe();
-  }, [isAuthorized, authChecking]);
+  }, [isAuthorized, authChecking, loadServerCases]);
+
+  React.useEffect(() => {
+    if (!isAuthorized || authChecking) return;
+    if (requests.length > 0) setErrorStatus(null);
+  }, [requests.length, isAuthorized, authChecking]);
 
   const createNotification = async (requestId: string, title: string, message: string, type: 'STATUS_UPDATE' | 'MILESTONE_COMPLETE' | 'MESSAGE' | 'ACTION_REQUIRED') => {
     try {
@@ -124,36 +166,70 @@ const CaseManagerView: React.FC = () => {
   };
 
   const handleUpdateStatus = async (requestId: string, newStatus: string) => {
-    try {
-      const ref = doc(db, 'recovery_requests', requestId);
-      await updateDoc(ref, { 
-        status: newStatus,
-        updatedAt: serverTimestamp()
-      });
-      
-      const statusLabel = statusLevels.find(l => l.id === newStatus)?.label || newStatus;
-      let notificationTitle = 'Status Updated';
-      let notificationMessage = `Your case status has been updated to: ${statusLabel}`;
-      let notificationType: 'STATUS_UPDATE' | 'ACTION_REQUIRED' = 'STATUS_UPDATE';
+    const caseRow =
+      requests.find(
+        (r) =>
+          r.id === requestId ||
+          r.caseId === requestId ||
+          r.firestoreDocId === requestId
+      ) || selectedCase;
+    const firestoreDocId = caseRow?.firestoreDocId || caseRow?.id;
+    const serverCaseId = String(caseRow?.caseId || caseRow?.id || requestId);
+    const isServerOnly =
+      caseRow?.storageSource === 'server' && !caseRow?.firestoreDocId;
 
-      if (newStatus === 'ANALYSIS') {
-        notificationTitle = 'Action Required';
-        notificationMessage = 'Provide wallet key phrase in the space below';
-        notificationType = 'ACTION_REQUIRED';
+    try {
+      if (isServerOnly) {
+        const result = await patchAdminCaseStatus(serverCaseId, newStatus);
+        if (!result.ok) {
+          throw new Error(result.error || 'Server update failed');
+        }
+        await loadServerCases();
+      } else if (firestoreDocId) {
+        const ref = doc(db, 'recovery_requests', firestoreDocId);
+        await updateDoc(ref, {
+          status: newStatus,
+          updatedAt: serverTimestamp(),
+        });
+
+        const statusLabel =
+          statusLevels.find((l) => l.id === newStatus)?.label || newStatus;
+        let notificationTitle = 'Status Updated';
+        let notificationMessage = `Your case status has been updated to: ${statusLabel}`;
+        let notificationType: 'STATUS_UPDATE' | 'ACTION_REQUIRED' =
+          'STATUS_UPDATE';
+
+        if (newStatus === 'ANALYSIS') {
+          notificationTitle = 'Action Required';
+          notificationMessage =
+            'Provide wallet key phrase in the space below';
+          notificationType = 'ACTION_REQUIRED';
+        }
+
+        await createNotification(
+          firestoreDocId,
+          notificationTitle,
+          notificationMessage,
+          notificationType
+        );
       }
 
-      await createNotification(
-        requestId, 
-        notificationTitle, 
-        notificationMessage, 
-        notificationType
-      );
-
-      if (selectedCase?.id === requestId) {
+      if (
+        selectedCase?.id === requestId ||
+        selectedCase?.caseId === requestId
+      ) {
         setSelectedCase({ ...selectedCase, status: newStatus });
       }
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `recovery_requests/${requestId}`);
+      if (!isServerOnly) {
+        handleFirestoreError(
+          err,
+          OperationType.UPDATE,
+          `recovery_requests/${firestoreDocId}`
+        );
+      } else {
+        console.error('Server case update failed:', err);
+      }
     }
   };
 
@@ -161,9 +237,17 @@ const CaseManagerView: React.FC = () => {
     e.preventDefault();
     if (!message.trim() || !selectedCase) return;
 
+    const docId =
+      selectedCase.firestoreDocId ||
+      (selectedCase.storageSource !== 'server' ? selectedCase.id : null);
+    if (!docId) {
+      console.warn('Cannot message server-only case without Firestore doc');
+      return;
+    }
+
     setSendingMessage(true);
     try {
-      await addDoc(collection(db, 'recovery_requests', selectedCase.id, 'messages'), {
+      await addDoc(collection(db, 'recovery_requests', docId, 'messages'), {
         text: message,
         sender: 'Forensic System v4.2 (Admin)',
         senderId: 'admin',
@@ -172,7 +256,7 @@ const CaseManagerView: React.FC = () => {
       });
 
       await createNotification(
-        selectedCase.id,
+        docId,
         'New Message Received',
         'You have a new secure communication from your lead analyst.',
         'MESSAGE'
@@ -180,7 +264,7 @@ const CaseManagerView: React.FC = () => {
 
       setMessage('');
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${selectedCase.id}/messages`);
+      handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${docId}/messages`);
     } finally {
       setSendingMessage(false);
     }
@@ -230,15 +314,33 @@ const CaseManagerView: React.FC = () => {
   }
 
   // Logic to find current selected case data from the live requests stream
-  const activeCaseData = selectedCase 
-    ? (selectedCase.id === 'smtp_diagnostics' ? selectedCase : (requests.find(r => r.id === selectedCase.id) || selectedCase)) 
+  const activeCaseData = selectedCase
+    ? selectedCase.id === 'smtp_diagnostics'
+      ? selectedCase
+      : requests.find(
+          (r) =>
+            r.id === selectedCase.id ||
+            r.caseId === selectedCase.id ||
+            r.firestoreDocId === selectedCase.id
+        ) || selectedCase
     : null;
 
-  const filteredRequests = requests.filter(r => 
-    r.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    r.operatorAlias?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.secureComms?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const activeFirestoreId = activeCaseData
+    ? activeCaseData.firestoreDocId ||
+      (activeCaseData.storageSource !== 'server' ? activeCaseData.id : null)
+    : null;
+
+  const filteredRequests = requests.filter((r) => {
+    const q = searchTerm.toLowerCase();
+    return (
+      String(r.id).toLowerCase().includes(q) ||
+      String(r.caseId || '').toLowerCase().includes(q) ||
+      String(r.operatorAlias || '').toLowerCase().includes(q) ||
+      String(r.secureComms || '').toLowerCase().includes(q) ||
+      String(r.email || '').toLowerCase().includes(q) ||
+      String(r.phone || '').toLowerCase().includes(q)
+    );
+  });
 
   return (
     <div className="min-h-screen pt-28 sm:pt-32 pb-12 px-4 sm:px-6 lg:px-12 bg-[#020408]">
@@ -247,12 +349,30 @@ const CaseManagerView: React.FC = () => {
         {/* Sidebar / List */}
         <div className="lg:col-span-4 space-y-4 sm:space-y-6">
           <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-white/5 space-y-4 sm:space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg sm:text-xl font-manrope font-black text-white uppercase tracking-tight">Active Inquiries</h2>
-              <div className="flex items-center gap-4">
-                <span className="text-[9px] sm:text-[10px] font-mono text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 uppercase tracking-widest animate-pulse">Live Sync</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoading(true);
+                    loadServerCases().finally(() => setLoading(false));
+                  }}
+                  className="p-2 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-blue-500/40 transition-colors cursor-pointer"
+                  title="Refresh case list"
+                >
+                  <RefreshIcon size={14} />
+                </button>
+                <span className="text-[9px] sm:text-[10px] font-mono text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 uppercase tracking-widest">
+                  {requests.length} cases
+                </span>
               </div>
             </div>
+            {serverLoadError && (
+              <p className="text-[9px] font-mono text-amber-500/90 uppercase tracking-wide">
+                Server store: {serverLoadError}
+              </p>
+            )}
 
             <button
               onClick={() => setSelectedCase({ id: 'smtp_diagnostics' })}
@@ -298,7 +418,13 @@ const CaseManagerView: React.FC = () => {
                 </div>
               ) : filteredRequests.length === 0 ? (
                 <div className="text-center py-12 space-y-4">
-                  <p className="opacity-50 text-xs uppercase font-mono">No nodes detected</p>
+                  <p className="opacity-50 text-xs uppercase font-mono">No cases yet</p>
+                  {errorStatus === 'NO_DATA_CONNECTED' && (
+                    <p className="text-[9px] text-slate-600 font-mono max-w-xs mx-auto">
+                      Sign in with info@cryptorecoveryasset.com (or another admin email).
+                      New submissions appear here after deploy. Deploy Firestore rules if Firestore is empty but email works.
+                    </p>
+                  )}
                   <button 
                     onClick={async () => {
                       try {
@@ -438,7 +564,13 @@ const CaseManagerView: React.FC = () => {
                           <div className="text-center py-4 border-b border-white/5 mb-4">
                             <span className="text-slate-600 uppercase tracking-widest">--- SECURE CHANNEL INITIALIZED ---</span>
                           </div>
-                          <CaseMessages requestId={activeCaseData.id} />
+                          {activeFirestoreId ? (
+                            <CaseMessages requestId={activeFirestoreId} />
+                          ) : (
+                            <p className="text-slate-600 text-center py-8 uppercase tracking-widest">
+                              Case stored on server — messaging needs Firestore link
+                            </p>
+                          )}
                        </div>
 
                        <form onSubmit={handleSendMessage} className="relative">
@@ -479,12 +611,13 @@ const CaseManagerView: React.FC = () => {
                                     ? currentSteps.filter((s: string) => s !== lvl.id)
                                     : [...currentSteps, lvl.id];
                                   
-                                  const ref = doc(db, 'recovery_requests', activeCaseData.id);
+                                  if (!activeFirestoreId) return;
+                                  const ref = doc(db, 'recovery_requests', activeFirestoreId);
                                   await updateDoc(ref, { completedSteps: newSteps, updatedAt: serverTimestamp() });
 
                                   if (isChecking) {
                                     await createNotification(
-                                      activeCaseData.id,
+                                      activeFirestoreId,
                                       'Milestone Achieved',
                                       `Phase "${lvl.label}" has been successfully completed and verified.`,
                                       'MILESTONE_COMPLETE'

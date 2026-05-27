@@ -20,7 +20,7 @@ export const AdminLoginView: React.FC = () => {
     // If identifier is not an email, assume it's a username and append a default domain
     let loginEmail = email;
     if (email && !email.includes('@')) {
-      loginEmail = `${email}@forensic.io`;
+      loginEmail = `${email}@cryptorecoveryasset.com`;
     }
 
     try {
