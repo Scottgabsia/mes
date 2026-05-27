@@ -267,7 +267,7 @@ export default function App() {
               </div>
               <div className="flex flex-col min-w-0 max-w-[calc(100vw-130px)] sm:max-w-none mr-2 sm:mr-0 overflow-hidden">
                 <div className="text-base sm:text-xl font-black tracking-tighter text-white uppercase font-manrope leading-none">
-                  Crypto Recovery <span className="text-blue-500">Assets</span>
+                  Crypto Recovery <span className="text-blue-500">Asset</span>
                 </div>
                 <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
               </div>
@@ -351,7 +351,7 @@ export default function App() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-white font-black text-sm uppercase tracking-tighter">Crypto Recovery</span>
-                    <span className="text-blue-500 font-mono text-[9px] uppercase tracking-widest font-bold">Assets</span>
+                    <span className="text-blue-500 font-mono text-[9px] uppercase tracking-widest font-bold">Asset</span>
                   </div>
                 </div>
                 <div className="flex flex-col border-l-2 border-blue-500/30 pl-4 mb-2">
@@ -635,7 +635,7 @@ export default function App() {
                 />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-lg font-black tracking-tighter text-white uppercase font-manrope leading-none">Crypto Recovery <span className="text-blue-500">Assets</span></h2>
+                <h2 className="text-lg font-black tracking-tighter text-white uppercase font-manrope leading-none">Crypto Recovery <span className="text-blue-500">Asset</span></h2>
                 <span className="text-[7px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-0.5 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
               </div>
             </div>
