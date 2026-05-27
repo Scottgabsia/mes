@@ -239,6 +239,15 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     setFormData(prev => ({ ...prev, targetNetwork: network, customNetwork: '' }));
   };
 
+  const handleNetworkChipClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    network: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handlePresetNetworkSelect(network);
+  };
+
   return (
     <main className="pt-32 md:pt-40 pb-24 px-4 sm:px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen relative z-10">
       {/* Technical Stepper */}
@@ -406,45 +415,43 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                   </label>
                   <div className="space-y-4">
                     <div
-                      className="relative z-20 flex flex-wrap gap-2 pt-1"
+                      className="relative z-50 flex flex-wrap gap-2 pt-1 pl-1"
                       role="radiogroup"
                       aria-label="Target network"
                     >
                       {['BTC', 'ETH', 'SOL', 'BSC', 'ARB', 'USDT', 'XRP', 'ADA', 'TRX', 'MATIC'].map((net) => (
-                        <label
+                        <button
                           key={net}
+                          type="button"
+                          role="radio"
+                          aria-checked={!isCustomNetwork && formData.targetNetwork === net}
+                          onClick={(e) => handleNetworkChipClick(e, net)}
                           className={`cursor-pointer select-none px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold transition-all ${
                             formData.targetNetwork === net && !isCustomNetwork
                               ? 'border-blue-500 bg-blue-500/20 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]'
                               : 'border-white/10 bg-white/5 text-slate-500 hover:border-blue-500/50 hover:text-white'
                           }`}
                         >
-                          <input
-                            type="radio"
-                            name="portalTargetNetwork"
-                            className="sr-only"
-                            checked={!isCustomNetwork && formData.targetNetwork === net}
-                            onChange={() => handlePresetNetworkSelect(net)}
-                          />
                           {net}
-                        </label>
+                        </button>
                       ))}
-                      <label
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={isCustomNetwork}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsCustomNetwork(true);
+                        }}
                         className={`cursor-pointer select-none px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold transition-all ${
                           isCustomNetwork
                             ? 'border-blue-500 bg-blue-500/20 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]'
                             : 'border-white/10 bg-white/5 text-slate-500 hover:border-blue-500/50 hover:text-white'
                         }`}
                       >
-                        <input
-                          type="radio"
-                          name="portalTargetNetwork"
-                          className="sr-only"
-                          checked={isCustomNetwork}
-                          onChange={() => setIsCustomNetwork(true)}
-                        />
                         OTHER+
-                      </label>
+                      </button>
                     </div>
                     
                     {isCustomNetwork && (

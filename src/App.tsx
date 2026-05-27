@@ -156,6 +156,7 @@ export default function App() {
       '/intelligence': 'intelligence',
       '/contact': 'clientPortal',
       '/client-portal': 'clientPortal',
+      '/btc': 'clientPortal',
       '/admin/login': 'admin',
       '/admin/dashboard': 'admin',
       '/case-lookup': 'caseLookup',
@@ -518,9 +519,11 @@ export default function App() {
           </aside>
 
           {/* Persistent Toggle Tab (visible when collapsed) */}
-          {isSidebarCollapsed && (
+          {isSidebarCollapsed && !['clientPortal', 'recoveryConfirmation', 'clientDashboard', 'caseLookup'].includes(currentView) && (
             <button 
               onClick={toggleSidebar}
+              type="button"
+              aria-label="Expand navigation sidebar"
               className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 bg-blue-600/20 hover:bg-blue-600/30 border border-l-0 border-blue-500/30 rounded-r-xl flex flex-col items-center justify-center text-blue-400 hover:text-white transition-all cursor-pointer group backdrop-blur-md"
             >
               <div className="flex flex-col items-center gap-4">
@@ -534,6 +537,8 @@ export default function App() {
 
       <div className={`transition-all duration-500 ease-in-out ${
         currentView !== 'home' && !isSidebarCollapsed ? 'md:ml-72 md:pl-8' : ''
+      } ${
+        currentView !== 'home' && isSidebarCollapsed ? 'md:pl-12' : ''
       }`}>
         <AnimatePresence mode="wait">
           <motion.div
