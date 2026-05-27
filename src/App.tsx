@@ -562,8 +562,8 @@ export default function App() {
               }} />
             )}
             {currentView === 'clientDashboard' && <ClientDashboardView caseData={selectedCase} />}
-            {currentView === 'chainTraceability' && <ChainTraceabilityView />}
-            {currentView === 'exchangeRecovery' && <ExchangeRecoveryView />}
+            {currentView === 'chainTraceability' && <ChainTraceabilityView onNavigate={handleNavClick} />}
+            {currentView === 'exchangeRecovery' && <ExchangeRecoveryView onNavigate={handleNavClick} />}
             {currentView === 'legalEnforcement' && <LegalEnforcementView />}
             {currentView === 'riskMonitoring' && <RiskMonitoringView />}
             {currentView === 'tools' && <ToolsView />}

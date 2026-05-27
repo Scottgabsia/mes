@@ -64,14 +64,9 @@ export const RiskMonitoringView = () => {
           <p className="text-lg text-slate-300 mb-10 leading-relaxed font-manrope">
             Tailored risk management frameworks for high-net-worth individuals and crypto-native institutions. Our solution is the difference between an asset and a liability.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <button className="px-12 py-5 bg-amber-600 text-white font-manrope font-black text-sm uppercase tracking-[0.3em] rounded-xl hover:bg-amber-500 transition-all shadow-[0_0_20px_#d9770644] active:scale-95 cursor-pointer">
-              Activate Advanced Monitoring
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-widest">System Status: Optimal</span>
-            </div>
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-widest">System Status: Optimal</span>
           </div>
         </div>
       </div>

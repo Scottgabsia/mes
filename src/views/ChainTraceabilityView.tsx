@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Search, Share2, Database, Shield, Zap, Activity } from 'lucide-react';
 
-export const ChainTraceabilityView = () => {
+type ChainTraceabilityViewProps = {
+  onNavigate?: (view: 'clientPortal') => void;
+};
+
+export const ChainTraceabilityView = ({ onNavigate }: ChainTraceabilityViewProps) => {
   return (
     <div className="pt-40 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto min-h-screen">
       <div className="relative mb-20">
@@ -133,7 +137,11 @@ export const ChainTraceabilityView = () => {
 
       {/* Final CTA */}
       <div className="text-center">
-        <button className="px-10 py-5 bg-blue-600 text-white font-manrope font-black text-sm uppercase tracking-[0.3em] rounded-xl hover:bg-blue-500 transition-all shadow-[0_0_25px_#0062ff66] active:scale-95 cursor-pointer">
+        <button
+          type="button"
+          onClick={() => onNavigate?.('clientPortal')}
+          className="px-10 py-5 bg-blue-600 text-white font-manrope font-black text-sm uppercase tracking-[0.3em] rounded-xl hover:bg-blue-500 transition-all shadow-[0_0_25px_#0062ff66] active:scale-95 cursor-pointer"
+        >
           Request Forensic Trace
         </button>
       </div>

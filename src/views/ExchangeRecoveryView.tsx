@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowUpDown, Landmark, ShieldCheck, Zap, Globe, Briefcase } from 'lucide-react';
 
-export const ExchangeRecoveryView = () => {
+type ExchangeRecoveryViewProps = {
+  onNavigate?: (view: 'clientPortal') => void;
+};
+
+export const ExchangeRecoveryView = ({ onNavigate }: ExchangeRecoveryViewProps) => {
   return (
     <div className="pt-40 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto min-h-screen">
       <div className="relative mb-20">
@@ -101,7 +105,11 @@ export const ExchangeRecoveryView = () => {
       </div>
 
       <div className="text-center mb-20">
-        <button className="px-10 py-5 bg-emerald-600 text-white font-manrope font-black text-sm uppercase tracking-[0.3em] rounded-xl hover:bg-emerald-500 transition-all shadow-[0_0_25px_#10b98166] active:scale-95 cursor-pointer">
+        <button
+          type="button"
+          onClick={() => onNavigate?.('clientPortal')}
+          className="px-10 py-5 bg-emerald-600 text-white font-manrope font-black text-sm uppercase tracking-[0.3em] rounded-xl hover:bg-emerald-500 transition-all shadow-[0_0_25px_#10b98166] active:scale-95 cursor-pointer"
+        >
           Initialize Recovery Protocol
         </button>
       </div>
