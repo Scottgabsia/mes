@@ -53,9 +53,13 @@ export async function fetchAdminCases(): Promise<{
   };
 }
 
-export async function patchAdminCaseStatus(
+export async function patchAdminCase(
   caseId: string,
-  status: string
+  body: {
+    status?: string;
+    completedSteps?: string[];
+    notification?: { title: string; message: string; type: string };
+  }
 ): Promise<{ ok: boolean; error?: string }> {
   const headers = await adminAuthHeaders();
   if (!headers) {
@@ -67,12 +71,62 @@ export async function patchAdminCaseStatus(
     {
       method: "PATCH",
       headers,
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(body),
     }
   );
 
   if (ok && data?.success) return { ok: true };
   return { ok: false, error: error || data?.error || "Update failed" };
+}
+
+export async function patchAdminCaseStatus(
+  caseId: string,
+  status: string,
+  notification?: { title: string; message: string; type: string }
+): Promise<{ ok: boolean; error?: string }> {
+  return patchAdminCase(caseId, { status, notification });
+}
+
+export async function postAdminCaseMessage(
+  caseId: string,
+  text: string
+): Promise<{ ok: boolean; error?: string }> {
+  const headers = await adminAuthHeaders();
+  if (!headers) {
+    return { ok: false, error: "Not signed in" };
+  }
+
+  const { ok, data, error } = await apiFetch<{ success?: boolean; error?: string }>(
+    `/api/admin/cases/${encodeURIComponent(caseId)}/messages`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ text }),
+    }
+  );
+
+  if (ok && data?.success) return { ok: true };
+  return { ok: false, error: error || data?.error || "Message failed" };
+}
+
+export async function fetchAdminCase(
+  caseId: string
+): Promise<{ ok: boolean; case?: AdminCaseRecord; error?: string }> {
+  const headers = await adminAuthHeaders();
+  if (!headers) {
+    return { ok: false, error: "Not signed in" };
+  }
+
+  const { ok, data, error } = await apiFetch<{
+    success?: boolean;
+    case?: AdminCaseRecord;
+    error?: string;
+  }>(`/api/admin/cases/${encodeURIComponent(caseId)}`, { headers });
+
+  if (ok && data?.success && data.case) {
+    return { ok: true, case: data.case };
+  }
+  return { ok: false, error: error || data?.error || "Load failed" };
 }
 
 function caseTime(c: AdminCaseRecord): number {

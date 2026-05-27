@@ -20,10 +20,16 @@ import {
   sendIntegrityVerifierEmail,
 } from "./server/forensic";
 import {
+  addCaseMessage,
+  addCaseNotification,
   appendRecoveryCase,
+  caseMatchesEmail,
   findRecoveryCaseByEmail,
+  getRecoveryCaseById,
   listRecoveryCases,
-  updateRecoveryCaseStatus,
+  markNotificationsRead,
+  updateRecoveryCase,
+  type StoredCase,
 } from "./server/caseStore";
 import { requireAdminFromRequest } from "./server/adminAuth";
 
@@ -148,6 +154,30 @@ async function startServer() {
     }
   });
 
+  function toPublicCase(found: StoredCase) {
+    const caseId = String(found.caseId || found.id);
+    return {
+      id: caseId,
+      caseId,
+      storageSource: "server",
+      firestoreDocId: null,
+      operatorAlias: found.operatorAlias,
+      secureComms: found.secureComms || found.email,
+      email: found.email || found.secureComms,
+      status: found.status || "PENDING",
+      incidentVector: found.incidentVector,
+      targetNetwork: found.targetNetwork,
+      transactionHash: found.transactionHash,
+      caseNarrative: found.caseNarrative,
+      estimatedValue: found.estimatedValue,
+      completedSteps: found.completedSteps || ["PENDING"],
+      messages: found.messages || [],
+      notifications: found.notifications || [],
+      formSource: found.formSource,
+      createdAt: found.createdAt,
+    };
+  }
+
   app.post("/api/case-lookup", (req, res) => {
     const email =
       typeof req.body?.email === "string"
@@ -167,28 +197,65 @@ async function startServer() {
       });
     }
 
-    const caseId = String(found.caseId || found.id);
-    res.json({
-      success: true,
-      case: {
-        id: caseId,
-        caseId,
-        storageSource: "server",
-        firestoreDocId: null,
-        operatorAlias: found.operatorAlias,
-        secureComms: found.secureComms || found.email,
-        email: found.email || found.secureComms,
-        status: found.status || "PENDING",
-        incidentVector: found.incidentVector,
-        targetNetwork: found.targetNetwork,
-        transactionHash: found.transactionHash,
-        caseNarrative: found.caseNarrative,
-        estimatedValue: found.estimatedValue,
-        completedSteps: found.completedSteps || [],
-        formSource: found.formSource,
-        createdAt: found.createdAt,
-      },
+    res.json({ success: true, case: toPublicCase(found) });
+  });
+
+  app.get("/api/case/:caseId", (req, res) => {
+    const email =
+      typeof req.query.email === "string"
+        ? req.query.email.trim().toLowerCase()
+        : "";
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found || !caseMatchesEmail(found, email)) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    res.json({ success: true, case: toPublicCase(found) });
+  });
+
+  app.post("/api/case/:caseId/messages", (req, res) => {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    const text = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+    if (!email || !text) {
+      return res
+        .status(400)
+        .json({ success: false, error: "email and text required" });
+    }
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found || !caseMatchesEmail(found, email)) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    const message = addCaseMessage(req.params.caseId, {
+      text,
+      sender: "Client",
+      senderId: "client",
+      type: "client_message",
     });
+    if (!message) {
+      return res.status(500).json({ success: false, error: "Failed to save" });
+    }
+    res.json({ success: true, message });
+  });
+
+  app.patch("/api/case/:caseId/notifications", (req, res) => {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    const notificationId =
+      typeof req.body?.notificationId === "string"
+        ? req.body.notificationId
+        : undefined;
+    if (!email) {
+      return res.status(400).json({ success: false, error: "email required" });
+    }
+    const ok = markNotificationsRead(req.params.caseId, email, notificationId);
+    if (!ok) {
+      return res.status(404).json({ success: false, error: "Not found" });
+    }
+    res.json({ success: true });
   });
 
   app.get("/api/admin/cases", async (req, res) => {
@@ -203,21 +270,80 @@ async function startServer() {
     res.json({ success: true, cases, count: cases.length });
   });
 
+  app.get("/api/admin/cases/:caseId", async (req, res) => {
+    const admin = await requireAdminFromRequest(req.headers.authorization);
+    if (!admin) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    res.json({ success: true, case: found });
+  });
+
   app.patch("/api/admin/cases/:caseId", async (req, res) => {
     const admin = await requireAdminFromRequest(req.headers.authorization);
     if (!admin) {
       return res.status(401).json({ success: false, error: "Unauthorized" });
     }
     const caseId = req.params.caseId;
-    const { status } = req.body || {};
-    if (!status) {
-      return res.status(400).json({ success: false, error: "status required" });
+    const { status, completedSteps, notification } = req.body || {};
+    if (
+      status === undefined &&
+      completedSteps === undefined &&
+      !notification
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Nothing to update" });
     }
-    const updated = updateRecoveryCaseStatus(caseId, status);
+    const updated = updateRecoveryCase(caseId, {
+      ...(status !== undefined ? { status: String(status) } : {}),
+      ...(completedSteps !== undefined
+        ? { completedSteps: completedSteps as string[] }
+        : {}),
+    });
     if (!updated) {
       return res.status(404).json({ success: false, error: "Case not found" });
     }
-    res.json({ success: true, case: updated });
+    if (notification && typeof notification === "object") {
+      addCaseNotification(caseId, {
+        title: String(notification.title || "Update"),
+        message: String(notification.message || ""),
+        type: String(notification.type || "STATUS_UPDATE"),
+      });
+    }
+    const fresh = getRecoveryCaseById(caseId);
+    res.json({ success: true, case: fresh || updated });
+  });
+
+  app.post("/api/admin/cases/:caseId/messages", async (req, res) => {
+    const admin = await requireAdminFromRequest(req.headers.authorization);
+    if (!admin) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+    const text = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+    if (!text) {
+      return res.status(400).json({ success: false, error: "text required" });
+    }
+    const caseId = req.params.caseId;
+    const message = addCaseMessage(caseId, {
+      text,
+      sender: "Forensic System v4.2 (Admin)",
+      senderId: "admin",
+      type: "admin_message",
+    });
+    if (!message) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    addCaseNotification(caseId, {
+      title: "New Message Received",
+      message:
+        "You have a new secure communication from your lead analyst.",
+      type: "MESSAGE",
+    });
+    res.json({ success: true, message });
   });
 
   app.get("/api/forensic/config", (_req, res) => {

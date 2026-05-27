@@ -1,5 +1,23 @@
 import { apiPost } from "./api";
 
+export type CaseMessage = {
+  id: string;
+  text: string;
+  sender: string;
+  senderId: string;
+  type: string;
+  createdAt: string;
+};
+
+export type CaseNotification = {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  read: boolean;
+  createdAt: string;
+};
+
 export type ClientCaseRecord = {
   id: string;
   caseId?: string;
@@ -15,6 +33,8 @@ export type ClientCaseRecord = {
   caseNarrative?: string;
   estimatedValue?: number;
   completedSteps?: string[];
+  messages?: CaseMessage[];
+  notifications?: CaseNotification[];
   formSource?: string;
   createdAt?: string;
 };

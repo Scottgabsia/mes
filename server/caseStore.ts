@@ -1,13 +1,79 @@
+import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { generateCaseId } from "./email";
+
+export type StoredMessage = {
+  id: string;
+  text: string;
+  sender: string;
+  senderId: string;
+  type: string;
+  createdAt: string;
+};
+
+export type StoredNotification = {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  read: boolean;
+  createdAt: string;
+};
 
 export type StoredCase = Record<string, unknown> & {
   id: string;
   caseId?: string;
   createdAt: string;
   status: string;
+  completedSteps?: string[];
+  messages?: StoredMessage[];
+  notifications?: StoredNotification[];
 };
+
+function newId(): string {
+  return crypto.randomUUID();
+}
+
+function normalizeEmail(value: unknown): string {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
+function findCaseIndex(store: { cases: StoredCase[] }, caseId: string): number {
+  return store.cases.findIndex((c) => c.id === caseId || c.caseId === caseId);
+}
+
+function normalizeStoredCase(row: StoredCase): StoredCase {
+  return {
+    ...row,
+    completedSteps: Array.isArray(row.completedSteps)
+      ? row.completedSteps
+      : [typeof row.status === "string" ? row.status : "PENDING"],
+    messages: Array.isArray(row.messages) ? row.messages : [],
+    notifications: Array.isArray(row.notifications) ? row.notifications : [],
+  };
+}
+
+export function getRecoveryCaseById(caseId: string): StoredCase | null {
+  const store = ensureStore();
+  const idx = findCaseIndex(store, caseId);
+  if (idx === -1) return null;
+  const normalized = normalizeStoredCase(store.cases[idx]);
+  store.cases[idx] = normalized;
+  return normalized;
+}
+
+export function caseMatchesEmail(
+  caseRow: StoredCase,
+  email: string
+): boolean {
+  const target = normalizeEmail(email);
+  if (!target) return false;
+  return (
+    normalizeEmail(caseRow.secureComms) === target ||
+    normalizeEmail(caseRow.email) === target
+  );
+}
 
 function resolveDataDir(): string {
   const fromEnv = process.env.CASE_DATA_DIR?.trim();
@@ -81,6 +147,11 @@ export function appendRecoveryCase(
     createdAt,
     status: (payload.status as string) || "PENDING",
     storageSource: "server",
+    completedSteps: Array.isArray(payload.completedSteps)
+      ? (payload.completedSteps as string[])
+      : ["PENDING"],
+    messages: [],
+    notifications: [],
   };
 
   store.cases.unshift(entry);
@@ -92,10 +163,6 @@ export function appendRecoveryCase(
     `[CaseStore] Saved case ${caseId} for ${String(payload.secureComms || payload.email || "unknown")} → ${CASES_FILE}`
   );
   return entry;
-}
-
-function normalizeEmail(value: unknown): string {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
 /** Find the most recent case submitted with this email (server store). */
@@ -120,25 +187,124 @@ export function findRecoveryCaseByEmail(email: string): StoredCase | null {
 
 export function listRecoveryCases(): StoredCase[] {
   const store = ensureStore();
+  store.cases = store.cases.map(normalizeStoredCase);
   return [...store.cases].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
+}
+
+export function updateRecoveryCase(
+  caseId: string,
+  patch: { status?: string; completedSteps?: string[] }
+): StoredCase | null {
+  const store = ensureStore();
+  const idx = findCaseIndex(store, caseId);
+  if (idx === -1) return null;
+  store.cases[idx] = {
+    ...store.cases[idx],
+    ...(patch.status !== undefined ? { status: patch.status } : {}),
+    ...(patch.completedSteps !== undefined
+      ? { completedSteps: patch.completedSteps }
+      : {}),
+    updatedAt: new Date().toISOString(),
+  };
+  writeStore(store);
+  return store.cases[idx];
 }
 
 export function updateRecoveryCaseStatus(
   caseId: string,
   status: string
 ): StoredCase | null {
+  return updateRecoveryCase(caseId, { status });
+}
+
+export function addCaseMessage(
+  caseId: string,
+  input: {
+    text: string;
+    sender: string;
+    senderId: string;
+    type: string;
+  }
+): StoredMessage | null {
   const store = ensureStore();
-  const idx = store.cases.findIndex(
-    (c) => c.id === caseId || c.caseId === caseId
-  );
+  const idx = findCaseIndex(store, caseId);
   if (idx === -1) return null;
-  store.cases[idx] = {
-    ...store.cases[idx],
-    status,
-    updatedAt: new Date().toISOString(),
+
+  const entry: StoredMessage = {
+    id: newId(),
+    text: input.text,
+    sender: input.sender,
+    senderId: input.senderId,
+    type: input.type,
+    createdAt: new Date().toISOString(),
   };
+
+  const messages = Array.isArray(store.cases[idx].messages)
+    ? [...store.cases[idx].messages!]
+    : [];
+  messages.push(entry);
+  store.cases[idx] = { ...store.cases[idx], messages };
   writeStore(store);
-  return store.cases[idx];
+  return entry;
+}
+
+export function addCaseNotification(
+  caseId: string,
+  input: {
+    title: string;
+    message: string;
+    type: string;
+  }
+): StoredNotification | null {
+  const store = ensureStore();
+  const idx = findCaseIndex(store, caseId);
+  if (idx === -1) return null;
+
+  const entry: StoredNotification = {
+    id: newId(),
+    title: input.title,
+    message: input.message,
+    type: input.type,
+    read: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  const notifications = Array.isArray(store.cases[idx].notifications)
+    ? [...store.cases[idx].notifications!]
+    : [];
+  notifications.unshift(entry);
+  store.cases[idx] = { ...store.cases[idx], notifications };
+  writeStore(store);
+  return entry;
+}
+
+export function markNotificationsRead(
+  caseId: string,
+  email: string,
+  notificationId?: string
+): boolean {
+  const store = ensureStore();
+  const idx = findCaseIndex(store, caseId);
+  if (idx === -1 || !caseMatchesEmail(store.cases[idx], email)) return false;
+
+  const notifications = Array.isArray(store.cases[idx].notifications)
+    ? [...store.cases[idx].notifications!]
+    : [];
+
+  let changed = false;
+  for (let i = 0; i < notifications.length; i++) {
+    if (notificationId && notifications[i].id !== notificationId) continue;
+    if (!notificationId || notifications[i].id === notificationId) {
+      notifications[i] = { ...notifications[i], read: true };
+      changed = true;
+      if (notificationId) break;
+    }
+  }
+
+  if (!changed) return false;
+  store.cases[idx] = { ...store.cases[idx], notifications };
+  writeStore(store);
+  return true;
 }

@@ -23,6 +23,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import {
+  fetchClientCase,
+  markClientNotificationsRead,
+  postClientCaseMessage,
+} from '../lib/caseClientApi';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 
 interface ClientDashboardViewProps {
@@ -58,8 +63,28 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       (caseData.storageSource === 'server' ? null : caseData.id);
 
     if (!firestoreDocId) {
-      setLiveCaseData(caseData);
-      return;
+      const caseId = String(caseData.caseId || caseData.id);
+      const email = String(caseData.secureComms || caseData.email || '');
+      if (!email) {
+        setLiveCaseData(caseData);
+        return;
+      }
+
+      const refresh = async () => {
+        const result = await fetchClientCase(caseId, email);
+        if (result.ok && result.case) {
+          setLiveCaseData(result.case);
+          setMessages(result.case.messages || []);
+          setNotifications(result.case.notifications || []);
+          setUnreadCount(
+            (result.case.notifications || []).filter((n) => !n.read).length
+          );
+        }
+      };
+
+      refresh();
+      const interval = window.setInterval(refresh, 5000);
+      return () => window.clearInterval(interval);
     }
 
     const qMessages = query(
@@ -108,20 +133,48 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     const firestoreDocId =
       caseData.firestoreDocId ||
       (caseData.storageSource === 'server' ? null : caseData.id);
-    if (!firestoreDocId) return;
+    const serverCaseId = !firestoreDocId
+      ? String(caseData.caseId || caseData.id)
+      : null;
+    const email = String(caseData.secureComms || caseData.email || '');
 
     setSendingMessage(true);
     try {
-      await addDoc(collection(db, 'recovery_requests', firestoreDocId, 'messages'), {
-        text: message,
-        sender: 'Client',
-        senderId: 'client',
-        createdAt: serverTimestamp(),
-        type: 'client_message'
-      });
+      if (serverCaseId && email) {
+        const result = await postClientCaseMessage(
+          serverCaseId,
+          email,
+          message.trim()
+        );
+        if (!result.ok) throw new Error(result.error || 'Send failed');
+        const refreshed = await fetchClientCase(serverCaseId, email);
+        if (refreshed.ok && refreshed.case) {
+          setMessages(refreshed.case.messages || []);
+          setLiveCaseData(refreshed.case);
+        }
+      } else if (firestoreDocId) {
+        await addDoc(
+          collection(db, 'recovery_requests', firestoreDocId, 'messages'),
+          {
+            text: message,
+            sender: 'Client',
+            senderId: 'client',
+            createdAt: serverTimestamp(),
+            type: 'client_message',
+          }
+        );
+      }
       setMessage('');
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `recovery_requests/${firestoreDocId}/messages`);
+      if (firestoreDocId) {
+        handleFirestoreError(
+          err,
+          OperationType.CREATE,
+          `recovery_requests/${firestoreDocId}/messages`
+        );
+      } else {
+        console.error('Server message failed:', err);
+      }
     } finally {
       setSendingMessage(false);
     }
@@ -248,22 +301,67 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
   const handleMarkAsRead = async (notificationId: string) => {
     if (!caseData?.id) return;
+    const firestoreDocId =
+      caseData.firestoreDocId ||
+      (caseData.storageSource === 'server' ? null : caseData.id);
+    const email = String(caseData.secureComms || caseData.email || '');
+
     try {
-      await updateDoc(doc(db, 'recovery_requests', caseData.id, 'notifications', notificationId), {
-        read: true
-      });
+      if (!firestoreDocId && email) {
+        await markClientNotificationsRead(
+          String(caseData.caseId || caseData.id),
+          email,
+          notificationId
+        );
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, read: true } : n
+          )
+        );
+        setUnreadCount((c) => Math.max(0, c - 1));
+        return;
+      }
+      if (!firestoreDocId) return;
+      await updateDoc(
+        doc(db, 'recovery_requests', firestoreDocId, 'notifications', notificationId),
+        { read: true }
+      );
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `recovery_requests/${caseData.id}/notifications/${notificationId}`);
+      handleFirestoreError(
+        err,
+        OperationType.UPDATE,
+        `recovery_requests/${firestoreDocId}/notifications/${notificationId}`
+      );
     }
   };
 
   const handleMarkAllRead = async () => {
     if (!caseData?.id || unreadCount === 0) return;
-    const unread = notifications.filter(n => !n.read);
+    const firestoreDocId =
+      caseData.firestoreDocId ||
+      (caseData.storageSource === 'server' ? null : caseData.id);
+    const email = String(caseData.secureComms || caseData.email || '');
+    const unread = notifications.filter((n) => !n.read);
+
     try {
-      await Promise.all(unread.map(n => 
-        updateDoc(doc(db, 'recovery_requests', caseData.id, 'notifications', n.id), { read: true })
-      ));
+      if (!firestoreDocId && email) {
+        await markClientNotificationsRead(
+          String(caseData.caseId || caseData.id),
+          email
+        );
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+        setUnreadCount(0);
+        return;
+      }
+      if (!firestoreDocId) return;
+      await Promise.all(
+        unread.map((n) =>
+          updateDoc(
+            doc(db, 'recovery_requests', firestoreDocId, 'notifications', n.id),
+            { read: true }
+          )
+        )
+      );
     } catch (err) {
       console.error('Failed to mark all as read:', err);
     }
