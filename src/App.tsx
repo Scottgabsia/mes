@@ -516,9 +516,6 @@ export default function App() {
               >
                 <Layers className="w-4 h-4" /> Services
               </button>
-              <button className="text-slate-400 px-4 py-3 flex items-center gap-4 hover:bg-primary/10 hover:text-primary rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left font-bold cursor-pointer">
-                <Activity className="w-4 h-4" /> Operations
-              </button>
               <button 
                 onClick={() => handleNavClick('intelligence')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
