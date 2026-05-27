@@ -10,6 +10,10 @@ export const FIREBASE_API_URL =
 /** Header/footer logo */
 export const LOGO_URL = "/logo.png?v=8";
 
+/** Square brand mark for Google / structured data (≥112×112) */
+export const BRAND_ICON_URL = `${SITE_URL}/brand-icon-512.png`;
+export const FAVICON_VERSION = "11";
+
 export const SOCIAL_LINKS = [
   {
     id: "facebook",

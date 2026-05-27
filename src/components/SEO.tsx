@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { OG_IMAGE_URL, SITE_URL } from '../constants';
+import { FAVICON_VERSION, OG_IMAGE_URL, SITE_URL } from '../constants';
 
 interface SEOProps {
   title?: string;
@@ -38,6 +38,9 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="description" content={metaDescription} />
       <meta name="keywords" content={metaKeywords} />
       <link rel="canonical" href={url} />
+      <link rel="icon" href={`/favicon.ico?v=${FAVICON_VERSION}`} sizes="any" />
+      <link rel="icon" type="image/png" sizes="48x48" href={`/favicon-48x48.png?v=${FAVICON_VERSION}`} />
+      <link rel="icon" type="image/png" sizes="192x192" href={`/favicon-192x192.png?v=${FAVICON_VERSION}`} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
