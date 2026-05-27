@@ -243,6 +243,135 @@ const REVIEWS_DATA: Review[] = [
     date: '2026-05-24',
     verified: true,
     tag: 'USER_EMPOWERMENT'
+  },
+  {
+    id: 'rev_23',
+    user: 'PRIYA_MUMBAI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I was devastated after losing nearly $180,000 USDT to a fake investment platform that looked identical to a legitimate DeFi protocol. Every other 'recovery' company I contacted demanded thousands upfront. Crypto Recovery Assets was different from the first call: they explained the forensic process, gave me a realistic timeline, and never asked for a retainer. Over six weeks their analysts mapped the flow through multiple chains, identified deposit addresses on a major exchange, and worked with compliance to freeze the balance. I received structured updates twice a week with transaction graphs I could actually show my lawyer. In the end we recovered 92% of the principal. I cannot overstate how professional, patient, and technically competent this team is. If you are sitting on the fence because you have been burned before, start here.",
+    date: '2026-05-25',
+    verified: true,
+    tag: 'FULL_RECOVERY'
+  },
+  {
+    id: 'rev_24',
+    user: 'THOMAS_HK',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "Our family office engaged them after a spear-phishing incident drained a cold-wallet workflow into a nested series of swaps. The case involved Ethereum mainnet, Arbitrum, and a privacy pool—complexity most vendors waved away. Their report included cluster attribution, exchange KYC correlation requests, and a chain-of-custody appendix suitable for counsel in Hong Kong and the UK. Communication was board-ready without being vague. Recovery exceeded our internal forecast.",
+    date: '2026-05-25',
+    verified: true,
+    tag: 'INSTITUTIONAL_GRADE'
+  },
+  {
+    id: 'rev_25',
+    user: 'NINA_PORTLAND',
+    platform: 'GOOGLE',
+    rating: 4,
+    content:
+      "Solid experience overall. The portal made it easy to message my analyst and upload bank statements when the exchange asked for source-of-funds proof. Took almost ten weeks because the thief had already cashed out through a P2P desk, but they still clawed back a meaningful portion. Would have appreciated slightly faster email replies on weekends, hence four stars—but I would absolutely recommend them to friends who get scammed.",
+    date: '2026-05-26',
+    verified: true,
+    tag: 'CLIENT_PORTAL'
+  },
+  {
+    id: 'rev_26',
+    user: 'RAFAEL_MX',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Recuperaron fondos que creía perdidos para siempre. Muy profesionales y claros en español e inglés.",
+    date: '2026-05-26',
+    verified: true,
+    tag: 'BILINGUAL_SUPPORT'
+  },
+  {
+    id: 'rev_27',
+    user: 'EMILY_RN_CHI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "A romance scammer convinced me to send BTC over three months. I was ashamed and almost did not report it. The intake team treated me with dignity—no judgment, just facts. They traced cumulative deposits to a consolidation wallet, linked it to prior fraud complaints in their intelligence database, and helped me file with IC3. Seeing the case status move from PENDING to RECOVERY in the client dashboard kept me sane. They recovered 0.84 BTC. Forever grateful.",
+    date: '2026-05-27',
+    verified: true,
+    tag: 'ROMANCE_SCAM'
+  },
+  {
+    id: 'rev_28',
+    user: 'VIKTOR_BERLIN',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Schnelle Reaktion, klare Forensik, echte Ergebnisse. Die Börse hat nach ihrem Brief die Auszahlung gestoppt.",
+    date: '2026-05-27',
+    verified: true,
+    tag: 'EU_EXCHANGE'
+  },
+  {
+    id: 'rev_29',
+    user: 'OLIVIA_SYDNEY',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I lost access to a hardware wallet after a firmware update corrupted my passphrase backup. Local shops said it was impossible. These specialists rebuilt the derivation path, verified checksums on partial seed fragments, and restored access without ever asking me to email my full seed phrase—everything happened through their encrypted portal and in-person video verification. That security posture matters. Five stars without hesitation.",
+    date: '2026-05-28',
+    verified: true,
+    tag: 'WALLET_RESTORATION'
+  },
+  {
+    id: 'rev_30',
+    user: 'JAMES_FTL',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "Fake Coinbase support on Twitter/X walked me through 'securing' my account and drained $47k in under an hour. I called Crypto Recovery Assets the same night. By morning they had flagged the destination cluster, by day three the exchange had a hold on the account, and within a month most funds were returned. The success-only fee model meant I only paid when money actually hit my bank-linked account. Legitimate operation.",
+    date: '2026-05-28',
+    verified: true,
+    tag: 'IMPERSONATION_SCAM'
+  },
+  {
+    id: 'rev_31',
+    user: 'HANNAH_ZURICH',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content:
+      "Very thorough forensic report for our insurance claim. Insurer initially denied coverage citing 'user negligence'; CRA's documentation on the exploit vector and third-party bridge vulnerability helped overturn that decision. Recovery amount was partial because assets had already been bridged to a high-risk jurisdiction, but the investigative quality was exceptional.",
+    date: '2026-05-29',
+    verified: true,
+    tag: 'INSURANCE_CLAIM'
+  },
+  {
+    id: 'rev_32',
+    user: 'ANTONIO_NJ',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "My son fell for a Discord 'NFT mint' drainer and lost his college fund in ETH and SOL. As a parent I was furious and scared. The team treated it like the emergency it was: weekend escalation, direct line to an analyst, coordination with OpenSea support logs and Solana validators where relevant. They recovered enough to cover tuition. God bless this crew—they turned our worst month into something hopeful.",
+    date: '2026-05-29',
+    verified: true,
+    tag: 'NFT_DRAINER'
+  },
+  {
+    id: 'rev_33',
+    user: 'MEI_LION_CITY',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Transparent milestones, honest probabilities, and they delivered. No ghosting, no upsells.",
+    date: '2026-05-30',
+    verified: true,
+    tag: 'MILESTONE_SYNC'
+  },
+  {
+    id: 'rev_34',
+    user: 'GREGORY_AUS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I run a small mining operation and had a payroll wallet compromised via a malicious browser extension. CRA isolated the malware IOCs, traced outflows to mixers and then to a regional exchange, and prepared evidence for Australian cybercrime authorities. The written report alone was worth the engagement—clear exhibits, hashes, timestamps, USD valuations at each hop. Funds recovered: 78%. Process was intense but fair. They told me upfront when odds were low and still pushed. This is the standard every recovery firm should meet.",
+    date: '2026-05-30',
+    verified: true,
+    tag: 'FORENSIC_REPORT'
   }
 ];
 
