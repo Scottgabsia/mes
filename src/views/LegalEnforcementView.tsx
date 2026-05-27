@@ -68,25 +68,15 @@ export const LegalEnforcementView = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass-panel p-8 rounded-2xl border border-white/5">
-          <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Expert Witness Coverage</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {['USA', 'United Kingdom', 'EU (Various)', 'Singapore', 'Hong Kong', 'UAE', 'Switzerland', 'Australia', 'Japan'].map(region => (
-              <div key={region} className="flex items-center gap-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                <span className="text-xs font-mono text-slate-400 uppercase">{region}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="glass-panel p-8 rounded-2xl border border-purple-500/20 bg-purple-500/5 flex flex-col items-center justify-center text-center">
-          <BookOpen className="text-purple-500 mb-4" />
-          <h4 className="text-sm font-bold text-white mb-2 uppercase">Court Ready Documentation</h4>
-          <p className="text-[10px] text-slate-500 mb-6">ISO-27001 compliant forensic export formats.</p>
-          <button className="w-full py-3 bg-purple-600 text-white font-manrope font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-purple-500 transition-all cursor-pointer">
-            Sample Report PDF
-          </button>
+      <div className="glass-panel p-8 rounded-2xl border border-white/5">
+        <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Expert Witness Coverage</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {['USA', 'United Kingdom', 'EU (Various)', 'Singapore', 'Hong Kong', 'UAE', 'Switzerland', 'Australia', 'Japan'].map(region => (
+            <div key={region} className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+              <span className="text-xs font-mono text-slate-400 uppercase">{region}</span>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -1,12 +1,13 @@
 import React from 'react';
 import { 
-  ShieldCheck, 
   Mail, 
   Clock, 
   CheckCircle2, 
-  ArrowLeft,
-  LayoutDashboard
+  LayoutDashboard,
+  AlertTriangle,
+  ListOrdered,
 } from 'lucide-react';
+import { CONTACT_EMAIL } from '../constants';
 import { motion } from 'motion/react';
 
 interface RecoveryConfirmationViewProps {
@@ -44,20 +45,71 @@ export const RecoveryConfirmationView = ({ onBackToDashboard }: RecoveryConfirma
         <div className="glass-panel p-8 rounded-2xl border border-white/5 mb-12 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent animate-scan"></div>
           
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex items-center gap-4 text-slate-300">
-              <Mail className="text-blue-500 w-6 h-6" />
+          <div className="flex flex-col items-stretch gap-8 text-left">
+            <div className="flex items-start gap-4 text-slate-300">
+              <Mail className="text-blue-500 w-6 h-6 flex-shrink-0 mt-0.5" />
               <p className="text-lg font-manrope leading-relaxed">
-                Thank you. Your forensic request has been <span className="text-white font-bold">successfully transmitted</span>. 
-                Our intake department has been notified and we have received your details in our secure monitoring system.
+                Thank you. Your forensic request has been{' '}
+                <span className="text-white font-bold">successfully transmitted</span>. Our intake
+                department has been notified and your details are in our secure monitoring system.
               </p>
             </div>
-            
-            <div className="flex items-center gap-4 text-slate-400">
-              <Clock className="text-blue-500/60 w-5 h-5" />
-              <p className="text-sm font-manrope italic">
-                Our forensic analysts are currently conducting a preliminary review of your data. 
-                Kindly note that we have received your submission and we will get back to you shortly via your provided contact methods.
+
+            <div className="flex items-start gap-4 text-slate-300 rounded-xl border border-blue-500/20 bg-blue-500/5 p-5">
+              <Mail className="text-blue-400 w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm font-manrope leading-relaxed">
+                You will receive an <span className="text-white font-bold">automated email</span> at
+                the address you provided with your case reference, an overview of our recovery
+                procedure, and what to expect in the next 24–48 hours. Messages are sent from{' '}
+                <span className="text-blue-400 font-mono text-xs">{CONTACT_EMAIL}</span>.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-4 text-amber-200/90 rounded-xl border border-amber-500/25 bg-amber-500/10 p-5">
+              <AlertTriangle className="text-amber-400 w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm font-manrope leading-relaxed">
+                <span className="text-white font-bold">Check your junk or spam folder</span> if you
+                do not see our email within a few minutes. Provider filters sometimes place
+                forensic and case notifications there—mark our message as “Not spam” so future
+                updates reach your inbox.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <ListOrdered className="text-blue-500 w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div className="space-y-4">
+                <p className="text-xs font-mono text-blue-400 uppercase tracking-widest font-bold">
+                  Our procedure — what happens next
+                </p>
+                <ol className="space-y-3 text-sm text-slate-400 font-manrope leading-relaxed list-decimal list-inside marker:text-blue-500 marker:font-bold">
+                  <li>
+                    <span className="text-slate-300">Intake confirmation</span> — automated email
+                    with your case details and secure portal instructions.
+                  </li>
+                  <li>
+                    <span className="text-slate-300">Preliminary review</span> — forensic analysts
+                    triage your submission and verify incident metadata (typically within 15
+                    minutes during business hours).
+                  </li>
+                  <li>
+                    <span className="text-slate-300">Case activation</span> — use the email link or
+                    client dashboard to track status, milestones, and analyst messages.
+                  </li>
+                  <li>
+                    <span className="text-slate-300">Forensic trace & recovery</span> — wallet
+                    verification, transaction tracing, and coordinated recovery actions as your
+                    case progresses.
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 text-slate-400 border-t border-white/5 pt-6">
+              <Clock className="text-blue-500/60 w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm font-manrope italic leading-relaxed">
+                Our team will also follow up via your provided contact methods if we need
+                additional information. You can access your dashboard below at any time using
+                the same email you submitted.
               </p>
             </div>
           </div>
