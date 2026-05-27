@@ -166,10 +166,11 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
 
   return (
     <div className="pt-24 xs:pt-28 sm:pt-40 lg:pt-44 xl:pt-48 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
-      <SEO 
-        title="Crypto Recovery Service & Blockchain Forensics" 
-        description="Global leader in cryptocurrency recovery service. Expert forensic analysis for Bitcoin, Ethereum, and DeFi exploits. Recover scammed crypto with zero upfront costs."
+      <SEO
+        title="Crypto Recovery Service & Blockchain Forensics"
+        description="Global leader in cryptocurrency recovery service. Expert forensic analysis for Bitcoin, Ethereum, and DeFi exploits. Recover scammed crypto with licensed investigators."
         keywords="crypto recovery service, cryptocurrency recovery tool, bitcoin recovery expert, scammed crypto recovery, hire crypto recovery specialist, how to recover lost crypto, blockchain forensics"
+        canonical="https://cryptorecoveryasset.com/"
       />
       {/* Hero & Main Viz */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 sm:gap-16 items-start mb-20 sm:mb-stack-lg">

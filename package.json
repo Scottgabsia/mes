@@ -16,6 +16,7 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "favicons": "node scripts/make-favicons-solid.mjs public/logo.png",
+    "sitemap": "node scripts/generate-sitemap.mjs",
     "deploy:functions": "cd functions && npm install && cd .. && firebase deploy --only functions"
   },
   "dependencies": {

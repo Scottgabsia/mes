@@ -1,6 +1,12 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /api
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reviews/submit
+
+# Crawl budget: allow static assets used in previews
+Allow: /favicon.ico
+Allow: /og-image.png
+Allow: /brand-icon-512.png
 
 Sitemap: https://cryptorecoveryasset.com/sitemap.xml

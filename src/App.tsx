@@ -19,6 +19,7 @@ import {
 import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { LOGO_URL } from './constants';
 import { FooterSocialLinks } from './components/SocialIcons';
+import { RouteSEO } from './components/RouteSEO';
 import { HomeView } from './views/HomeView';
 import { ServicesView } from './views/ServicesView';
 import { IntelligenceView } from './views/IntelligenceView';
@@ -237,6 +238,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
+      <RouteSEO />
       {/* TopAppBar */}
       <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
         <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">

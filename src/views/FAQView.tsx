@@ -9,73 +9,20 @@ import {
   ShieldAlert, 
   Search 
 } from 'lucide-react';
-import { SEO } from '../components/SEO';
+import { SEO, buildBreadcrumbSchema } from '../components/SEO';
+import { buildFaqPageSchema } from '../lib/seoConfig';
+import { getFaqCategories } from '../data/faq';
 
-const FAQ_DATA = [
-  {
-    category: 'WALLET_RECOVERY',
-    icon: Wallet,
-    questions: [
-      {
-        q: "How to recover lost crypto from a deleted wallet?",
-        a: "If the wallet was deleted, recovery depends on whether you have the seed phrase (12-24 words) or if raw data remains on the device's storage. Our specialists use deep-sector scanning to find deleted wallet files or help you reconstruct seed phrases from partial backups.",
-        keywords: "recover deleted crypto wallet"
-      },
-      {
-        q: "How to recover 12 word seed phrase if I lost some words?",
-        a: "We utilize high-performance computing clusters to 'brute force' missing words in a seed phrase. If you have 11 out of 12 words, or if you know the words but not the order, recovery is 99.9% mathematically certain within minutes.",
-        keywords: "how to recover 12 word seed phrase"
-      },
-      {
-        q: "Is it possible to recover Ledger Nano without seed phrase?",
-        a: "Recovery without the seed phrase requires physical access to the device and specialized hardware forensic tools. While extremely difficult due to the Secure Element chip, we have proprietary methods for data extraction in specific failure scenarios.",
-        keywords: "recover ledger nano without seed phrase"
-      },
-      {
-        q: "How to recover MetaMask wallet after computer reset?",
-        a: "If you didn't back up your seed phrase, we can often extract the encrypted 'vault' file from the hard drive's disk image if the sectors haven't been overwritten. This file can then be decrypted with your original password.",
-        keywords: "recover metamask wallet"
-      }
-    ]
-  },
-  {
-    category: 'EXCHANGE_&_SCAMS',
-    icon: ShieldAlert,
-    questions: [
-      {
-        q: "Can the FBI recover stolen crypto?",
-        a: "The FBI (via IC3) compiles evidence and can execute seizures if the case reaches a federal threshold. We act as the bridge by providing the FBI with professional forensic reports that prove the flow of funds, which significantly increases the chance of agency action.",
-        keywords: "can the fbi recover stolen crypto"
-      },
-      {
-        q: "What should I do if I was scammed into sending crypto?",
-        a: "Time is the most critical factor. Every minute counts before the scammer moves funds to a mixer or an off-ramp. We can help you 'trace a bitcoin transaction to an exchange' and issue immediate legal notices to freeze those funds before they are cashed out.",
-        keywords: "scammed crypto recovery"
-      },
-      {
-        q: "How to recover coinbase wallet assets sent to the wrong address?",
-        a: "If assets were sent to a wrong address on the same chain (and it's an exchange-owned address), we can mediate with the compliance team. If sent to a different chain, specialized 'cross-chain rescue' protocols are required.",
-        keywords: "recover coinbase wallet"
-      }
-    ]
-  },
-  {
-    category: 'SECURITY_&_EXPERTISE',
-    icon: Lock,
-    questions: [
-      {
-        q: "How to hire a crypto recovery specialist safely?",
-        a: "Always look for verifiable credentials, a transparent fee structure (no upfront fees), and a professional company registered in a clear jurisdiction. Never share your private keys or seed phrases with anyone claiming to be an 'expert'.",
-        keywords: "hire crypto recovery specialist"
-      },
-      {
-        q: "What are the common recovery scam signs?",
-        a: "Red flags include: demanding 'activation fees' or 'tax fees' upfront, claiming to 'hack the blockchain', or guaranteeing results in 1-2 hours. Legitimate firms only charge a percentage AFTER the recovery is successful.",
-        keywords: "recovery scam signs"
-      }
-    ]
-  }
-];
+const CATEGORY_ICONS: Record<string, typeof Wallet> = {
+  WALLET_RECOVERY: Wallet,
+  'EXCHANGE_&_SCAMS': ShieldAlert,
+  'SECURITY_&_EXPERTISE': Lock,
+};
+
+const FAQ_DATA = getFaqCategories().map((cat) => ({
+  ...cat,
+  icon: CATEGORY_ICONS[cat.category] ?? HelpCircle,
+}));
 
 type FAQViewProps = {
   onNavigate?: (view: 'clientPortal') => void;
@@ -91,10 +38,18 @@ export const FAQView = ({ onNavigate }: FAQViewProps) => {
 
   return (
     <main className="pt-32 pb-32 px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen">
-      <SEO 
-        title="FAQ & Recovery Guides | Crypto Specialist Support" 
+      <SEO
+        title="Crypto Recovery FAQ"
         description="Frequently asked questions about crypto recovery. Learn how to recover 12 word seed phrases, recover deleted wallets, and handle scammed assets safely."
         keywords="crypto recovery faq, how to recover lost crypto, recover metamask wallet help, trust wallet recovery guide, ledger nano recovery help"
+        canonical="https://cryptorecoveryasset.com/faq"
+        jsonLd={[
+          buildFaqPageSchema(),
+          buildBreadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "FAQ", path: "/faq" },
+          ]),
+        ]}
       />
 
       <div className="mb-20 text-center">
