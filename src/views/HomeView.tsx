@@ -2,9 +2,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BadgeCheck, 
-  Gavel, 
-  FileCheck, 
-  Landmark, 
   AlertTriangle, 
   ChevronLeft, 
   ChevronRight, 
@@ -14,6 +11,7 @@ import {
 import { ProgressBar, ForensicAgent } from '../components/Common';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { ReviewsSection } from '../components/ReviewsSection';
+import { CertificationsPartnershipsSection } from '../components/CertificationsPartnershipsSection';
 import { SEO } from '../components/SEO';
 import { serverTimestamp } from 'firebase/firestore';
 import { submitRecoveryCase } from '../lib/submitRecoveryCase';
@@ -298,22 +296,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
         </div>
       </section>
 
-      <section className="mb-stack-lg grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'ISO 27001', code: 'SEC_MGMT_01', icon: BadgeCheck, color: 'text-blue-400', border: 'border-blue-500/50' },
-          { label: 'GDPR', code: 'PRIV_COMP_A2', icon: Gavel, color: 'text-indigo-400', border: 'border-indigo-500/50' },
-          { label: 'NIST 800-53', code: 'FED_CTRL_STDS', icon: FileCheck, color: 'text-cyan-400', border: 'border-cyan-500/50' },
-          { label: 'FINCEN', code: 'MSB_REG_409', icon: Landmark, color: 'text-blue-500', border: 'border-blue-600/50' },
-        ].map((cert, idx) => (
-          <div key={idx} className={`glass-panel p-6 rounded-sm flex flex-col items-center text-center gap-3 border-b-2 ${cert.border} hover:bg-white/5 transition-colors group cursor-default`}>
-            <cert.icon className={`${cert.color} w-8 h-8 group-hover:scale-110 transition-transform`} />
-            <div>
-              <p className="text-white font-bold text-xs uppercase tracking-widest">{cert.label}</p>
-              <p className="text-[10px] text-slate-500 uppercase font-fira">{cert.code}</p>
-            </div>
-          </div>
-        ))}
-      </section>
+      <CertificationsPartnershipsSection onNavigate={onNavigate} />
 
       <section className="mb-stack-lg">
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
