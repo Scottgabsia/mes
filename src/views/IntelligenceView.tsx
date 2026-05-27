@@ -10,12 +10,29 @@ import {
   ChevronRight,
   ArrowRight,
   Upload,
-  Headphones,
   LayoutDashboard,
   Layers,
   Search,
   Users
 } from 'lucide-react';
+
+const INTELLIGENCE_MAILTO = (() => {
+  const email = 'info@cryptorecoveryasset.com';
+  const subject = 'Intelligence Submission — Crypto Recovery Assets';
+  const body = [
+    'Please share your intelligence report below.',
+    '',
+    'Summary:',
+    '',
+    '',
+    'Source / reference:',
+    '',
+    '',
+    'Additional details:',
+    '',
+  ].join('\n');
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+})();
 
 export const IntelligenceView = () => {
   const [riskIndex, setRiskIndex] = React.useState(89.4);
@@ -421,15 +438,14 @@ export const IntelligenceView = () => {
             <div className="h-px w-8 bg-blue-500/30"></div>
           </div>
           <h2 className="text-3xl lg:text-4xl font-extrabold font-manrope text-white mb-8 max-w-2xl uppercase tracking-tighter">SECURE YOUR ASSETS WITH ADVANCED INTERROGATION</h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            <button className="bg-blue-600 text-white px-12 py-5 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center gap-4 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group">
+          <div className="flex justify-center">
+            <a
+              href={INTELLIGENCE_MAILTO}
+              className="bg-blue-600 text-white px-12 py-5 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center gap-4 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group no-underline"
+            >
               <Upload className="group-hover:rotate-12 transition-transform" size={20} />
               Submit Intelligence
-            </button>
-            <button className="glass-panel border-blue-500/50 text-blue-400 px-12 py-5 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center gap-4 hover:bg-blue-500/10 active:scale-95 transition-all group">
-              <Headphones className="group-hover:scale-110 transition-transform" size={20} />
-              Request Custom Audit
-            </button>
+            </a>
           </div>
           <p className="mt-10 text-slate-500 font-mono text-[10px] uppercase tracking-widest">ESTABLISHED SECURE P2P CONNECTION: 256-BIT ENCRYPTION ACTIVE</p>
         </div>
