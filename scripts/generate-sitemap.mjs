@@ -10,6 +10,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 
 // Read SEO_ROUTES from built file is hard in plain node — duplicate paths inline from config
+const blogSlugs = [
+  "how-to-recover-stolen-bitcoin-2026",
+  "best-crypto-recovery-company-guide",
+  "recover-hacked-crypto-wallet-guide",
+  "crypto-scam-recovery-what-works",
+  "digital-asset-recovery-explained",
+  "top-10-crypto-scams-2026",
+];
+
 const routes = [
   ["/", "weekly", "1.0"],
   ["/services", "monthly", "0.9"],
@@ -18,6 +27,7 @@ const routes = [
   ["/faq", "weekly", "0.85"],
   ["/reviews", "weekly", "0.8"],
   ["/blog", "weekly", "0.75"],
+  ...blogSlugs.map((slug) => [`/blog/${slug}`, "monthly", "0.72"]),
   ["/intelligence", "weekly", "0.75"],
   ["/case-lookup", "monthly", "0.7"],
   ["/traceability", "monthly", "0.8"],

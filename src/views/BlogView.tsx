@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Newspaper, 
   ChevronRight, 
@@ -15,16 +16,42 @@ import {
 import { SEO } from '../components/SEO';
 import { BlogContent } from '../components/BlogContent';
 import { apiPost } from '../lib/api';
-import { BLOG_KEYWORD_LINKS, FEATURED_BLOG_POSTS } from '../data/blogPosts';
+import { BLOG_KEYWORD_LINKS, FEATURED_BLOG_POSTS, getBlogPostBySlug } from '../data/blogPosts';
 import { SITE_URL } from '../constants';
 
 export const BlogView = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = React.useState('ALL_POSTS');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedPost, setSelectedPost] = React.useState<any>(null);
   const [subscriberData, setSubscriberData] = React.useState({ name: '', email: '' });
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
+
+  React.useEffect(() => {
+    const match = location.pathname.match(/^\/blog\/([^/]+)\/?$/);
+    if (match) {
+      const post = getBlogPostBySlug(match[1]);
+      setSelectedPost(post ?? null);
+      return;
+    }
+    if (location.pathname === '/blog' || location.pathname === '/blog/') {
+      setSelectedPost(null);
+    }
+  }, [location.pathname]);
+
+  const openPost = (post: { slug?: string; [key: string]: unknown }) => {
+    setSelectedPost(post);
+    if (post.slug) {
+      navigate(`/blog/${post.slug}`);
+    }
+  };
+
+  const closePost = () => {
+    setSelectedPost(null);
+    navigate('/blog');
+  };
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,17 +250,54 @@ export const BlogView = () => {
 
   if (selectedPost) {
     return (
-      <main className="pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1000px] mx-auto min-h-screen relative z-10 transition-all">
+      <main className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1000px] mx-auto min-h-screen relative z-10 transition-all">
         <SEO
           title={selectedPost.title}
           description={selectedPost.excerpt}
-          canonical={`${SITE_URL}/blog`}
+          canonical={
+            selectedPost.slug
+              ? `${SITE_URL}/blog/${selectedPost.slug}`
+              : `${SITE_URL}/blog`
+          }
           keywords={selectedPost.keywords?.join(', ') || 'crypto recovery, blockchain forensics, scam recovery'}
+          ogImage={
+            selectedPost.image.startsWith("http")
+              ? selectedPost.image
+              : selectedPost.image
+          }
+          ogType="article"
+          jsonLd={
+            selectedPost.slug
+              ? {
+                  "@context": "https://schema.org",
+                  "@type": "Article",
+                  headline: selectedPost.title,
+                  description: selectedPost.excerpt,
+                  image: selectedPost.image.startsWith("http")
+                    ? selectedPost.image
+                    : `${SITE_URL}${selectedPost.image}`,
+                  author: {
+                    "@type": "Person",
+                    name: selectedPost.author,
+                  },
+                  publisher: {
+                    "@type": "Organization",
+                    name: "Crypto Recovery Asset",
+                    logo: {
+                      "@type": "ImageObject",
+                      url: `${SITE_URL}/brand-icon-512.png`,
+                    },
+                  },
+                  mainEntityOfPage: `${SITE_URL}/blog/${selectedPost.slug}`,
+                  keywords: selectedPost.keywords?.join(", "),
+                }
+              : undefined
+          }
         />
         <motion.button 
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          onClick={() => setSelectedPost(null)}
+          onClick={closePost}
           className="flex items-center gap-2 text-slate-500 hover:text-white font-mono text-[10px] uppercase tracking-widest mb-12 transition-colors"
         >
           <ChevronRight className="rotate-180 text-blue-500" size={14} /> BACK_TO_INTEL_FEED
@@ -322,7 +386,7 @@ export const BlogView = () => {
   }
 
   return (
-    <main className="pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative z-10">
+    <main className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative z-10">
       <SEO 
         title="Forensic Intelligence | How to Recover Lost Crypto" 
         description="Educational guides on how to recover 12 word seed phrases, lost private keys, and scammed crypto assets. Expert insights from our forensic analysts."
@@ -405,7 +469,7 @@ export const BlogView = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              onClick={() => setSelectedPost(post)}
+              onClick={() => openPost(post)}
               transition={{ 
                 duration: 0.4, 
                 delay: idx * 0.1,

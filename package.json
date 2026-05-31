@@ -17,6 +17,7 @@
     "lint": "tsc --noEmit",
     "favicons": "node scripts/make-favicons-solid.mjs public/logo.png",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "blog:images": "node scripts/generate-blog-images.mjs",
     "deploy:functions": "cd functions && npm install && cd .. && firebase deploy --only functions"
   },
   "dependencies": {
@@ -46,7 +47,7 @@
     "autoprefixer": "^10.4.21",
     "jimp": "^1.6.1",
     "tailwindcss": "^4.1.14",
-    "to-ico": "^1.1.5",
+    "to-ico": "^1.0.1",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3"

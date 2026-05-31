@@ -1,5 +1,6 @@
 import { SITE_URL } from "../constants";
 import { FAQ_ITEMS } from "../data/faq";
+import { getBlogPostBySlug } from "../data/blogPosts";
 
 export type SeoRouteConfig = {
   path: string;
@@ -198,6 +199,24 @@ export function normalizePath(pathname: string): string {
 
 export function getSeoForPath(pathname: string): SeoRouteConfig & { canonical: string; noindex: boolean } {
   const path = normalizePath(pathname);
+
+  const blogMatch = path.match(/^\/blog\/([^/]+)$/);
+  if (blogMatch) {
+    const post = getBlogPostBySlug(blogMatch[1]);
+    if (post) {
+      return {
+        path,
+        title: post.title,
+        description: post.excerpt,
+        keywords: post.keywords.join(", "),
+        changefreq: "monthly",
+        priority: 0.72,
+        canonical: `${SITE_URL}${path}`,
+        noindex: false,
+      };
+    }
+  }
+
   const match = SEO_ROUTES.find((r) => r.path === path);
 
   const fallback = SEO_ROUTES[0]!;

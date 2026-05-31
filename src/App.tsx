@@ -192,6 +192,8 @@ export default function App() {
 
     if (pathMapRev[path]) {
       setCurrentView(pathMapRev[path]);
+    } else if (path.startsWith("/blog/")) {
+      setCurrentView("blog");
     } else {
       // Fallback to home for unknown paths
       setCurrentView('home');

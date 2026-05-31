@@ -37,7 +37,7 @@ export const FAQView = ({ onNavigate }: FAQViewProps) => {
   };
 
   return (
-    <main className="pt-32 pb-32 px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen">
+    <main className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen">
       <SEO
         title="Crypto Recovery FAQ"
         description="Frequently asked questions about crypto recovery. Learn how to recover 12 word seed phrases, recover deleted wallets, and handle scammed assets safely."
