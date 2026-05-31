@@ -196,7 +196,7 @@ export const BlogView = () => {
       readTime: "18 MIN",
       category: "CASE_STUDIES",
       tags: ["#ROMANCE_SCAM", "#USDT_RECOVERY", "#SYNDICATE_MAPPING"],
-      image: "https://images.unsplash.com/photo-1621416848440-2369dadad157?auto=format&fit=crop&q=80&w=800"
+      image: "/blog/operation-gilded-cage-pig-butchering-recovery.png"
     },
     {
       id: 7,

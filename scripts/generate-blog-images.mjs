@@ -28,7 +28,7 @@ function drawGradient(img) {
       const r = blend(0x0b, 0x1e, t);
       const g = blend(0x12, 0x3a, t);
       const b = blend(0x20, 0x8f, t);
-      img.setPixelColor((r << 24) | (g << 16) | (b << 8) | 0xff, x, y);
+      img.setPixelColor(((r << 24) | (g << 16) | (b << 8) | 0xff) >>> 0, x, y);
     }
   }
 }
@@ -49,7 +49,7 @@ function drawGlow(img, cx, cy, radius, color) {
       const nr = Math.min(255, Math.round(er + r * alpha));
       const ng = Math.min(255, Math.round(eg + g * alpha));
       const nb = Math.min(255, Math.round(eb + b * alpha));
-      img.setPixelColor((nr << 24) | (ng << 16) | (nb << 8) | 0xff, x, y);
+      img.setPixelColor(((nr << 24) | (ng << 16) | (nb << 8) | 0xff) >>> 0, x, y);
     }
   }
 }
@@ -123,7 +123,7 @@ async function createCover(slug, accent) {
   // Accent bar
   for (let y = H - 8; y < H; y++) {
     for (let x = 0; x < W; x++) {
-      img.setPixelColor(accent, x, y);
+      img.setPixelColor(accent >>> 0, x, y);
     }
   }
 
@@ -139,6 +139,15 @@ const covers = [
   ["best-crypto-recovery-company-guide", 0x059669ff],
   ["recover-hacked-crypto-wallet-guide", 0x7c3aedff],
   ["crypto-scam-recovery-what-works", 0x0891b2ff],
+  ["operation-gilded-cage-pig-butchering-recovery", 0xdc2626ff],
+  ["stolen-usdt-recovery-guide-2026", 0x059669ff],
+  ["sim-swap-crypto-theft-recovery", 0xea580cff],
+  ["lost-crypto-wallet-recovery-guide", 0x6366f1ff],
+  ["blockchain-forensics-crypto-recovery", CYAN],
+  ["fake-crypto-investment-scam-recovery", 0xb45309ff],
+  ["cryptocurrency-recovery-service-guide", BLUE],
+  ["top-10-crypto-scams-2026", 0xf97316ff],
+  ["digital-asset-recovery-explained", 0x8b5cf6ff],
 ];
 
 for (const [slug, accent] of covers) {

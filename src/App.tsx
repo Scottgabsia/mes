@@ -250,6 +250,12 @@ export default function App() {
     return <CaseManagerView />;
   }
 
+  const hasTickerBar =
+    currentView === 'services' || currentView === 'intelligence';
+  const sidebarLayoutClass = hasTickerBar
+    ? 'top-[6.5rem] h-[calc(100vh-6.5rem)]'
+    : 'top-[4.75rem] h-[calc(100vh-4.75rem)]';
+
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
       <RouteSEO />
@@ -485,7 +491,7 @@ export default function App() {
       {!VIEWS_WITHOUT_SIDEBAR.includes(currentView) && (
         <>
           <aside 
-            className={`fixed left-0 top-0 h-full z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-32 transition-all duration-500 ease-in-out ${
+            className={`fixed left-0 z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-5 transition-all duration-500 ease-in-out ${sidebarLayoutClass} ${
               isSidebarCollapsed ? 'w-0 -translate-x-full opacity-0' : 'w-72 translate-x-0 opacity-100'
             }`}
           >
