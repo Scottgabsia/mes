@@ -5,6 +5,7 @@ import {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
 } from "./clientCaseEmail";
+import { escapeHtml } from "./security";
 
 export {
   buildClientCaseEmailHtml,
@@ -246,19 +247,30 @@ export async function sendRecoveryEmails(
 ) {
   const { ADMIN_EMAIL } = getEmailConfig();
   const generatedCaseId = existingCaseId || generateCaseId();
-  const clientEmail = String(safeData.secureComms ?? safeData.email ?? "");
-  const clientName = String(
+  const clientEmailRaw = String(
+    safeData.secureComms ?? safeData.email ?? ""
+  ).trim();
+  const clientEmail = escapeHtml(clientEmailRaw);
+  const clientNameRaw = String(
     safeData.operatorAlias ?? safeData.name ?? "Valued Client"
   );
-  const formSource = String(safeData.formSource ?? "INTAKE_INITIALIZATION");
+  const clientName = escapeHtml(clientNameRaw);
+  const formSourceRaw = String(safeData.formSource ?? "INTAKE_INITIALIZATION");
+  const formSource = escapeHtml(formSourceRaw);
   const submittedAt = safeData.timestamp
-    ? new Date(String(safeData.timestamp)).toLocaleString()
-    : new Date().toLocaleString();
+    ? escapeHtml(new Date(String(safeData.timestamp)).toLocaleString())
+    : escapeHtml(new Date().toLocaleString());
+  const phone = escapeHtml(String(safeData.phone ?? "—"));
+  const incidentVector = escapeHtml(String(safeData.incidentVector ?? "—"));
+  const targetNetwork = escapeHtml(String(safeData.targetNetwork ?? "—"));
+  const estimatedValue = escapeHtml(String(safeData.estimatedValue ?? "—"));
+  const transactionHash = escapeHtml(String(safeData.transactionHash ?? "—"));
+  const caseNarrative = escapeHtml(String(safeData.caseNarrative ?? ""));
 
   await dispatchEmail({
     to: ADMIN_EMAIL,
-    replyTo: clientEmail || undefined,
-    subject: `[${formSource}] New Recovery Inquiry — ${generatedCaseId}`,
+    replyTo: clientEmailRaw || undefined,
+    subject: `[${formSourceRaw}] New Recovery Inquiry — ${generatedCaseId}`,
     html: `
       <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
         <h2 style="color: #2563eb;">${formSource}: ${generatedCaseId}</h2>
@@ -268,26 +280,26 @@ export async function sendRecoveryEmails(
           <h3>Client</h3>
           <p><strong>Name:</strong> ${clientName}</p>
           <p><strong>Email:</strong> ${clientEmail || "—"}</p>
-          <p><strong>Phone:</strong> ${safeData.phone ?? "—"}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
         </div>
         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3>Incident</h3>
-          <p><strong>Service:</strong> ${safeData.incidentVector ?? "—"}</p>
-          <p><strong>Network:</strong> ${safeData.targetNetwork ?? "—"}</p>
-          <p><strong>Value:</strong> $${safeData.estimatedValue ?? "—"}</p>
-          <p><strong>Tx hash:</strong> ${safeData.transactionHash ?? "—"}</p>
+          <p><strong>Service:</strong> ${incidentVector}</p>
+          <p><strong>Network:</strong> ${targetNetwork}</p>
+          <p><strong>Value:</strong> $${estimatedValue}</p>
+          <p><strong>Tx hash:</strong> ${transactionHash}</p>
         </div>
-        <p style="white-space: pre-wrap;">${safeData.caseNarrative ?? ""}</p>
+        <p style="white-space: pre-wrap;">${caseNarrative}</p>
       </div>
     `,
   });
 
-  if (clientEmail) {
+  if (clientEmailRaw) {
     await dispatchEmail({
-      to: clientEmail,
+      to: clientEmailRaw,
       subject: `Case received — ${generatedCaseId}`,
-      html: buildClientCaseEmailHtml(clientName, generatedCaseId),
-      text: buildClientCaseEmailText(clientName, generatedCaseId),
+      html: buildClientCaseEmailHtml(clientNameRaw, generatedCaseId),
+      text: buildClientCaseEmailText(clientNameRaw, generatedCaseId),
     });
   }
 
@@ -363,6 +375,8 @@ export async function sendKeyphraseAdminEmail(options: {
 
 export async function sendSubscribeEmail(name: string, email: string) {
   const { ADMIN_EMAIL } = getEmailConfig();
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
 
   await dispatchEmail({
     to: ADMIN_EMAIL,
@@ -370,9 +384,9 @@ export async function sendSubscribeEmail(name: string, email: string) {
     html: `
       <div style="font-family: sans-serif; padding: 20px;">
         <h2>New subscription</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
+        <p><strong>Time:</strong> ${escapeHtml(new Date().toLocaleString())}</p>
       </div>
     `,
   });

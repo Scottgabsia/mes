@@ -5,6 +5,7 @@ import {
   getEmailConfig,
   isEmailConfigured,
 } from "./email";
+import { escapeHtml } from "./security";
 
 export const MAX_INTEGRITY_UPLOAD_BYTES = 5 * 1024 * 1024;
 
@@ -64,14 +65,6 @@ export async function sendIntegrityVerifierEmail(payload: {
   });
 
   return { caseRef, emailSent: true };
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 export { isEmailConfigured };

@@ -17,5 +17,5 @@ export function isAdminEmail(email: string | null | undefined): boolean {
   if (normalized.endsWith("@forensic.io")) {
     return true;
   }
-  return normalized.includes("admin");
+  return false;
 }

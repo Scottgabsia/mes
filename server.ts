@@ -36,6 +36,17 @@ import {
   type StoredCase,
 } from "./server/caseStore";
 import { requireAdminFromRequest } from "./server/adminAuth";
+import {
+  applySecurityHeaders,
+  assertDistHasNoPhpArtifacts,
+  blockProbePaths,
+  createRateLimiter,
+  isDangerousUploadFilename,
+  rejectIfUnsafeText,
+  sanitizeMessageText,
+  sanitizePlainText,
+  sanitizeRecoveryPayload,
+} from "./server/security";
 
 const isProduction =
   process.env.NODE_ENV === "production" ||
@@ -51,7 +62,25 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || "3000", 10);
 
   app.set("trust proxy", 1);
+  app.use(applySecurityHeaders(isProduction));
+  app.use(blockProbePaths);
   app.use(express.json({ limit: "12mb" }));
+
+  const formRateLimit = createRateLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    keyPrefix: "form",
+  });
+  const lookupRateLimit = createRateLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 30,
+    keyPrefix: "lookup",
+  });
+  const messageRateLimit = createRateLimiter({
+    windowMs: 5 * 60 * 1000,
+    max: 40,
+    keyPrefix: "message",
+  });
 
   const { ADMIN_EMAIL } = getEmailConfig();
   logEmailStartup();
@@ -85,12 +114,24 @@ async function startServer() {
   });
 
   /** Open in browser to verify email links work outside Titan/Gmail */
-  app.get("/api/preview-case-email", (_req, res) => {
+  app.get("/api/preview-case-email", async (req, res) => {
+    if (isProduction) {
+      const admin = await requireAdminFromRequest(req.headers.authorization);
+      if (!admin) {
+        return res.status(404).json({ error: "Not found" });
+      }
+    }
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(buildClientCaseEmailHtml("Preview User", "DF-0000-PREVIEW"));
   });
 
   app.get("/api/debug-email", async (req, res) => {
+    if (isProduction) {
+      const admin = await requireAdminFromRequest(req.headers.authorization);
+      if (!admin) {
+        return res.status(404).json({ error: "Not found" });
+      }
+    }
     if (!isEmailConfigured()) {
       return res.status(500).json({
         success: false,
@@ -123,9 +164,17 @@ async function startServer() {
     }
   });
 
-  app.post("/api/submit-recovery", async (req, res) => {
-    const formData = req.body;
-    console.log("NEW RECOVERY REQUEST:", JSON.stringify(formData, null, 2));
+  app.post("/api/submit-recovery", formRateLimit, async (req, res) => {
+    const sanitized = sanitizeRecoveryPayload(req.body ?? {});
+    if (sanitized.ok === false) {
+      return res.status(400).json({ success: false, error: sanitized.error });
+    }
+
+    const formData = sanitized.data;
+    console.log(
+      "NEW RECOVERY REQUEST:",
+      String(formData.secureComms || formData.email || "unknown")
+    );
 
     const { createdAt, ...safeData } = formData;
     const caseId = generateCaseId();
@@ -195,7 +244,7 @@ async function startServer() {
     };
   }
 
-  app.post("/api/case-lookup", (req, res) => {
+  app.post("/api/case-lookup", lookupRateLimit, (req, res) => {
     const email =
       typeof req.body?.email === "string"
         ? req.body.email.trim().toLowerCase()
@@ -229,12 +278,21 @@ async function startServer() {
     res.json({ success: true, case: toPublicCase(found) });
   });
 
-  app.post("/api/case/:caseId/messages", (req, res) => {
+  app.post("/api/case/:caseId/messages", messageRateLimit, (req, res) => {
     const email =
       typeof req.body?.email === "string"
         ? req.body.email.trim().toLowerCase()
         : "";
-    const text = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+    let text = "";
+    try {
+      text =
+        typeof req.body?.text === "string"
+          ? sanitizeMessageText(req.body.text)
+          : "";
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Invalid message";
+      return res.status(400).json({ success: false, error: message });
+    }
     if (!email || !text) {
       return res
         .status(400)
@@ -256,7 +314,7 @@ async function startServer() {
     res.json({ success: true, message });
   });
 
-  app.post("/api/case/:caseId/keyphrase", async (req, res) => {
+  app.post("/api/case/:caseId/keyphrase", formRateLimit, async (req, res) => {
     const email =
       typeof req.body?.email === "string"
         ? req.body.email.trim().toLowerCase()
@@ -427,7 +485,7 @@ async function startServer() {
     });
   });
 
-  app.post("/api/forensic/integrity-upload", async (req, res) => {
+  app.post("/api/forensic/integrity-upload", formRateLimit, async (req, res) => {
     const { filename, contentBase64, sha256, mimeType, notifierEmail } =
       req.body ?? {};
 
@@ -435,6 +493,14 @@ async function startServer() {
       return res.status(400).json({
         success: false,
         error: "filename, contentBase64, and sha256 are required",
+      });
+    }
+
+    if (isDangerousUploadFilename(String(filename))) {
+      console.warn(`[Security] Blocked dangerous upload filename: ${filename}`);
+      return res.status(400).json({
+        success: false,
+        error: "File type not allowed for forensic upload.",
       });
     }
 
@@ -492,8 +558,14 @@ async function startServer() {
     }
   });
 
-  app.post("/api/subscribe", async (req, res) => {
-    const { name, email } = req.body;
+  app.post("/api/subscribe", formRateLimit, async (req, res) => {
+    const name = sanitizePlainText(req.body?.name, 120);
+    const email = sanitizePlainText(req.body?.email, 320);
+    const blocked =
+      rejectIfUnsafeText(name, "name") || rejectIfUnsafeText(email, "email");
+    if (blocked) {
+      return res.status(400).json({ success: false, error: blocked });
+    }
     console.log("NEW BLOG SUBSCRIPTION:", name, email);
 
     try {
@@ -530,6 +602,13 @@ async function startServer() {
       process.exit(1);
     }
 
+    try {
+      assertDistHasNoPhpArtifacts(distPath);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : err);
+      process.exit(1);
+    }
+
     const health = getHealthEmailPayload();
     console.log(`[PROD] Mode: production`);
     console.log(`[PROD] Port: ${PORT}`);
@@ -537,7 +616,19 @@ async function startServer() {
     console.log(`[PROD] Email provider: ${health.emailProvider}`);
     console.log(`[PROD] Admin inbox: ${ADMIN_EMAIL}`);
 
-    app.use(express.static(distPath, { index: false }));
+    app.use(
+      express.static(distPath, {
+        index: false,
+        dotfiles: "deny",
+        fallthrough: true,
+        setHeaders(res, filePath) {
+          res.setHeader("X-Content-Type-Options", "nosniff");
+          if (/\.(php|phtml|phar|cgi)$/i.test(filePath)) {
+            res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          }
+        },
+      })
+    );
 
     app.get("/", (_req, res) => {
       res.sendFile(indexPath);

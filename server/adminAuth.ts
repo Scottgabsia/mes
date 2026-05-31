@@ -29,7 +29,7 @@ function isAdminEmail(email: string): boolean {
   if (ADMIN_EMAILS.includes(e)) return true;
   if (e.endsWith("@cryptorecoveryasset.com")) return true;
   if (e.endsWith("@forensic.io")) return true;
-  return e.includes("admin");
+  return false;
 }
 
 /** Verify Firebase ID token via Identity Toolkit REST API */
