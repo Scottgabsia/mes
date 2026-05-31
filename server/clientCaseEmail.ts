@@ -40,8 +40,7 @@ export function buildClientCaseEmailText(
 }
 
 /**
- * Gmail/iOS fix: one styled <a> per CTA — no bgcolor on <td>, no display:block,
- * no overflow:hidden on parents (those block taps in Gmail mobile).
+ * Gmail/iOS fix: full-width styled <a> — background on the link only (not the td).
  */
 function emailCtaLink(
   href: string,
@@ -49,19 +48,16 @@ function emailCtaLink(
   bgColor: string,
   textColor = "#ffffff"
 ): string {
-  return `<p align="center" style="margin:0 0 8px;padding:0;">
-  <a href="${href}" target="_blank" rel="noopener noreferrer"
-     style="background-color:${bgColor};border:2px solid ${bgColor};border-radius:10px;color:${textColor};font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;line-height:48px;text-align:center;text-decoration:none;padding:0 28px;-webkit-text-size-adjust:none;">
-    ${escapeHtml(label)}
-  </a>
-</p>`;
-}
-
-function linkFallback(href: string, label: string): string {
-  return `<p align="center" style="margin:0 0 24px;font-size:13px;line-height:1.5;color:#64748b;">
-    ${escapeHtml(label)}<br/>
-    <a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;font-weight:bold;text-decoration:underline;word-break:break-all;">${escapeHtml(href)}</a>
-  </p>`;
+  return `<table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 14px;">
+  <tr>
+    <td align="center" style="padding:0;">
+      <a href="${href}" target="_blank" rel="noopener noreferrer"
+         style="background-color:${bgColor};border:2px solid ${bgColor};border-radius:12px;color:${textColor};display:block;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;line-height:1.35;padding:18px 24px;text-align:center;text-decoration:none;width:100%;max-width:100%;box-sizing:border-box;-webkit-text-size-adjust:none;">
+        ${escapeHtml(label)}
+      </a>
+    </td>
+  </tr>
+</table>`;
 }
 
 /** Email-client-safe HTML — tested pattern for Gmail mobile tap targets */
@@ -108,12 +104,10 @@ export function buildClientCaseEmailHtml(
               <p style="margin:0 0 16px;font-size:14px;font-weight:bold;color:#0f172a;text-align:center;">Quick actions</p>
 
               ${emailCtaLink(lookupUrl, "Check Case Status", "#2563eb")}
-              ${linkFallback(lookupUrl, "Or open case status in your browser:")}
 
               ${emailCtaLink(whatsappUrl, "Chat on WhatsApp", "#16a34a")}
-              ${linkFallback(whatsappUrl, "Or open WhatsApp chat:")}
 
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:10px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
                 <tr>
                   <td style="padding:16px;font-size:13px;color:#334155;">
                     <p style="margin:0 0 10px;font-weight:bold;color:#0f172a;">Next steps in your recovery</p>
