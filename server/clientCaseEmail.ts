@@ -40,7 +40,7 @@ export function buildClientCaseEmailText(
 }
 
 /**
- * Gmail/iOS fix: full-width styled <a> — background on the link only (not the td).
+ * Gmail/iOS: use inline-block + padding for size — display:block breaks taps in Gmail.
  */
 function emailCtaLink(
   href: string,
@@ -52,7 +52,7 @@ function emailCtaLink(
   <tr>
     <td align="center" style="padding:0;">
       <a href="${href}" target="_blank" rel="noopener noreferrer"
-         style="background-color:${bgColor};border:2px solid ${bgColor};border-radius:12px;color:${textColor};display:block;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;line-height:1.35;padding:18px 24px;text-align:center;text-decoration:none;width:100%;max-width:100%;box-sizing:border-box;-webkit-text-size-adjust:none;">
+         style="background-color:${bgColor};border:2px solid ${bgColor};border-radius:12px;color:${textColor};display:inline-block;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;line-height:1.4;padding:20px 40px;text-align:center;text-decoration:none;min-width:300px;-webkit-text-size-adjust:none;">
         ${escapeHtml(label)}
       </a>
     </td>
