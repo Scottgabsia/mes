@@ -1,17 +1,32 @@
 export const CASE_LOOKUP_URL = "https://cryptorecoveryasset.com/case-lookup";
-export const WHATSAPP_URL = "https://wa.me/message/FKM22PP45SVFO1";
+/** Site support line — matches footer / structured data */
+export const SUPPORT_PHONE_E164 = "14016844683";
+
+export function buildCaseLookupUrl(caseId: string): string {
+  return `${CASE_LOOKUP_URL}?ref=${encodeURIComponent(caseId)}`;
+}
+
+export function buildWhatsAppUrl(caseId: string): string {
+  const text = encodeURIComponent(
+    `Hello, my case ID is ${caseId}. I need help with my crypto recovery case.`
+  );
+  return `https://wa.me/${SUPPORT_PHONE_E164}?text=${text}`;
+}
 
 export function buildClientCaseEmailText(
   clientName: string,
   caseId: string
 ): string {
+  const lookupUrl = buildCaseLookupUrl(caseId);
+  const whatsappUrl = buildWhatsAppUrl(caseId);
+
   return [
     `Hello ${clientName},`,
     "",
     `Your case was received. Case ID: ${caseId}`,
     "",
-    `Check case status: ${CASE_LOOKUP_URL}`,
-    `WhatsApp support: ${WHATSAPP_URL}`,
+    `Check case status: ${lookupUrl}`,
+    `WhatsApp support: ${whatsappUrl}`,
     "",
     "Next steps:",
     "1. We validate your submission and assign an analyst.",
@@ -24,28 +39,61 @@ export function buildClientCaseEmailText(
   ].join("\n");
 }
 
-/** Email-client-safe HTML (no nested button tables; links on <td> anchors) */
+/**
+ * Gmail/iOS fix: one styled <a> per CTA — no bgcolor on <td>, no display:block,
+ * no overflow:hidden on parents (those block taps in Gmail mobile).
+ */
+function emailCtaLink(
+  href: string,
+  label: string,
+  bgColor: string,
+  textColor = "#ffffff"
+): string {
+  return `<p align="center" style="margin:0 0 8px;padding:0;">
+  <a href="${href}" target="_blank" rel="noopener noreferrer"
+     style="background-color:${bgColor};border:2px solid ${bgColor};border-radius:10px;color:${textColor};font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;line-height:48px;text-align:center;text-decoration:none;padding:0 28px;-webkit-text-size-adjust:none;">
+    ${escapeHtml(label)}
+  </a>
+</p>`;
+}
+
+function linkFallback(href: string, label: string): string {
+  return `<p align="center" style="margin:0 0 24px;font-size:13px;line-height:1.5;color:#64748b;">
+    ${escapeHtml(label)}<br/>
+    <a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;font-weight:bold;text-decoration:underline;word-break:break-all;">${escapeHtml(href)}</a>
+  </p>`;
+}
+
+/** Email-client-safe HTML — tested pattern for Gmail mobile tap targets */
 export function buildClientCaseEmailHtml(
   clientName: string,
   caseId: string
 ): string {
   const safeName = escapeHtml(clientName);
   const safeId = escapeHtml(caseId);
+  const lookupUrl = buildCaseLookupUrl(caseId);
+  const whatsappUrl = buildWhatsAppUrl(caseId);
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light" />
   <title>Case received</title>
+  <style type="text/css">
+    a { color: #2563eb; }
+    .cta-link { text-decoration: none !important; }
+  </style>
 </head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;">
+<body style="margin:0;padding:0;background-color:#f1f5f9;color-scheme:light only;">
   <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f1f5f9;">
     <tr>
       <td align="center" style="padding:24px 12px;">
-        <table width="600" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;">
+        <table width="600" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;">
           <tr>
-            <td style="background-color:#0b1220;padding:24px;">
+            <td style="background-color:#0b1220;padding:24px;border-radius:16px 16px 0 0;">
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8;">Crypto Recovery Asset</p>
               <p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:bold;color:#ffffff;">We received your case</p>
               <p style="margin:10px 0 0;font-family:Courier,monospace;font-size:13px;color:#93c5fd;">Case ID: <strong style="color:#bfdbfe;">${safeId}</strong></p>
@@ -55,31 +103,15 @@ export function buildClientCaseEmailHtml(
             <td style="padding:24px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#0f172a;">
               <p style="margin:0 0 12px;">Hello <strong>${safeName}</strong>,</p>
               <p style="margin:0 0 12px;">Your request is registered in our recovery queue. Our team will review it and contact you at the email you provided.</p>
-              <p style="margin:0 0 20px;color:#475569;">Keep your Case ID: <strong style="font-family:Courier,monospace;">${safeId}</strong></p>
+              <p style="margin:0 0 24px;color:#475569;">Keep your Case ID: <strong style="font-family:Courier,monospace;">${safeId}</strong></p>
 
-              <p style="margin:0 0 8px;font-size:14px;font-weight:bold;color:#0f172a;">Quick links</p>
-              <p style="margin:0 0 16px;font-size:16px;">
-                <a href="${CASE_LOOKUP_URL}" style="color:#2563eb;font-weight:bold;text-decoration:underline;">Open case status portal</a>
-              </p>
-              <p style="margin:0 0 24px;font-size:16px;">
-                <a href="${WHATSAPP_URL}" style="color:#16a34a;font-weight:bold;text-decoration:underline;">Message us on WhatsApp</a>
-              </p>
+              <p style="margin:0 0 16px;font-size:14px;font-weight:bold;color:#0f172a;text-align:center;">Quick actions</p>
 
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:12px;">
-                <tr>
-                  <td align="center" bgcolor="#2563eb" style="background-color:#2563eb;border-radius:10px;">
-                    <a href="${CASE_LOOKUP_URL}" style="display:block;padding:16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;">Check Case Status</a>
-                  </td>
-                </tr>
-              </table>
+              ${emailCtaLink(lookupUrl, "Check Case Status", "#2563eb")}
+              ${linkFallback(lookupUrl, "Or open case status in your browser:")}
 
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:24px;">
-                <tr>
-                  <td align="center" bgcolor="#16a34a" style="background-color:#16a34a;border-radius:10px;">
-                    <a href="${WHATSAPP_URL}" style="display:block;padding:16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;">Chat on WhatsApp</a>
-                  </td>
-                </tr>
-              </table>
+              ${emailCtaLink(whatsappUrl, "Chat on WhatsApp", "#16a34a")}
+              ${linkFallback(whatsappUrl, "Or open WhatsApp chat:")}
 
               <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
                 <tr>
@@ -95,7 +127,7 @@ export function buildClientCaseEmailHtml(
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding:18px 24px;background-color:#f8fafc;border-top:1px solid #e2e8f0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:#94a3b8;">
+            <td align="center" style="padding:18px 24px;background-color:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:#94a3b8;">
               © Crypto Recovery Asset All rights reserved.<br/>
               Private &amp; Confidential • Forensic Intelligence Services
             </td>
@@ -115,3 +147,6 @@ function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+/** @deprecated Use buildWhatsAppUrl(caseId) — kept for imports that expect a constant */
+export const WHATSAPP_URL = `https://wa.me/${SUPPORT_PHONE_E164}`;
