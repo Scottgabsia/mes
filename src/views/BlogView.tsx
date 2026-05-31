@@ -17,7 +17,7 @@ import { SEO } from '../components/SEO';
 import { BlogContent } from '../components/BlogContent';
 import { apiPost } from '../lib/api';
 import { BLOG_KEYWORD_LINKS, FEATURED_BLOG_POSTS, getBlogPostBySlug } from '../data/blogPosts';
-import { SITE_URL } from '../constants';
+import { SITE_URL, blogImageSrc } from '../constants';
 
 export const BlogView = () => {
   const location = useLocation();
@@ -263,7 +263,7 @@ export const BlogView = () => {
           ogImage={
             selectedPost.image.startsWith("http")
               ? selectedPost.image
-              : selectedPost.image
+              : blogImageSrc(selectedPost.image)
           }
           ogType="article"
           jsonLd={
@@ -275,7 +275,7 @@ export const BlogView = () => {
                   description: selectedPost.excerpt,
                   image: selectedPost.image.startsWith("http")
                     ? selectedPost.image
-                    : `${SITE_URL}${selectedPost.image}`,
+                    : `${SITE_URL}${blogImageSrc(selectedPost.image)}`,
                   author: {
                     "@type": "Person",
                     name: selectedPost.author,
@@ -337,7 +337,7 @@ export const BlogView = () => {
 
           <div className="rounded-3xl overflow-hidden border border-white/5 mb-16 aspect-video">
             <img
-              src={selectedPost.image}
+              src={blogImageSrc(selectedPost.image)}
               alt={selectedPost.title}
               className="w-full h-full object-cover"
             />
@@ -493,7 +493,7 @@ export const BlogView = () => {
               {/* Image Section */}
               <div className={`relative overflow-hidden ${idx === 0 ? 'h-[300px] sm:h-[450px]' : 'h-[250px]'}`}>
                 <img 
-                  src={post.image} 
+                  src={blogImageSrc(post.image)} 
                   alt={post.title} 
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-1000"
