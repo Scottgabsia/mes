@@ -252,9 +252,10 @@ export default function App() {
 
   const hasTickerBar =
     currentView === 'services' || currentView === 'intelligence';
+  /** Header ~5.5rem on md+; ticker adds 2.5rem on Services/Intelligence */
   const sidebarLayoutClass = hasTickerBar
-    ? 'top-[6.5rem] h-[calc(100vh-6.5rem)]'
-    : 'top-[4.75rem] h-[calc(100vh-4.75rem)]';
+    ? 'top-[8rem] h-[calc(100vh-8rem)]'
+    : 'top-[5.5rem] h-[calc(100vh-5.5rem)]';
 
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
@@ -459,7 +460,7 @@ export default function App() {
 
       {/* Services/Intelligence Sub-Header (Ticker) */}
       {(currentView === 'services' || currentView === 'intelligence') && (
-        <div className="fixed top-[64px] w-full z-40 bg-slate-950/60 border-b border-white/5 backdrop-blur-md overflow-hidden h-10 flex items-center">
+        <div className="fixed top-16 sm:top-[5.5rem] w-full z-40 bg-slate-950/60 border-b border-white/5 backdrop-blur-md overflow-hidden h-10 flex items-center">
           <div className="flex items-center gap-4 px-6 border-r border-white/5 bg-slate-950/90 h-full">
             <span className={`w-2 h-2 rounded-full animate-pulse ${currentView === 'intelligence' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`}></span>
             <span className={`text-[9px] font-fira uppercase tracking-[0.2em] whitespace-nowrap ${currentView === 'intelligence' ? 'text-red-400' : 'text-primary'}`}>
@@ -491,7 +492,7 @@ export default function App() {
       {!VIEWS_WITHOUT_SIDEBAR.includes(currentView) && (
         <>
           <aside 
-            className={`fixed left-0 z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-5 transition-all duration-500 ease-in-out ${sidebarLayoutClass} ${
+            className={`fixed left-0 z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-8 transition-all duration-500 ease-in-out ${sidebarLayoutClass} ${
               isSidebarCollapsed ? 'w-0 -translate-x-full opacity-0' : 'w-72 translate-x-0 opacity-100'
             }`}
           >
