@@ -9,7 +9,6 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const blogDir = path.join(__dirname, "..", "public", "blog");
-const logoPath = path.join(__dirname, "..", "public", "logo.png");
 
 const BG = 0x0b1220ff;
 const BLUE = 0x2563ebff;
@@ -112,12 +111,6 @@ async function createCover(slug, accent) {
         }
       }
     }
-  }
-
-  if (fs.existsSync(logoPath)) {
-    const logo = await Jimp.read(logoPath);
-    logo.resize({ w: 72, h: 72 });
-    img.composite(logo, 48, 48);
   }
 
   // Accent bar
