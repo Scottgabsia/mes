@@ -108,9 +108,28 @@ export default function App() {
   const [selectedCase, setSelectedCase] = React.useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
-  
+  const headerRef = React.useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = React.useState(96);
+  const TICKER_HEIGHT = 40;
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Keep sidebar/ticker aligned when header height changes (tagline wrap, mobile menu, etc.)
+  React.useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const update = () => setHeaderHeight(el.getBoundingClientRect().height);
+    update();
+
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [isMobileMenuOpen, currentView]);
 
   // Handle initial route
   React.useEffect(() => {
@@ -252,16 +271,13 @@ export default function App() {
 
   const hasTickerBar =
     currentView === 'services' || currentView === 'intelligence';
-  /** Header ~5.5rem on md+; ticker adds 2.5rem on Services/Intelligence */
-  const sidebarLayoutClass = hasTickerBar
-    ? 'top-[8rem] h-[calc(100vh-8rem)]'
-    : 'top-[5.5rem] h-[calc(100vh-5.5rem)]';
+  const sidebarTop = headerHeight + (hasTickerBar ? TICKER_HEIGHT : 0);
 
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
       <RouteSEO />
       {/* TopAppBar */}
-      <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
+      <header ref={headerRef} className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
         <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">
             <div className="flex items-center gap-2 sm:gap-4 cursor-pointer group min-w-0" onClick={() => handleNavClick('home')}>
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center">
@@ -460,7 +476,10 @@ export default function App() {
 
       {/* Services/Intelligence Sub-Header (Ticker) */}
       {(currentView === 'services' || currentView === 'intelligence') && (
-        <div className="fixed top-16 sm:top-[5.5rem] w-full z-40 bg-slate-950/60 border-b border-white/5 backdrop-blur-md overflow-hidden h-10 flex items-center">
+        <div
+          className="fixed w-full z-40 bg-slate-950/60 border-b border-white/5 backdrop-blur-md overflow-hidden h-10 flex items-center"
+          style={{ top: headerHeight }}
+        >
           <div className="flex items-center gap-4 px-6 border-r border-white/5 bg-slate-950/90 h-full">
             <span className={`w-2 h-2 rounded-full animate-pulse ${currentView === 'intelligence' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`}></span>
             <span className={`text-[9px] font-fira uppercase tracking-[0.2em] whitespace-nowrap ${currentView === 'intelligence' ? 'text-red-400' : 'text-primary'}`}>
@@ -492,7 +511,8 @@ export default function App() {
       {!VIEWS_WITHOUT_SIDEBAR.includes(currentView) && (
         <>
           <aside 
-            className={`fixed left-0 z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-8 transition-all duration-500 ease-in-out ${sidebarLayoutClass} ${
+            style={{ top: sidebarTop, height: `calc(100vh - ${sidebarTop}px)` }}
+            className={`fixed left-0 z-30 border-r border-white/5 bg-slate-950/40 backdrop-blur-3xl hidden md:flex flex-col pt-6 transition-all duration-500 ease-in-out ${
               isSidebarCollapsed ? 'w-0 -translate-x-full opacity-0' : 'w-72 translate-x-0 opacity-100'
             }`}
           >
