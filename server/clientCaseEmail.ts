@@ -206,7 +206,7 @@ export function buildClientCaseEmailHtml(
                     <p style="margin:0 0 12px;font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#0f172a;">While you wait — recommended actions</p>
                     <p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#475569;">• Save your Case ID (<strong style="font-family:Courier,monospace;">${safeId}</strong>) in a secure location.</p>
                     <p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#475569;">• Gather transaction hashes, wallet addresses, exchange records, and screenshots if available.</p>
-                    <p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#475569;">• Watch for replies from <strong>@cryptorecoveryasset.com</strong> — verify the sender before sharing sensitive data.</p>
+                    <p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#475569;">• Watch for replies from <strong>info@cryptorecoveryasset.com</strong> — verify the sender before sharing sensitive data.</p>
                     <p style="margin:0;font-size:13px;line-height:1.6;color:#475569;">• Never share seed phrases or private keys except through our secure portal when explicitly requested by your assigned analyst.</p>
                   </td>
                 </tr>
