@@ -771,15 +771,31 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                             const f = e.target.files?.[0] || null;
                             setProofImage(f);
                           }}
-                          className="sr-only"
+                          className="absolute -left-[9999px] top-auto w-px h-px opacity-0"
                         />
                         <div className="flex flex-wrap items-center gap-3">
-                          <label
-                            htmlFor={proofInputId}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const input = proofInputRef.current;
+                              if (!input) return;
+                              const picker = (input as HTMLInputElement & { showPicker?: () => void }).showPicker;
+                              if (typeof picker === 'function') {
+                                try {
+                                  picker.call(input);
+                                  return;
+                                } catch {
+                                  // fallback to click() below
+                                }
+                              }
+                              input.click();
+                            }}
                             className="px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
                           >
                             Choose Image
-                          </label>
+                          </button>
                           {proofImage && (
                             <button
                               type="button"
