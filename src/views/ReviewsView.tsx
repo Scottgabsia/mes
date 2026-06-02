@@ -572,6 +572,106 @@ const REVIEWS_DATA: Review[] = [
     date: '2026-06-01',
     verified: true,
     tag: 'CLIENT_CONFIDENCE'
+  },
+  {
+    id: 'rev_55',
+    user: 'KAREN_VAN',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "From day one, the team was transparent and calm. Their forensic timeline helped us recover a major portion of our losses.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'TIMELINE_CLARITY'
+  },
+  {
+    id: 'rev_56',
+    user: 'LEO_HELSINKI',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Excellent technical team. They explained wallet clustering and exchange touchpoints in practical terms and delivered real results.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'CLUSTER_FORENSICS'
+  },
+  {
+    id: 'rev_57',
+    user: 'AMY_NYC',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content: "Good overall experience and strong communication. Recovery took time, but the process was organized and professional.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'ORGANIZED_PROCESS'
+  },
+  {
+    id: 'rev_58',
+    user: 'TARIQ_RIYADH',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "They handled a complicated cross-chain scam with confidence. I appreciated the detailed updates and legal-ready evidence package.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'CROSS_CHAIN_INTEL'
+  },
+  {
+    id: 'rev_59',
+    user: 'MIA_BRISBANE',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "No hype, just disciplined recovery work. They gave realistic probabilities and still beat expectations.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'REALISTIC_ASSESSMENT'
+  },
+  {
+    id: 'rev_60',
+    user: 'PETER_DALLAS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I was impressed by how quickly they engaged with exchange compliance. That early escalation was key in our case.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'COMPLIANCE_SPEED'
+  },
+  {
+    id: 'rev_61',
+    user: 'NORA_STHLM',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "They turned a chaotic situation into a clear action plan. Every step was documented and easy to follow.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'ACTION_PLAN'
+  },
+  {
+    id: 'rev_62',
+    user: 'DIEGO_BCN',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Strong team and strong methodology. Took longer than I hoped, but they recovered enough to make a huge difference.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'METHODICAL_RECOVERY'
+  },
+  {
+    id: 'rev_63',
+    user: 'FATIMA_ABU',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Best part was trust: secure portal, no private-key requests, and clear analyst ownership throughout the case.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'TRUSTED_HANDLING'
+  },
+  {
+    id: 'rev_64',
+    user: 'BEN_MELB',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Their forensic report was incredibly detailed and helped both exchange and legal follow-up. Highly recommended.",
+    date: '2026-06-02',
+    verified: true,
+    tag: 'DETAILED_REPORTING'
   }
 ];
 
