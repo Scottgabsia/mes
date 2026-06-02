@@ -11,6 +11,21 @@ const root = path.join(__dirname, "..");
 
 // Read SEO_ROUTES from built file is hard in plain node — duplicate paths inline from config
 const blogSlugs = [
+  "crypto-legal-reporting-review-court-ready-forensic-documentation",
+  "defi-smart-contract-exploit-recovery-review-long-analysis",
+  "exchange-compliance-crypto-recovery-review-kyc-aml-freeze-workflow",
+  "bitcoin-recovery-case-review-long-investigation-breakdown",
+  "crypto-recovery-service-reviews-2026-long-guide",
+  "legal-evidence-in-crypto-recovery-court-ready-reports",
+  "chain-hopping-and-mixers-how-scammers-launder-crypto",
+  "smart-contract-exploits-can-lost-tokens-be-recovered",
+  "role-of-exchange-compliance-in-crypto-recovery",
+  "how-blockchain-forensics-trace-stolen-crypto-across-wallets",
+  "future-of-crypto-security-ai-forensics-regulation",
+  "crypto-recovery-vs-scam-recovery-difference",
+  "inside-bitcoin-recovery-case-blockchain-forensics",
+  "five-things-to-do-immediately-after-crypto-scam",
+  "can-stolen-crypto-be-recovered-victim-guide",
   "cryptocurrency-recovery-service-guide",
   "fake-crypto-investment-scam-recovery",
   "blockchain-forensics-crypto-recovery",

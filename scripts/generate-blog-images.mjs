@@ -128,6 +128,21 @@ async function createCover(slug, accent) {
 fs.mkdirSync(blogDir, { recursive: true });
 
 const covers = [
+  ["crypto-recovery-service-reviews-2026-long-guide", 0x2563ebff],
+  ["bitcoin-recovery-case-review-long-investigation-breakdown", 0xeab308ff],
+  ["exchange-compliance-crypto-recovery-review-kyc-aml-freeze-workflow", 0x06b6d4ff],
+  ["defi-smart-contract-exploit-recovery-review-long-analysis", 0x9333eaff],
+  ["crypto-legal-reporting-review-court-ready-forensic-documentation", 0x14b8a6ff],
+  ["how-blockchain-forensics-trace-stolen-crypto-across-wallets", 0x22c55eff],
+  ["role-of-exchange-compliance-in-crypto-recovery", 0x0ea5e9ff],
+  ["smart-contract-exploits-can-lost-tokens-be-recovered", 0xa855f7ff],
+  ["chain-hopping-and-mixers-how-scammers-launder-crypto", 0xef4444ff],
+  ["legal-evidence-in-crypto-recovery-court-ready-reports", 0x14b8a6ff],
+  ["can-stolen-crypto-be-recovered-victim-guide", 0x0ea5e9ff],
+  ["five-things-to-do-immediately-after-crypto-scam", 0x16a34aff],
+  ["inside-bitcoin-recovery-case-blockchain-forensics", 0xeab308ff],
+  ["crypto-recovery-vs-scam-recovery-difference", 0xf97316ff],
+  ["future-of-crypto-security-ai-forensics-regulation", 0x8b5cf6ff],
   ["how-to-recover-stolen-bitcoin-2026", BLUE],
   ["best-crypto-recovery-company-guide", 0x059669ff],
   ["recover-hacked-crypto-wallet-guide", 0x7c3aedff],
