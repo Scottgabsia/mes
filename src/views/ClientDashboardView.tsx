@@ -262,6 +262,11 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     setProofImageError(null);
     if (proofInputRef.current) proofInputRef.current.value = '';
   };
+  const openProofImagePicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    proofInputRef.current?.click();
+  };
 
   const normalizeKeyphrase = (raw: string): string =>
     raw
@@ -768,12 +773,14 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                           Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
                         </p>
                         <div className="hidden md:flex flex-wrap items-center gap-3">
-                          <label
-                            htmlFor={proofInputId}
+                          <button
+                            type="button"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={openProofImagePicker}
                             className="inline-flex px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
                           >
                             Choose Image
-                          </label>
+                          </button>
                           {proofImage && (
                             <button
                               type="button"
