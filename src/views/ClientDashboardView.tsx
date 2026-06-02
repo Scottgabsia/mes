@@ -761,41 +761,27 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                         <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
                           Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
                         </label>
-                        <input
-                          id={proofInputId}
-                          ref={proofInputRef}
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
-                          onChange={(e) => {
-                            setProofImageError(null);
-                            const f = e.target.files?.[0] || null;
-                            setProofImage(f);
-                          }}
-                          className="absolute -left-[9999px] top-auto w-px h-px opacity-0"
-                        />
                         <div className="flex flex-wrap items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              const input = proofInputRef.current;
-                              if (!input) return;
-                              const picker = (input as HTMLInputElement & { showPicker?: () => void }).showPicker;
-                              if (typeof picker === 'function') {
-                                try {
-                                  picker.call(input);
-                                  return;
-                                } catch {
-                                  // fallback to click() below
-                                }
-                              }
-                              input.click();
-                            }}
-                            className="px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
-                          >
-                            Choose Image
-                          </button>
+                          <div className="relative inline-flex">
+                            <button
+                              type="button"
+                              className="px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
+                            >
+                              Choose Image
+                            </button>
+                            <input
+                              id={proofInputId}
+                              ref={proofInputRef}
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+                              onChange={(e) => {
+                                setProofImageError(null);
+                                const f = e.target.files?.[0] || null;
+                                setProofImage(f);
+                              }}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                          </div>
                           {proofImage && (
                             <button
                               type="button"
