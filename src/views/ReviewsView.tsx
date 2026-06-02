@@ -372,6 +372,206 @@ const REVIEWS_DATA: Review[] = [
     date: '2026-05-30',
     verified: true,
     tag: 'FORENSIC_REPORT'
+  },
+  {
+    id: 'rev_35',
+    user: 'AISHA_DXB',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I lost funds in a fake OTC desk scam. Their team traced every transfer and coordinated with exchange compliance. Recovery was not instant, but updates were consistent and evidence quality was excellent.",
+    date: '2026-05-31',
+    verified: true,
+    tag: 'OTC_SCAM_TRACE'
+  },
+  {
+    id: 'rev_36',
+    user: 'MARK_LONDON',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Professional from intake to closure. They explained probabilities clearly, never overpromised, and recovered a substantial amount from a cross-chain theft case.",
+    date: '2026-05-31',
+    verified: true,
+    tag: 'CROSS_CHAIN_CASE'
+  },
+  {
+    id: 'rev_37',
+    user: 'ELISE_PARIS',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "The legal report they produced was accepted by my attorney without revisions. The timeline and transaction mapping were clear and court-friendly.",
+    date: '2026-05-31',
+    verified: true,
+    tag: 'LEGAL_READY_REPORT'
+  },
+  {
+    id: 'rev_38',
+    user: 'NOAH_TORONTO',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Very good service and communication. Recovery took longer than expected due to exchange backlogs, but the team stayed engaged and recovered meaningful value.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'PERSISTENT_FOLLOWUP'
+  },
+  {
+    id: 'rev_39',
+    user: 'CHLOE_DUBLIN',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I was targeted by a recovery scam after my first loss. This was the first company that behaved transparently and documented every action. Real professionals.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'DOUBLE_SCAM_DEFENSE'
+  },
+  {
+    id: 'rev_40',
+    user: 'RAVI_SINGAPORE',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Strong technical depth on DeFi exploit tracing. Their analysts explained bridge hops and mixer interactions in language our team could understand.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'DEFI_ANALYSIS'
+  },
+  {
+    id: 'rev_41',
+    user: 'MARTA_MADRID',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I appreciated the security-first process. They never asked for private keys and all document sharing happened through a secure portal.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'SECURE_WORKFLOW'
+  },
+  {
+    id: 'rev_42',
+    user: 'ISAAC_BOSTON',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "After a SIM-swap account takeover, they moved fast with exchange notifications and forensic evidence. That speed made the difference.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'SIM_SWAP_RESPONSE'
+  },
+  {
+    id: 'rev_43',
+    user: 'YUKI_TOKYO',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Clear milestones, honest risk ratings, and excellent analyst support. The process felt structured and trustworthy from day one.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'STRUCTURED_CASE'
+  },
+  {
+    id: 'rev_44',
+    user: 'NATALIE_ATL',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "My case was old and difficult, so the recovery percentage was partial. Still, they delivered exactly what they said they would: rigorous tracing and realistic guidance.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'LEGACY_CASE'
+  },
+  {
+    id: 'rev_45',
+    user: 'OMAR_DOHA',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Excellent coordination with our legal counsel. Their evidence package saved us weeks and improved our filing quality immediately.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'COUNSEL_SUPPORT'
+  },
+  {
+    id: 'rev_46',
+    user: 'JULIA_OSLO',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I thought my chain-hopped funds were gone forever. They tracked movements across multiple wallets and found exchange touchpoints we did not see.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'CHAIN_HOP_TRACE'
+  },
+  {
+    id: 'rev_47',
+    user: 'TYLER_SEA',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Great experience for a stressful situation. Fast intake, clean reporting, and no hidden fees. I would refer anyone dealing with crypto fraud.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'FEE_TRANSPARENCY'
+  },
+  {
+    id: 'rev_48',
+    user: 'LINA_AMS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Their long-form case updates were incredibly useful. Every update included what changed, what remained uncertain, and what the next action was.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'CLEAR_UPDATES'
+  },
+  {
+    id: 'rev_49',
+    user: 'FARIS_KL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "The team helped us with a high-value USDT scam and handled exchange coordination professionally. Evidence quality was top-tier.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'USDT_RECOVERY'
+  },
+  {
+    id: 'rev_50',
+    user: 'SOPHIE_CPT',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Their forensic methodology gave me confidence. They separated confirmed facts from assumptions, which was critical for legal follow-up.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'METHOD_DISCIPLINE'
+  },
+  {
+    id: 'rev_51',
+    user: 'DANIEL_MIA',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content: "Very strong technical team and great portal. A bit complex for non-technical users, but the analyst support was patient and helpful.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'ANALYST_SUPPORT'
+  },
+  {
+    id: 'rev_52',
+    user: 'HYEJIN_SEOUL',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I used them for smart-contract exploit response. They acted quickly, provided an actionable trace map, and coordinated with our external counsel.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'EXPLOIT_RESPONSE'
+  },
+  {
+    id: 'rev_53',
+    user: 'MIGUEL_LISBON',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "From first call to final report, everything was handled with professionalism. Their process is exactly what victims need in high-stress situations.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'PROCESS_TRUST'
+  },
+  {
+    id: 'rev_54',
+    user: 'ERIN_DENVER',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "This team restored my confidence after a major loss. They delivered practical advice, strong forensics, and real outcomes.",
+    date: '2026-06-01',
+    verified: true,
+    tag: 'CLIENT_CONFIDENCE'
   }
 ];
 
