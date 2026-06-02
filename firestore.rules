@@ -8,10 +8,10 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.email == 'contact@vr-astrovision.com' ||
-        request.auth.token.email == 'admin@forensic.io' ||
+        request.auth.token.email == 'admin@forensic.com' ||
         request.auth.token.email == 'info@cryptorecoveryasset.com' ||
         request.auth.token.email.matches('.*@cryptorecoveryasset\\.com$') ||
-        request.auth.token.email.matches('.*@forensic\\.io$')
+        request.auth.token.email.matches('.*@forensic\\.com$')
       );
     }
 

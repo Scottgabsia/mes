@@ -21,14 +21,14 @@ function getFirebaseApiKey(): string {
 const ADMIN_EMAILS = [
   "info@cryptorecoveryasset.com",
   "contact@vr-astrovision.com",
-  "admin@forensic.io",
+  "admin@forensic.com",
 ];
 
 function isAdminEmail(email: string): boolean {
   const e = email.trim().toLowerCase();
   if (ADMIN_EMAILS.includes(e)) return true;
   if (e.endsWith("@cryptorecoveryasset.com")) return true;
-  if (e.endsWith("@forensic.io")) return true;
+  if (e.endsWith("@forensic.com")) return true;
   return false;
 }
 

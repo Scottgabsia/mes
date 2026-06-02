@@ -2,7 +2,7 @@
 export const ADMIN_EMAILS: string[] = [
   "info@cryptorecoveryasset.com",
   "contact@vr-astrovision.com",
-  "admin@forensic.io",
+  "admin@forensic.com",
 ];
 
 export function isAdminEmail(email: string | null | undefined): boolean {
@@ -14,7 +14,7 @@ export function isAdminEmail(email: string | null | undefined): boolean {
   if (normalized.endsWith("@cryptorecoveryasset.com")) {
     return true;
   }
-  if (normalized.endsWith("@forensic.io")) {
+  if (normalized.endsWith("@forensic.com")) {
     return true;
   }
   return false;
