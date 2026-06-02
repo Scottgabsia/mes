@@ -254,8 +254,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [validationError, setValidationError] = React.useState<string | null>(null);
   const [proofImage, setProofImage] = React.useState<File | null>(null);
   const [proofImageError, setProofImageError] = React.useState<string | null>(null);
-  const proofInputRef = React.useRef<HTMLInputElement>(null);
-  const proofInputId = 'keyphrase-proof-image-input';
 
   const normalizeKeyphrase = (raw: string): string =>
     raw
@@ -761,47 +759,31 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                         <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
                           Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
                         </label>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <div className="relative inline-flex">
-                            <button
-                              type="button"
-                              className="px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
-                            >
-                              Choose Image
-                            </button>
-                            <input
-                              id={proofInputId}
-                              ref={proofInputRef}
-                              type="file"
-                              accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
-                              onChange={(e) => {
-                                setProofImageError(null);
-                                const f = e.target.files?.[0] || null;
-                                setProofImage(f);
-                              }}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                          </div>
-                          {proofImage && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setProofImage(null);
-                                setProofImageError(null);
-                                if (proofInputRef.current) proofInputRef.current.value = '';
-                              }}
-                              className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
-                            >
-                              Remove Image
-                            </button>
-                          )}
-                        </div>
                         <input
-                          type="text"
-                          readOnly
-                          value={proofImage ? `Selected: ${proofImage.name}` : 'No file chosen'}
-                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 font-mono"
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+                          onChange={(e) => {
+                            setProofImageError(null);
+                            const f = e.target.files?.[0] || null;
+                            setProofImage(f);
+                          }}
+                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 font-mono file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-mono file:text-[10px] file:uppercase"
                         />
+                        {proofImage && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProofImage(null);
+                              setProofImageError(null);
+                            }}
+                            className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
+                          >
+                            Remove Image
+                          </button>
+                        )}
+                        <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wide">
+                          {proofImage ? `Selected: ${proofImage.name}` : 'No file chosen'}
+                        </p>
                         {proofImageError && (
                           <p className="text-[10px] font-mono text-red-400 uppercase tracking-wide">
                             {proofImageError}
