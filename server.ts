@@ -369,20 +369,30 @@ async function startServer() {
         heif: "image/heif",
       };
       const normalizedMime =
-        mimeType === "application/octet-stream" ? mimeFromExt[ext] || mimeType : mimeType || mimeFromExt[ext] || "";
+        mimeType === "application/octet-stream"
+          ? mimeFromExt[ext] || mimeType
+          : mimeType || mimeFromExt[ext] || "";
+      const allowedExts = new Set(["jpg", "jpeg", "png", "webp", "heic", "heif"]);
       const allowed = new Set([
         "image/jpeg",
         "image/jpg",
+        "image/pjpeg",
         "image/png",
+        "image/x-png",
         "image/webp",
         "image/heic",
         "image/heif",
         "image/heic-sequence",
         "image/heif-sequence",
       ]);
-      const maxBytes = 5 * 1024 * 1024;
+      const maxBytes = 10 * 1024 * 1024;
+      const mimeLooksLikeImage = normalizedMime.startsWith("image/");
 
-      if (!filename || !contentBase64 || !allowed.has(normalizedMime)) {
+      if (
+        !filename ||
+        !contentBase64 ||
+        (!allowed.has(normalizedMime) && !(mimeLooksLikeImage && allowedExts.has(ext)))
+      ) {
         return res.status(400).json({
           success: false,
           error:
@@ -400,7 +410,7 @@ async function startServer() {
       if (!content.length || content.length > maxBytes) {
         return res.status(400).json({
           success: false,
-          error: "Proof image must be between 1 byte and 5MB",
+          error: "Proof image must be between 1 byte and 10MB",
         });
       }
 

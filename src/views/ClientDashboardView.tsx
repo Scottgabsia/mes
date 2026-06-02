@@ -286,10 +286,13 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         heic: 'image/heic',
         heif: 'image/heif',
       };
+      const allowedExts = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']);
       const allowedTypes = new Set([
         'image/jpeg',
         'image/jpg',
+        'image/pjpeg',
         'image/png',
+        'image/x-png',
         'image/webp',
         'image/heic',
         'image/heif',
@@ -301,20 +304,26 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         (allowedTypes.has(normalizedType) ? normalizedType : '') ||
         mimeFromExt[ext] ||
         normalizedType;
-      const maxBytes = 5 * 1024 * 1024;
-      if (!allowedTypes.has(resolvedMimeType)) {
+      const maxBytes = 10 * 1024 * 1024;
+      const mimeLooksLikeImage = resolvedMimeType.startsWith('image/');
+      if (!allowedTypes.has(resolvedMimeType) && !(mimeLooksLikeImage && allowedExts.has(ext))) {
         setProofImageError('Only JPG, JPEG, PNG, WEBP, HEIC, or HEIF image files are allowed.');
         return;
       }
       if (proofImage.size > maxBytes) {
-        setProofImageError('Image is too large. Maximum file size is 5MB.');
+        setProofImageError('Image is too large. Maximum file size is 10MB.');
         return;
       }
       const dataUrl = await fileToBase64(proofImage);
+      const contentBase64 = dataUrl.split(',')[1] || '';
+      if (!contentBase64) {
+        setProofImageError('Could not read the selected image. Please choose another file.');
+        return;
+      }
       proofImagePayload = {
         filename: proofImage.name,
         mimeType: resolvedMimeType,
-        contentBase64: dataUrl.split(',')[1] || '',
+        contentBase64,
       };
     }
 
@@ -738,7 +747,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
                       <div className="space-y-2">
                         <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-                          Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 5MB)
+                          Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
                         </label>
                         <input
                           type="file"
