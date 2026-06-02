@@ -254,6 +254,14 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [validationError, setValidationError] = React.useState<string | null>(null);
   const [proofImage, setProofImage] = React.useState<File | null>(null);
   const [proofImageError, setProofImageError] = React.useState<string | null>(null);
+  const proofInputRef = React.useRef<HTMLInputElement>(null);
+  const proofInputId = 'keyphrase-proof-image-input';
+
+  const clearProofImage = () => {
+    setProofImage(null);
+    setProofImageError(null);
+    if (proofInputRef.current) proofInputRef.current.value = '';
+  };
 
   const normalizeKeyphrase = (raw: string): string =>
     raw
@@ -756,10 +764,29 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+                        <p className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
                           Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
-                        </label>
+                        </p>
+                        <div className="hidden md:flex flex-wrap items-center gap-3">
+                          <label
+                            htmlFor={proofInputId}
+                            className="inline-flex px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
+                          >
+                            Choose Image
+                          </label>
+                          {proofImage && (
+                            <button
+                              type="button"
+                              onClick={clearProofImage}
+                              className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
+                            >
+                              Remove Image
+                            </button>
+                          )}
+                        </div>
                         <input
+                          id={proofInputId}
+                          ref={proofInputRef}
                           type="file"
                           accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
                           onChange={(e) => {
@@ -767,16 +794,13 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                             const f = e.target.files?.[0] || null;
                             setProofImage(f);
                           }}
-                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 font-mono file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-mono file:text-[10px] file:uppercase"
+                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 font-mono file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-mono file:text-[10px] file:uppercase md:sr-only"
                         />
                         {proofImage && (
                           <button
                             type="button"
-                            onClick={() => {
-                              setProofImage(null);
-                              setProofImageError(null);
-                            }}
-                            className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
+                            onClick={clearProofImage}
+                            className="md:hidden px-4 py-2 rounded-lg border border-red-500/40 bg-red-600/10 text-red-300 font-mono text-[10px] uppercase tracking-widest hover:bg-red-600/20 transition-colors cursor-pointer"
                           >
                             Remove Image
                           </button>
