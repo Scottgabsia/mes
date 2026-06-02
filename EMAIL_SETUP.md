@@ -53,6 +53,25 @@ ADMIN_EMAIL=info@cryptorecoveryasset.com
 
 Verify domain at resend.com. Used only when SMTP is not configured.
 
+**Deliverability guardrails (important):**
+
+- Do **not** use `onboarding@resend.dev` in production. Use your verified `@cryptorecoveryasset.com` sender.
+- Keep sender alignment strict:
+  - `From`: `info@cryptorecoveryasset.com`
+  - `Reply-To`: same domain where possible
+- Publish SPF, DKIM, and DMARC for `cryptorecoveryasset.com`:
+  - SPF: include only your active sender(s) (Titan and/or Resend)
+  - DKIM: enable provider DKIM records exactly as issued
+  - DMARC: start with `p=none`, then move to `quarantine/reject` after monitoring
+
+Example DMARC starter record:
+
+```
+Host: _dmarc
+Type: TXT
+Value: v=DMARC1; p=none; rua=mailto:info@cryptorecoveryasset.com; adkim=s; aspf=s; pct=100
+```
+
 ---
 
 ## Logs

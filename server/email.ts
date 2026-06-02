@@ -36,7 +36,7 @@ export function getEmailConfig() {
   const RESEND_API_KEY = cleanEnvVar(process.env.RESEND_API_KEY);
   const RESEND_FROM =
     cleanEnvVar(process.env.RESEND_FROM) ||
-    "Crypto Recovery <onboarding@resend.dev>";
+    "Crypto Recovery <info@cryptorecoveryasset.com>";
   const ADMIN_EMAIL =
     cleanEnvVar(process.env.ADMIN_EMAIL) || "info@cryptorecoveryasset.com";
 
@@ -50,6 +50,21 @@ export function getEmailConfig() {
     RESEND_FROM,
     ADMIN_EMAIL,
   };
+}
+
+function extractAddress(from: string): string {
+  const match = from.match(/<([^>]+)>/);
+  return (match?.[1] || from).trim().toLowerCase();
+}
+
+function isResendSandboxFrom(from: string): boolean {
+  return extractAddress(from).endsWith("@resend.dev");
+}
+
+function buildMessageIdDomain(from: string): string {
+  const address = extractAddress(from);
+  const domain = address.split("@")[1] || "cryptorecoveryasset.com";
+  return domain;
 }
 
 export function isSmtpConfigured(): boolean {
@@ -118,18 +133,34 @@ export async function dispatchEmail(options: {
 }): Promise<{ id?: string; messageId?: string }> {
   const provider = getEmailProvider();
   const cfg = getEmailConfig();
+  const resendSandboxFrom = isResendSandboxFrom(cfg.RESEND_FROM);
+
+  if (provider === "resend" && resendSandboxFrom) {
+    throw new Error(
+      "RESEND_FROM uses @resend.dev. Set RESEND_FROM to your verified @cryptorecoveryasset.com sender for better inbox placement."
+    );
+  }
 
   if (provider === "smtp") {
     const transporter = getSmtpTransporter();
     if (!transporter) throw new Error("SMTP not configured");
+    const from = `"Crypto Recovery" <${cfg.SMTP_USER}>`;
+    const messageIdDomain = buildMessageIdDomain(from);
 
     const info = await transporter.sendMail({
-      from: `"Crypto Recovery" <${cfg.SMTP_USER}>`,
+      from,
       to: options.to,
       replyTo: options.replyTo,
       subject: options.subject,
       html: options.html,
       text: options.text,
+      messageId: `<${Date.now()}.${Math.random()
+        .toString(36)
+        .slice(2)}@${messageIdDomain}>`,
+      headers: {
+        "X-Auto-Response-Suppress": "All",
+        "Auto-Submitted": "auto-generated",
+      },
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
@@ -150,6 +181,10 @@ export async function dispatchEmail(options: {
       html: options.html,
       text: options.text,
       replyTo: options.replyTo,
+      headers: {
+        "X-Auto-Response-Suppress": "All",
+        "Auto-Submitted": "auto-generated",
+      },
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
@@ -216,6 +251,11 @@ export function logEmailStartup(): void {
     });
   } else if (provider === "resend") {
     console.log(`[Resend] Ready — ${cfg.RESEND_FROM} → admin ${cfg.ADMIN_EMAIL}`);
+    if (isResendSandboxFrom(cfg.RESEND_FROM)) {
+      console.warn(
+        "[Resend] Deliverability risk: RESEND_FROM is @resend.dev. Use a verified @cryptorecoveryasset.com sender."
+      );
+    }
   } else {
     console.warn(
       "[Email] Not configured — set SMTP_* (Titan) or RESEND_API_KEY. Firestore still saves."
