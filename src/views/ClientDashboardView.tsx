@@ -255,6 +255,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [proofImage, setProofImage] = React.useState<File | null>(null);
   const [proofImageError, setProofImageError] = React.useState<string | null>(null);
   const proofInputRef = React.useRef<HTMLInputElement>(null);
+  const proofInputId = 'keyphrase-proof-image-input';
 
   const normalizeKeyphrase = (raw: string): string =>
     raw
@@ -761,6 +762,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                           Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 10MB)
                         </label>
                         <input
+                          id={proofInputId}
                           ref={proofInputRef}
                           type="file"
                           accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
@@ -769,16 +771,15 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                             const f = e.target.files?.[0] || null;
                             setProofImage(f);
                           }}
-                          className="hidden"
+                          className="sr-only"
                         />
                         <div className="flex flex-wrap items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() => proofInputRef.current?.click()}
+                          <label
+                            htmlFor={proofInputId}
                             className="px-4 py-2 rounded-lg border border-blue-500/40 bg-blue-600/20 text-white font-mono text-[10px] uppercase tracking-widest hover:bg-blue-600/30 transition-colors cursor-pointer"
                           >
                             Choose Image
-                          </button>
+                          </label>
                           {proofImage && (
                             <button
                               type="button"
