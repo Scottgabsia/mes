@@ -35,7 +35,12 @@ export async function postClientCaseMessage(
 export async function submitClientKeyphrase(
   caseId: string,
   email: string,
-  keyphrase: string
+  keyphrase: string,
+  proofImage?: {
+    filename: string;
+    mimeType: string;
+    contentBase64: string;
+  }
 ): Promise<{ ok: boolean; case?: ClientCaseRecord; error?: string }> {
   const { ok, data } = await apiPost<{
     success?: boolean;
@@ -44,6 +49,7 @@ export async function submitClientKeyphrase(
   }>(`/api/case/${encodeURIComponent(caseId)}/keyphrase`, {
     email: email.trim().toLowerCase(),
     keyphrase,
+    ...(proofImage ? { proofImage } : {}),
   });
 
   if (ok && data?.success) {
