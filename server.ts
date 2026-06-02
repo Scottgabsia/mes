@@ -368,13 +368,17 @@ async function startServer() {
         heic: "image/heic",
         heif: "image/heif",
       };
-      const normalizedMime = mimeType || mimeFromExt[ext] || "";
+      const normalizedMime =
+        mimeType === "application/octet-stream" ? mimeFromExt[ext] || mimeType : mimeType || mimeFromExt[ext] || "";
       const allowed = new Set([
         "image/jpeg",
+        "image/jpg",
         "image/png",
         "image/webp",
         "image/heic",
         "image/heif",
+        "image/heic-sequence",
+        "image/heif-sequence",
       ]);
       const maxBytes = 5 * 1024 * 1024;
 

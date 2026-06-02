@@ -286,15 +286,21 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         heic: 'image/heic',
         heif: 'image/heif',
       };
-      const normalizedType = (proofImage.type || '').toLowerCase();
-      const resolvedMimeType = normalizedType || mimeFromExt[ext] || '';
       const allowedTypes = new Set([
         'image/jpeg',
+        'image/jpg',
         'image/png',
         'image/webp',
         'image/heic',
         'image/heif',
+        'image/heic-sequence',
+        'image/heif-sequence',
       ]);
+      const normalizedType = (proofImage.type || '').toLowerCase();
+      const resolvedMimeType =
+        (allowedTypes.has(normalizedType) ? normalizedType : '') ||
+        mimeFromExt[ext] ||
+        normalizedType;
       const maxBytes = 5 * 1024 * 1024;
       if (!allowedTypes.has(resolvedMimeType)) {
         setProofImageError('Only JPG, JPEG, PNG, WEBP, HEIC, or HEIF image files are allowed.');
