@@ -25,6 +25,26 @@ export function blogImageSrc(path: string): string {
   return `${path}?v=${BLOG_IMAGE_VERSION}`;
 }
 
+/** Home hero "SYSTEM ACTIVE: N TRACES" — grows daily, same value all day (no refresh reset). */
+export const TRACE_COUNT_BASE = 2838;
+export const TRACE_COUNT_ANCHOR_ISO = "2026-06-02";
+export const TRACE_DAILY_INCREMENTS = [12, 10, 50, 11, 15, 22, 9] as const;
+
+export function getActiveTraceCount(): number {
+  const anchor = new Date(`${TRACE_COUNT_ANCHOR_ISO}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Math.max(
+    0,
+    Math.floor((today.getTime() - anchor.getTime()) / 86_400_000)
+  );
+  let count = TRACE_COUNT_BASE;
+  for (let i = 0; i < days; i++) {
+    count += TRACE_DAILY_INCREMENTS[i % TRACE_DAILY_INCREMENTS.length];
+  }
+  return count;
+}
+
 export const SOCIAL_LINKS = [
   {
     id: "facebook",

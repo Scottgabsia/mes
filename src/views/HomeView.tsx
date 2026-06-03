@@ -9,7 +9,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { ProgressBar, ForensicAgent } from '../components/Common';
-import { CRYPTO_CURRENCIES } from '../constants';
+import { CRYPTO_CURRENCIES, getActiveTraceCount } from '../constants';
 import { ReviewsSection } from '../components/ReviewsSection';
 import { CertificationsPartnershipsSection } from '../components/CertificationsPartnershipsSection';
 import { SEO } from '../components/SEO';
@@ -22,12 +22,17 @@ interface HomeViewProps {
 
 export const HomeView = ({ onNavigate }: HomeViewProps) => {
   const [balance, setBalance] = React.useState<number | string>(50000);
-  const [traceCount, setTraceCount] = React.useState(2841);
+  const [traceCount, setTraceCount] = React.useState(() => getActiveTraceCount());
   const [secondsSinceLast, setSecondsSinceLast] = React.useState(12.4);
 
   React.useEffect(() => {
+    const base = getActiveTraceCount();
+    setTraceCount(base);
     const traceInterval = setInterval(() => {
-      setTraceCount(prev => prev + (Math.random() > 0.5 ? 1 : -1));
+      setTraceCount((prev) => {
+        const next = prev + (Math.random() > 0.5 ? 1 : -1);
+        return Math.max(base, next);
+      });
     }, 3000);
 
     const secInterval = setInterval(() => {
