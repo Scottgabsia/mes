@@ -22,19 +22,10 @@ interface HomeViewProps {
 
 export const HomeView = ({ onNavigate }: HomeViewProps) => {
   const [balance, setBalance] = React.useState<number | string>(50000);
-  const [traceCount, setTraceCount] = React.useState(() => getActiveTraceCount());
+  const traceCount = getActiveTraceCount();
   const [secondsSinceLast, setSecondsSinceLast] = React.useState(12.4);
 
   React.useEffect(() => {
-    const base = getActiveTraceCount();
-    setTraceCount(base);
-    const traceInterval = setInterval(() => {
-      setTraceCount((prev) => {
-        const next = prev + (Math.random() > 0.5 ? 1 : -1);
-        return Math.max(base, next);
-      });
-    }, 3000);
-
     const secInterval = setInterval(() => {
       setSecondsSinceLast(prev => {
         const next = prev + 0.1;
@@ -42,10 +33,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       });
     }, 100);
 
-    return () => {
-      clearInterval(traceInterval);
-      clearInterval(secInterval);
-    };
+    return () => clearInterval(secInterval);
   }, []);
 
   const [network, setNetwork] = React.useState('Bitcoin (BTC)');
