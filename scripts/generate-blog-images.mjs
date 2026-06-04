@@ -128,6 +128,16 @@ async function createCover(slug, accent) {
 fs.mkdirSync(blogDir, { recursive: true });
 
 const covers = [
+  ["crypto-recovery-services-complete-guide-2026", 0x2563ebff],
+  ["bitcoin-ethereum-recovery-specialists-guide", 0xeab308ff],
+  ["blockchain-forensic-analysis-crypto-recovery-guide", 0x22d3eeff],
+  ["crypto-scam-investigation-tracing-services-guide", 0x0891b2ff],
+  ["legit-trusted-crypto-recovery-company-guide", 0x059669ff],
+  ["recover-hacked-crypto-wallet-complete-guide", 0x7c3aedff],
+  ["exchange-compliance-digital-asset-recovery-guide", 0x0ea5e9ff],
+  ["crypto-fraud-blockchain-recovery-investigation-guide", 0xef4444ff],
+  ["recover-lost-cryptocurrency-blockchain-assets-guide", 0x6366f1ff],
+  ["crypto-asset-protection-scam-help-support-guide", 0x14b8a6ff],
   ["crypto-recovery-services-usa-guide-2026", 0x1d4ed8ff],
   ["crypto-recovery-northeast-usa-states-cities", 0x0ea5e9ff],
   ["crypto-recovery-midwest-usa-states-cities", 0x6366f1ff],
