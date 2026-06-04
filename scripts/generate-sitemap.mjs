@@ -11,6 +11,12 @@ const root = path.join(__dirname, "..");
 
 // Read SEO_ROUTES from built file is hard in plain node — duplicate paths inline from config
 const blogSlugs = [
+  "crypto-recovery-mountain-plains-usa-states-cities",
+  "crypto-recovery-west-coast-usa-states-cities",
+  "crypto-recovery-south-texas-usa-states-cities",
+  "crypto-recovery-midwest-usa-states-cities",
+  "crypto-recovery-northeast-usa-states-cities",
+  "crypto-recovery-services-usa-guide-2026",
   "crypto-legal-reporting-review-court-ready-forensic-documentation",
   "defi-smart-contract-exploit-recovery-review-long-analysis",
   "exchange-compliance-crypto-recovery-review-kyc-aml-freeze-workflow",
