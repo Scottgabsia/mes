@@ -4,17 +4,16 @@ export const CONTACT_EMAIL = "info@cryptorecoveryasset.com";
 export const SUPPORT_PHONE_DISPLAY = "+1 (401) 684-4683";
 /** Site support line — matches footer / structured data */
 export const SUPPORT_PHONE_E164 = "14016844683";
+/** WhatsApp Business message link — used in case confirmation emails */
+export const WHATSAPP_MESSAGE_URL = "https://wa.me/message/FKM22PP45SVFO1";
 export const BRAND_LOGO_URL = `${SITE_URL}/brand-icon-512.png`;
 
 export function buildCaseLookupUrl(caseId: string): string {
   return `${CASE_LOOKUP_URL}?ref=${encodeURIComponent(caseId)}`;
 }
 
-export function buildWhatsAppUrl(caseId: string): string {
-  const text = encodeURIComponent(
-    `Hello, my case ID is ${caseId}. I need help with my crypto recovery case.`
-  );
-  return `https://wa.me/${SUPPORT_PHONE_E164}?text=${text}`;
+export function buildWhatsAppUrl(_caseId?: string): string {
+  return WHATSAPP_MESSAGE_URL;
 }
 
 export function buildClientCaseEmailText(
@@ -42,7 +41,7 @@ export function buildClientCaseEmailText(
     "",
     "YOUR SECURE CLIENT PORTAL",
     `Track status anytime: ${lookupUrl}`,
-    `WhatsApp (include your Case ID): ${whatsappUrl}`,
+    `WhatsApp (mention your Case ID when you message us): ${whatsappUrl}`,
     "",
     "WHILE YOU WAIT",
     "• Save your Case ID in a secure place.",
@@ -262,4 +261,4 @@ function escapeHtml(value: string): string {
 }
 
 /** @deprecated Use buildWhatsAppUrl(caseId) — kept for imports that expect a constant */
-export const WHATSAPP_URL = `https://wa.me/${SUPPORT_PHONE_E164}`;
+export const WHATSAPP_URL = WHATSAPP_MESSAGE_URL;
