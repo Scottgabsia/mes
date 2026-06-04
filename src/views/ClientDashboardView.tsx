@@ -825,9 +825,6 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                     </div>
                   ))}
                 </div>
-                <button className="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl font-mono text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-colors cursor-pointer capitalize">
-                  View full session history
-                </button>
               </div>
 
               {/* Secure Analyst Info */}
