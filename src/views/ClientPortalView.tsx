@@ -737,7 +737,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
           <div className="p-6 glass-panel border-l-2 border-emerald-500 rounded-xl relative overflow-hidden group">
             <p className="font-mono text-[10px] text-emerald-500/70 mb-1 tracking-widest uppercase">SECURE_COMMS_CHANNEL</p>
             <p className="text-sm text-slate-300 leading-relaxed mb-4">
-              Questions before you submit? Chat with our recovery team on WhatsApp.
+              Chat with our recovery team on WhatsApp.
             </p>
             <a
               href={WHATSAPP_URL}
