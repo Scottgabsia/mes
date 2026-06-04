@@ -1,5 +1,6 @@
 import React from 'react';
 import { LOGO_URL } from '../constants';
+import { WhatsAppSupportPanel } from '../components/WhatsAppSupportPanel';
 import { 
   ShieldCheck, 
   MessageSquare, 
@@ -849,6 +850,8 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                   <MessageSquare size={14} /> Open Secure Comms
                 </button>
               </div>
+
+              <WhatsAppSupportPanel />
             </div>
           </motion.div>
         )}

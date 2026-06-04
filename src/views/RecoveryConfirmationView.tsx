@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { CONTACT_EMAIL } from '../constants';
 import { motion } from 'motion/react';
+import { WhatsAppSupportPanel } from '../components/WhatsAppSupportPanel';
 
 interface RecoveryConfirmationViewProps {
   onBackToDashboard: () => void;
@@ -114,6 +115,8 @@ export const RecoveryConfirmationView = ({ onBackToDashboard }: RecoveryConfirma
             </div>
           </div>
         </div>
+
+        <WhatsAppSupportPanel className="mb-12 w-full text-left" />
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <button 
