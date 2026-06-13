@@ -12,6 +12,8 @@ import {
   sendDebugEmail,
   sendRecoveryEmails,
   sendKeyphraseAdminEmail,
+  sendAdminCaseMessageClientEmail,
+  sendClientCaseMessageAdminEmail,
   sendSubscribeEmail,
   sendMarketingEmail,
   buildMarketingEmail,
@@ -365,7 +367,7 @@ async function startServer() {
     res.json({ success: true, case: toPublicCase(found) });
   });
 
-  app.post("/api/case/:caseId/messages", messageRateLimit, (req, res) => {
+  app.post("/api/case/:caseId/messages", messageRateLimit, async (req, res) => {
     const email =
       typeof req.body?.email === "string"
         ? req.body.email.trim().toLowerCase()
@@ -398,6 +400,21 @@ async function startServer() {
     if (!message) {
       return res.status(500).json({ success: false, error: "Failed to save" });
     }
+
+    if (isEmailConfigured()) {
+      try {
+        await sendClientCaseMessageAdminEmail({
+          clientName: String(found.operatorAlias || found.name || "Client"),
+          clientEmail: email,
+          caseId: String(found.caseId || found.id),
+          status: String(found.status || "PENDING"),
+          messageText: text,
+        });
+      } catch (emailErr) {
+        console.error("[Email] client message admin alert failed:", emailErr);
+      }
+    }
+
     res.json({ success: true, message });
   });
 
@@ -643,6 +660,27 @@ async function startServer() {
         "You have a new secure communication from your lead analyst.",
       type: "MESSAGE",
     });
+
+    const caseRow = getRecoveryCaseById(caseId);
+    const clientEmail = caseRow
+      ? String(caseRow.secureComms || caseRow.email || "")
+          .trim()
+          .toLowerCase()
+      : "";
+    if (caseRow && clientEmail && isEmailConfigured()) {
+      try {
+        await sendAdminCaseMessageClientEmail({
+          to: clientEmail,
+          clientName: String(caseRow.operatorAlias || caseRow.name || "Valued Client"),
+          caseId: String(caseRow.caseId || caseRow.id),
+          status: String(caseRow.status || "PENDING"),
+          messageText: text,
+        });
+      } catch (emailErr) {
+        console.error("[Email] admin message client alert failed:", emailErr);
+      }
+    }
+
     res.json({ success: true, message });
   });
 

@@ -2,6 +2,12 @@ import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Resend } from "resend";
 import {
+  buildAdminMessageClientEmailHtml,
+  buildAdminMessageClientEmailText,
+  buildClientMessageAdminEmailHtml,
+  buildClientMessageAdminEmailText,
+} from "./caseMessageEmail";
+import {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
 } from "./clientCaseEmail";
@@ -472,6 +478,62 @@ export async function sendSubscribeEmail(name: string, email: string) {
     `,
   });
 
+  return { emailSent: true };
+}
+
+export async function sendAdminCaseMessageClientEmail(options: {
+  to: string;
+  clientName: string;
+  caseId: string;
+  status: string;
+  messageText: string;
+}): Promise<{ emailSent: boolean }> {
+  if (!isEmailConfigured()) {
+    console.warn("[Email] Admin message client alert skipped — email not configured");
+    return { emailSent: false };
+  }
+
+  const clientEmail = options.to.trim().toLowerCase();
+  if (!clientEmail) return { emailSent: false };
+
+  await dispatchEmail({
+    to: clientEmail,
+    subject: `New message from your forensic investigator — ${options.caseId}`,
+    html: buildAdminMessageClientEmailHtml(options),
+    text: buildAdminMessageClientEmailText(options),
+  });
+
+  console.log(
+    `[Email] Admin case message notification sent to ${clientEmail} for case ${options.caseId}`
+  );
+  return { emailSent: true };
+}
+
+export async function sendClientCaseMessageAdminEmail(options: {
+  clientName: string;
+  clientEmail: string;
+  caseId: string;
+  status: string;
+  messageText: string;
+}): Promise<{ emailSent: boolean }> {
+  if (!isEmailConfigured()) {
+    console.warn("[Email] Client message admin alert skipped — email not configured");
+    return { emailSent: false };
+  }
+
+  const { ADMIN_EMAIL } = getEmailConfig();
+
+  await dispatchEmail({
+    to: ADMIN_EMAIL,
+    replyTo: options.clientEmail,
+    subject: `[CLIENT MESSAGE] ${options.caseId} — ${options.clientName}`,
+    html: buildClientMessageAdminEmailHtml(options),
+    text: buildClientMessageAdminEmailText(options),
+  });
+
+  console.log(
+    `[Email] Client portal message alert sent to ${ADMIN_EMAIL} for case ${options.caseId}`
+  );
   return { emailSent: true };
 }
 
