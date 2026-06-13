@@ -146,10 +146,19 @@ export async function dispatchEmail(options: {
   text?: string;
   replyTo?: string;
   attachments?: EmailAttachment[];
+  /** Transactional case mail — omit Auto-Submitted (helps inbox placement). */
+  delivery?: "transactional" | "automated";
 }): Promise<{ id?: string; messageId?: string }> {
   const provider = getEmailProvider();
   const cfg = getEmailConfig();
   const resendSandboxFrom = isResendSandboxFrom(cfg.RESEND_FROM);
+  const isTransactional = options.delivery === "transactional";
+  const mailHeaders: Record<string, string> = {
+    "X-Auto-Response-Suppress": "All",
+  };
+  if (!isTransactional) {
+    mailHeaders["Auto-Submitted"] = "auto-generated";
+  }
 
   if (provider === "resend" && resendSandboxFrom) {
     throw new Error(
@@ -173,10 +182,7 @@ export async function dispatchEmail(options: {
       messageId: `<${Date.now()}.${Math.random()
         .toString(36)
         .slice(2)}@${messageIdDomain}>`,
-      headers: {
-        "X-Auto-Response-Suppress": "All",
-        "Auto-Submitted": "auto-generated",
-      },
+      headers: mailHeaders,
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
@@ -197,10 +203,7 @@ export async function dispatchEmail(options: {
       html: options.html,
       text: options.text,
       replyTo: options.replyTo,
-      headers: {
-        "X-Auto-Response-Suppress": "All",
-        "Auto-Submitted": "auto-generated",
-      },
+      headers: mailHeaders,
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
@@ -353,9 +356,11 @@ export async function sendRecoveryEmails(
   if (clientEmailRaw) {
     await dispatchEmail({
       to: clientEmailRaw,
+      replyTo: ADMIN_EMAIL,
       subject: `Case received — ${generatedCaseId}`,
       html: buildClientCaseEmailHtml(clientNameRaw, generatedCaseId),
       text: buildClientCaseEmailText(clientNameRaw, generatedCaseId),
+      delivery: "transactional",
     });
   }
 
@@ -498,9 +503,11 @@ export async function sendAdminCaseMessageClientEmail(options: {
 
   await dispatchEmail({
     to: clientEmail,
-    subject: `New message from your forensic investigator — ${options.caseId}`,
+    replyTo: getEmailConfig().ADMIN_EMAIL,
+    subject: `Case ${options.caseId}: new secure message`,
     html: buildAdminMessageClientEmailHtml(options),
     text: buildAdminMessageClientEmailText(options),
+    delivery: "transactional",
   });
 
   console.log(
@@ -526,9 +533,10 @@ export async function sendClientCaseMessageAdminEmail(options: {
   await dispatchEmail({
     to: ADMIN_EMAIL,
     replyTo: options.clientEmail,
-    subject: `[CLIENT MESSAGE] ${options.caseId} — ${options.clientName}`,
+    subject: `Case ${options.caseId}: client replied in portal`,
     html: buildClientMessageAdminEmailHtml(options),
     text: buildClientMessageAdminEmailText(options),
+    delivery: "transactional",
   });
 
   console.log(
