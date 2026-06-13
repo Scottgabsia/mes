@@ -4,8 +4,11 @@ export const CONTACT_EMAIL = "info@cryptorecoveryasset.com";
 export const SUPPORT_PHONE_DISPLAY = "+1 (401) 684-4683";
 /** Site support line — matches footer / structured data */
 export const SUPPORT_PHONE_E164 = "14016844683";
+export const BUSINESS_ADDRESS_LINE1 = "One World Trade Center, Suite 850";
+export const BUSINESS_ADDRESS_LINE2 = "New York, NY 10007, USA";
+export const BUSINESS_ADDRESS_INLINE = `${BUSINESS_ADDRESS_LINE1} · ${BUSINESS_ADDRESS_LINE2}`;
 /** WhatsApp Business message link — used in case confirmation emails */
-export const WHATSAPP_MESSAGE_URL = "https://wa.me/message/FKM22PP45SVFO1";
+export const WHATSAPP_MESSAGE_URL = "https://wa.me/message/QYIWNLJV3ZHLE1";
 export const BRAND_LOGO_URL = `${SITE_URL}/brand-icon-512.png`;
 
 export function buildCaseLookupUrl(caseId: string): string {
@@ -53,6 +56,8 @@ export function buildClientCaseEmailText(
     `Email: ${CONTACT_EMAIL}`,
     `Phone: ${SUPPORT_PHONE_DISPLAY}`,
     `Website: ${SITE_URL}`,
+    BUSINESS_ADDRESS_LINE1,
+    BUSINESS_ADDRESS_LINE2,
     "",
     "This message is private and confidential. Unauthorized disclosure is prohibited.",
     "",
@@ -239,7 +244,7 @@ export function buildClientCaseEmailHtml(
           <tr>
             <td align="center" style="padding:24px 32px;background-color:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;">
               <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#64748b;">Crypto Recovery Asset</p>
-              <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:#94a3b8;">One World Trade Center, Suite 850 · New York, NY 10007, USA</p>
+              <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:#94a3b8;">${BUSINESS_ADDRESS_INLINE}</p>
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:10px;line-height:1.5;color:#94a3b8;">© ${new Date().getFullYear()} Crypto Recovery Asset. All rights reserved.<br/>Private &amp; Confidential · Forensic Intelligence Services</p>
             </td>
           </tr>

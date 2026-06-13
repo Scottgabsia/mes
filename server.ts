@@ -13,7 +13,11 @@ import {
   sendRecoveryEmails,
   sendKeyphraseAdminEmail,
   sendSubscribeEmail,
+  sendMarketingEmail,
+  buildMarketingEmail,
+  listMarketingTemplates,
   generateCaseId,
+  type MarketingTemplateId,
 } from "./server/email";
 import {
   getForensicPgpPublicKey,
@@ -123,6 +127,87 @@ async function startServer() {
     }
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(buildClientCaseEmailHtml("Preview User", "DF-0000-PREVIEW"));
+  });
+
+  app.get("/api/marketing-emails", async (req, res) => {
+    if (isProduction) {
+      const admin = await requireAdminFromRequest(req.headers.authorization);
+      if (!admin) {
+        return res.status(404).json({ error: "Not found" });
+      }
+    }
+    res.json({
+      templates: listMarketingTemplates().map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        sampleSubject: t.subject({ firstName: "Alex", caseId: "DF-8829-QX-04" }),
+      })),
+    });
+  });
+
+  app.get("/api/marketing-email-preview", async (req, res) => {
+    if (isProduction) {
+      const admin = await requireAdminFromRequest(req.headers.authorization);
+      if (!admin) {
+        return res.status(404).json({ error: "Not found" });
+      }
+    }
+    const templateId = String(req.query.template || "scam_recovery_campaign") as MarketingTemplateId;
+    try {
+      const { html } = buildMarketingEmail(templateId, {
+        firstName: String(req.query.firstName || "Alex"),
+        caseId: req.query.caseId ? String(req.query.caseId) : undefined,
+      });
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error) {
+      res.status(400).json({
+        error: error instanceof Error ? error.message : "Invalid template",
+      });
+    }
+  });
+
+  app.post("/api/send-marketing-email", async (req, res) => {
+    const admin = await requireAdminFromRequest(req.headers.authorization);
+    if (!admin) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    if (!isEmailConfigured()) {
+      return res.status(500).json({ success: false, error: "Email not configured" });
+    }
+
+    const to = String(req.body?.to || "").trim();
+    const templateId = String(req.body?.templateId || "") as MarketingTemplateId;
+    if (!to || !templateId) {
+      return res.status(400).json({
+        success: false,
+        error: "to and templateId are required",
+      });
+    }
+
+    try {
+      const result = await sendMarketingEmail({
+        to,
+        templateId,
+        vars: {
+          firstName: req.body?.firstName ? String(req.body.firstName) : undefined,
+          caseId: req.body?.caseId ? String(req.body.caseId) : undefined,
+        },
+      });
+      res.json({
+        success: true,
+        messageId: result.messageId ?? result.id,
+        recipient: to,
+        templateId,
+      });
+    } catch (error) {
+      console.error("[Email] send-marketing-email failed:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
   });
 
   app.get("/api/debug-email", async (req, res) => {

@@ -64,7 +64,7 @@ export const SOCIAL_LINKS = [
 ] as const;
 
 /** WhatsApp Business message link — form page + email CTAs */
-export const WHATSAPP_URL = "https://wa.me/message/FKM22PP45SVFO1";
+export const WHATSAPP_URL = "https://wa.me/message/QYIWNLJV3ZHLE1";
 
 /** WhatsApp, Facebook, Twitter link previews — image with dark background */
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.png?v=1`;

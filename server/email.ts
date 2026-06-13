@@ -5,7 +5,17 @@ import {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
 } from "./clientCaseEmail";
+import type { MarketingEmailVars, MarketingTemplateId } from "./marketingEmails";
+import { buildMarketingEmail } from "./marketingEmails";
 import { escapeHtml } from "./security";
+
+export type { MarketingEmailVars, MarketingTemplateId };
+export {
+  buildMarketingEmail,
+  listMarketingTemplates,
+  MARKETING_EMAIL_TEMPLATES,
+} from "./marketingEmails";
+export { SCAM_RECOVERY_SUBJECT_LINES } from "./marketingScamRecoveryEmail";
 
 export {
   buildClientCaseEmailHtml,
@@ -463,4 +473,24 @@ export async function sendSubscribeEmail(name: string, email: string) {
   });
 
   return { emailSent: true };
+}
+
+/** Send a marketing template to one recipient (manual campaigns / admin tests). */
+export async function sendMarketingEmail(options: {
+  to: string;
+  templateId: MarketingTemplateId;
+  vars?: MarketingEmailVars;
+}) {
+  const { subject, html, text } = buildMarketingEmail(
+    options.templateId,
+    options.vars ?? {}
+  );
+
+  return dispatchEmail({
+    to: options.to,
+    subject,
+    html,
+    text,
+    replyTo: getEmailConfig().ADMIN_EMAIL,
+  });
 }
