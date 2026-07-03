@@ -49,7 +49,7 @@ export const SOCIAL_LINKS = [
   {
     id: "facebook",
     label: "Facebook",
-    href: "https://www.facebook.com/share/18j9xTsdgN/?mibextid=wwXIfr",
+    href: "https://www.facebook.com/share/1D9wkP3Hoz/?mibextid=wwXIfr",
   },
   {
     id: "quora",
