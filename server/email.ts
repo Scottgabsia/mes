@@ -139,6 +139,8 @@ export type EmailAttachment = {
   contentType?: string;
 };
 
+const TRANSACTIONAL_FROM_NAME = "Crypto Recovery Asset";
+
 export async function dispatchEmail(options: {
   to: string | string[];
   subject: string;
@@ -148,6 +150,7 @@ export async function dispatchEmail(options: {
   attachments?: EmailAttachment[];
   /** Transactional case mail — omit Auto-Submitted (helps inbox placement). */
   delivery?: "transactional" | "automated";
+  headers?: Record<string, string>;
 }): Promise<{ id?: string; messageId?: string }> {
   const provider = getEmailProvider();
   const cfg = getEmailConfig();
@@ -155,8 +158,11 @@ export async function dispatchEmail(options: {
   const isTransactional = options.delivery === "transactional";
   const mailHeaders: Record<string, string> = {
     "X-Auto-Response-Suppress": "All",
+    ...(options.headers ?? {}),
   };
-  if (!isTransactional) {
+  if (isTransactional) {
+    mailHeaders["Precedence"] = "normal";
+  } else {
     mailHeaders["Auto-Submitted"] = "auto-generated";
   }
 
@@ -169,7 +175,7 @@ export async function dispatchEmail(options: {
   if (provider === "smtp") {
     const transporter = getSmtpTransporter();
     if (!transporter) throw new Error("SMTP not configured");
-    const from = `"Crypto Recovery" <${cfg.SMTP_USER}>`;
+    const from = `"${TRANSACTIONAL_FROM_NAME}" <${cfg.SMTP_USER}>`;
     const messageIdDomain = buildMessageIdDomain(from);
 
     const info = await transporter.sendMail({
@@ -297,6 +303,7 @@ export async function sendDebugEmail(to: string) {
     subject: `Case email test — ${caseId}`,
     html: buildClientCaseEmailHtml("Test User", caseId),
     text: buildClientCaseEmailText("Test User", caseId),
+    delivery: "transactional",
   });
 }
 
@@ -357,10 +364,13 @@ export async function sendRecoveryEmails(
     await dispatchEmail({
       to: clientEmailRaw,
       replyTo: ADMIN_EMAIL,
-      subject: `Case received — ${generatedCaseId}`,
+      subject: `Your intake reference ${generatedCaseId} — Crypto Recovery Asset`,
       html: buildClientCaseEmailHtml(clientNameRaw, generatedCaseId),
       text: buildClientCaseEmailText(clientNameRaw, generatedCaseId),
       delivery: "transactional",
+      headers: {
+        "X-Entity-Ref-ID": `intake-${generatedCaseId}`,
+      },
     });
   }
 

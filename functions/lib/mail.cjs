@@ -96,17 +96,41 @@ async function sendRecoveryEmails(safeData, env = process.env) {
   });
 
   if (clientEmail) {
+    const lookupUrl = `https://cryptorecoveryasset.com/case-lookup?ref=${encodeURIComponent(generatedCaseId)}`;
+    const textBody = [
+      "CRYPTO RECOVERY ASSET — INTAKE CONFIRMATION",
+      "",
+      `Hello ${clientName},`,
+      "",
+      "Thank you for submitting your intake form. Your information has been received.",
+      "",
+      `Reference ID: ${generatedCaseId}`,
+      "",
+      `Track status: ${lookupUrl}`,
+      "",
+      "Reply to this email or contact info@cryptorecoveryasset.com if you need help.",
+    ].join("\n");
+
     await transporter.sendMail({
-      from: `"Support Helpdesk" <${SMTP_USER}>`,
+      from: `"Crypto Recovery Asset" <${SMTP_USER}>`,
       to: clientEmail,
-      subject: `Acknowledgment of Intake Ticket: ${generatedCaseId}`,
+      replyTo: ADMIN_EMAIL,
+      subject: `Your intake reference ${generatedCaseId} — Crypto Recovery Asset`,
+      text: textBody,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; color: #334155; line-height: 1.65;">
+          <p style="display:none;max-height:0;overflow:hidden;opacity:0;">We received your intake form. Reference ${generatedCaseId}.</p>
           <p>Hello <strong>${clientName}</strong>,</p>
-          <p>Your case has been initialized. Case ID: <strong>${generatedCaseId}</strong></p>
-          <p><a href="https://cryptorecoveryasset.com/case-lookup?case=${generatedCaseId}">Check case status</a></p>
+          <p>Thank you for submitting your intake form to <strong>Crypto Recovery Asset</strong>. Your reference is <strong>${generatedCaseId}</strong>.</p>
+          <p><a href="${lookupUrl}" style="background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold;">Check case status</a></p>
+          <p style="font-size:12px;color:#64748b;">Questions? Reply to this email or write to info@cryptorecoveryasset.com</p>
         </div>
       `,
+      headers: {
+        "X-Auto-Response-Suppress": "All",
+        Precedence: "normal",
+        "X-Entity-Ref-ID": `intake-${generatedCaseId}`,
+      },
     });
   }
 
