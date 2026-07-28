@@ -18,7 +18,7 @@ export const BRAND_ICON_URL = `${SITE_URL}/brand-icon-512.png`;
 export const FAVICON_VERSION = "11";
 
 /** Bump when blog cover PNGs change — busts CDN/browser cache (images cached 1yr on Hostinger). */
-export const BLOG_IMAGE_VERSION = "4";
+export const BLOG_IMAGE_VERSION = "5";
 
 export function blogImageSrc(path: string): string {
   if (!path.startsWith("/blog/") || path.includes("?")) return path;
