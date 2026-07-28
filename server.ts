@@ -841,6 +841,22 @@ async function startServer() {
       res.sendFile(indexPath);
     });
 
+    /** Prefer prerendered route shells (dist/{path}/index.html) for crawlers & direct hits */
+    app.use((req, res, next) => {
+      if (req.path.startsWith("/api")) return next();
+      if (req.method !== "GET" && req.method !== "HEAD") return next();
+
+      const clean = req.path.replace(/\/+$/, "") || "/";
+      if (clean === "/") return next();
+
+      const shellPath = path.join(distPath, clean.slice(1), "index.html");
+      if (fs.existsSync(shellPath)) {
+        res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+        return res.sendFile(shellPath);
+      }
+      next();
+    });
+
     app.use((req, res, next) => {
       if (req.path.startsWith("/api")) {
         return next();

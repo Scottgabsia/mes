@@ -32,4 +32,11 @@ if (missingRoutes.length) {
   process.exit(1);
 }
 
+const sampleShell = path.join(dist, "blog", "index.html");
+const servicesShell = path.join(dist, "services", "index.html");
+if (!fs.existsSync(sampleShell) && !fs.existsSync(servicesShell)) {
+  console.error("[build] Missing prerender SEO shells — run prerender-seo-shells.ts after vite build");
+  process.exit(1);
+}
+
 console.log("[build] OK:", [...rootFiles, ...required.map((f) => `dist/${f}`)].join(", "));

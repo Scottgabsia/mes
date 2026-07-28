@@ -76,6 +76,7 @@ export const SEO: React.FC<SEOProps> = ({
 
       <meta name="robots" content={robots} />
       <meta name="googlebot" content={robots} />
+      <meta name="bingbot" content={robots} />
       <meta name="language" content="English" />
       <meta name="author" content="Crypto Recovery Assets" />
       <meta name="geo.region" content="US-NY" />

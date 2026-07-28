@@ -1,12 +1,42 @@
+# https://cryptorecoveryasset.com/robots.txt
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /services
+Allow: /contact
+Allow: /about
+Allow: /faq
+Allow: /reviews
+Allow: /traceability
+Allow: /recovery
+Allow: /legal
+Allow: /tools
 Disallow: /admin/
 Disallow: /api/
 Disallow: /reviews/submit
 
-# Crawl budget: allow static assets used in previews
-Allow: /favicon.ico
-Allow: /og-image.png
-Allow: /brand-icon-512.png
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
 
 Sitemap: https://cryptorecoveryasset.com/sitemap.xml
