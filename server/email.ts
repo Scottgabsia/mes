@@ -10,8 +10,6 @@ import {
 import {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
-  buildClientIntakeConfirmationEmailHtml,
-  buildClientIntakeConfirmationEmailText,
 } from "./clientCaseEmail";
 import type { MarketingEmailVars, MarketingTemplateId } from "./marketingEmails";
 import { buildMarketingEmail } from "./marketingEmails";
@@ -28,8 +26,6 @@ export { SCAM_RECOVERY_SUBJECT_LINES } from "./marketingScamRecoveryEmail";
 export {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
-  buildClientIntakeConfirmationEmailHtml,
-  buildClientIntakeConfirmationEmailText,
   CASE_LOOKUP_URL,
   WHATSAPP_URL,
 } from "./clientCaseEmail";
@@ -143,6 +139,7 @@ export type EmailAttachment = {
   contentType?: string;
 };
 
+const DEFAULT_FROM_NAME = "Crypto Recovery";
 const TRANSACTIONAL_FROM_NAME = "Crypto Recovery Asset";
 
 export async function dispatchEmail(options: {
@@ -177,14 +174,14 @@ export async function dispatchEmail(options: {
   if (provider === "smtp") {
     const transporter = getSmtpTransporter();
     if (!transporter) throw new Error("SMTP not configured");
-    const from = `"${TRANSACTIONAL_FROM_NAME}" <${cfg.SMTP_USER}>`;
+    const fromName = isTransactional ? TRANSACTIONAL_FROM_NAME : DEFAULT_FROM_NAME;
+    const from = `"${fromName}" <${cfg.SMTP_USER}>`;
     const messageIdDomain = buildMessageIdDomain(from);
-    const toList = Array.isArray(options.to) ? options.to : [options.to];
 
     const info = await transporter.sendMail({
       from,
       to: options.to,
-      replyTo: options.replyTo || cfg.SMTP_USER,
+      replyTo: options.replyTo,
       subject: options.subject,
       html: options.html,
       text: options.text,
@@ -192,10 +189,6 @@ export async function dispatchEmail(options: {
         .toString(36)
         .slice(2)}@${messageIdDomain}>`,
       headers: mailHeaders,
-      envelope: {
-        from: cfg.SMTP_USER,
-        to: toList,
-      },
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
@@ -370,14 +363,9 @@ export async function sendRecoveryEmails(
   if (clientEmailRaw) {
     await dispatchEmail({
       to: clientEmailRaw,
-      replyTo: ADMIN_EMAIL,
-      subject: `Intake confirmation — ${generatedCaseId}`,
-      html: buildClientIntakeConfirmationEmailHtml(clientNameRaw, generatedCaseId),
-      text: buildClientIntakeConfirmationEmailText(clientNameRaw, generatedCaseId),
-      delivery: "transactional",
-      headers: {
-        "X-Entity-Ref-ID": `intake-${generatedCaseId}`,
-      },
+      subject: `Case received — ${generatedCaseId}`,
+      html: buildClientCaseEmailHtml(clientNameRaw, generatedCaseId),
+      text: buildClientCaseEmailText(clientNameRaw, generatedCaseId),
     });
   }
 

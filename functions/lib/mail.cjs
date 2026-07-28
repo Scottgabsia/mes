@@ -112,10 +112,9 @@ async function sendRecoveryEmails(safeData, env = process.env) {
     ].join("\n");
 
     await transporter.sendMail({
-      from: `"Crypto Recovery Asset" <${SMTP_USER}>`,
+      from: `"Crypto Recovery" <${SMTP_USER}>`,
       to: clientEmail,
-      replyTo: ADMIN_EMAIL,
-      subject: `Intake confirmation — ${generatedCaseId}`,
+      subject: `Case received — ${generatedCaseId}`,
       text: textBody,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; color: #334155; line-height: 1.65;">
@@ -128,7 +127,7 @@ async function sendRecoveryEmails(safeData, env = process.env) {
       `,
       headers: {
         "X-Auto-Response-Suppress": "All",
-        "X-Entity-Ref-ID": `intake-${generatedCaseId}`,
+        "Auto-Submitted": "auto-generated",
       },
     });
   }

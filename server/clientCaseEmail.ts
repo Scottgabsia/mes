@@ -27,13 +27,13 @@ export function buildClientCaseEmailText(
   const whatsappUrl = buildWhatsAppUrl(caseId);
 
   return [
-    "CRYPTO RECOVERY ASSET — INTAKE CONFIRMATION",
+    "CRYPTO RECOVERY ASSET — CASE CONFIRMATION",
     "",
     `Hello ${clientName},`,
     "",
-    "Thank you for submitting your intake form. Your information has been received and queued for review.",
+    "Thank you for trusting Crypto Recovery Asset. Your intake submission has been received and queued for forensic review.",
     "",
-    `Reference ID: ${caseId}`,
+    `Case ID: ${caseId}`,
     `Status: PENDING — Intake review`,
     "",
     "WHAT HAPPENS NEXT",
@@ -219,10 +219,9 @@ export function buildClientCaseEmailHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
   <meta name="supported-color-schemes" content="light" />
-  <title>Intake confirmation — ${safeId}</title>
+  <title>Case ${safeId} — Confirmation</title>
 </head>
 <body style="margin:0;padding:0;background-color:#eef2f7;color-scheme:light only;">
-  ${intakeEmailPreheader(caseId)}
   <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#eef2f7;">
     <tr>
       <td align="center" style="padding:32px 16px;">
@@ -248,7 +247,7 @@ export function buildClientCaseEmailHtml(
           <!-- Confirmation banner -->
           <tr>
             <td style="background-color:#ecfdf5;border-bottom:1px solid #bbf7d0;padding:16px 32px;">
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#047857;letter-spacing:0.5px;text-transform:uppercase;">Intake form received</p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#047857;letter-spacing:0.5px;text-transform:uppercase;">✓ Case registered successfully</p>
             </td>
           </tr>
 
@@ -257,7 +256,7 @@ export function buildClientCaseEmailHtml(
             <td style="padding:32px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#334155;">
 
               <p style="margin:0 0 8px;font-size:15px;color:#0f172a;">Hello <strong>${safeName}</strong>,</p>
-              <p style="margin:0 0 24px;">Thank you for submitting your intake form to <strong>Crypto Recovery Asset</strong>. Your information is in our secure queue. A member of our team will review your file and contact you at the email address you provided.</p>
+              <p style="margin:0 0 24px;">Thank you for contacting <strong>Crypto Recovery Asset</strong>. Your intake submission is now in our secure recovery queue. A member of our forensic team will review your file and reach out using the email address you provided.</p>
 
               <!-- Case ID card -->
               <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 28px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;">
