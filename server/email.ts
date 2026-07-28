@@ -10,6 +10,8 @@ import {
 import {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
+  buildClientIntakeConfirmationEmailHtml,
+  buildClientIntakeConfirmationEmailText,
 } from "./clientCaseEmail";
 import type { MarketingEmailVars, MarketingTemplateId } from "./marketingEmails";
 import { buildMarketingEmail } from "./marketingEmails";
@@ -26,6 +28,8 @@ export { SCAM_RECOVERY_SUBJECT_LINES } from "./marketingScamRecoveryEmail";
 export {
   buildClientCaseEmailHtml,
   buildClientCaseEmailText,
+  buildClientIntakeConfirmationEmailHtml,
+  buildClientIntakeConfirmationEmailText,
   CASE_LOOKUP_URL,
   WHATSAPP_URL,
 } from "./clientCaseEmail";
@@ -160,9 +164,7 @@ export async function dispatchEmail(options: {
     "X-Auto-Response-Suppress": "All",
     ...(options.headers ?? {}),
   };
-  if (isTransactional) {
-    mailHeaders["Precedence"] = "normal";
-  } else {
+  if (!isTransactional) {
     mailHeaders["Auto-Submitted"] = "auto-generated";
   }
 
@@ -177,11 +179,12 @@ export async function dispatchEmail(options: {
     if (!transporter) throw new Error("SMTP not configured");
     const from = `"${TRANSACTIONAL_FROM_NAME}" <${cfg.SMTP_USER}>`;
     const messageIdDomain = buildMessageIdDomain(from);
+    const toList = Array.isArray(options.to) ? options.to : [options.to];
 
     const info = await transporter.sendMail({
       from,
       to: options.to,
-      replyTo: options.replyTo,
+      replyTo: options.replyTo || cfg.SMTP_USER,
       subject: options.subject,
       html: options.html,
       text: options.text,
@@ -189,6 +192,10 @@ export async function dispatchEmail(options: {
         .toString(36)
         .slice(2)}@${messageIdDomain}>`,
       headers: mailHeaders,
+      envelope: {
+        from: cfg.SMTP_USER,
+        to: toList,
+      },
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
@@ -364,9 +371,9 @@ export async function sendRecoveryEmails(
     await dispatchEmail({
       to: clientEmailRaw,
       replyTo: ADMIN_EMAIL,
-      subject: `Your intake reference ${generatedCaseId} — Crypto Recovery Asset`,
-      html: buildClientCaseEmailHtml(clientNameRaw, generatedCaseId),
-      text: buildClientCaseEmailText(clientNameRaw, generatedCaseId),
+      subject: `Intake confirmation — ${generatedCaseId}`,
+      html: buildClientIntakeConfirmationEmailHtml(clientNameRaw, generatedCaseId),
+      text: buildClientIntakeConfirmationEmailText(clientNameRaw, generatedCaseId),
       delivery: "transactional",
       headers: {
         "X-Entity-Ref-ID": `intake-${generatedCaseId}`,

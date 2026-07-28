@@ -66,6 +66,101 @@ export function buildClientCaseEmailText(
   ].join("\n");
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/** Minimal receipt-style intake mail — fewer links/images, better inbox placement. */
+export function buildClientIntakeConfirmationEmailText(
+  clientName: string,
+  caseId: string
+): string {
+  const lookupUrl = buildCaseLookupUrl(caseId);
+  return [
+    "Intake confirmation — Crypto Recovery Asset",
+    "",
+    `Hello ${clientName},`,
+    "",
+    "We received your intake form. This email confirms your submission.",
+    "",
+    `Reference: ${caseId}`,
+    "Status: Pending review",
+    "",
+    `View your case status: ${lookupUrl}`,
+    "",
+    "Our team will contact you at the email address you provided.",
+    "",
+    "Contact us:",
+    `Email: ${CONTACT_EMAIL}`,
+    `Phone: ${SUPPORT_PHONE_DISPLAY}`,
+    "",
+    BUSINESS_ADDRESS_LINE1,
+    BUSINESS_ADDRESS_LINE2,
+    "",
+    "If you did not submit this form, please reply to this email.",
+  ].join("\n");
+}
+
+export function buildClientIntakeConfirmationEmailHtml(
+  clientName: string,
+  caseId: string
+): string {
+  const safeName = escapeHtml(clientName);
+  const safeId = escapeHtml(caseId);
+  const lookupUrl = buildCaseLookupUrl(caseId);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intake confirmation — ${safeId}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,Helvetica,sans-serif;color:#1e293b;">
+  <div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#f4f6f8;">Your intake form was received. Reference ${safeId}.</div>
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="560" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;">
+          <tr>
+            <td style="padding:28px 32px 8px;">
+              <p style="margin:0 0 6px;font-size:13px;color:#64748b;">Crypto Recovery Asset</p>
+              <h1 style="margin:0 0 20px;font-size:20px;font-weight:bold;color:#0f172a;">Intake confirmation</h1>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#334155;">Hello ${safeName},</p>
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#334155;">We received your intake form. Save the reference below to track your submission.</p>
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 4px;font-size:12px;color:#64748b;">Reference</p>
+                    <p style="margin:0 0 12px;font-size:18px;font-weight:bold;font-family:Courier,monospace;color:#1d4ed8;">${safeId}</p>
+                    <p style="margin:0;font-size:12px;color:#64748b;">Status: Pending review</p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 20px;text-align:center;">
+                <a href="${lookupUrl}" style="display:inline-block;background:#2563eb;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 28px;border-radius:6px;">View case status</a>
+              </p>
+              <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#475569;">Questions? Reply to this email or contact <a href="mailto:${CONTACT_EMAIL}" style="color:#2563eb;">${CONTACT_EMAIL}</a>.</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;color:#475569;">Phone: <a href="tel:+${SUPPORT_PHONE_E164}" style="color:#2563eb;">${SUPPORT_PHONE_DISPLAY}</a></p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;border-radius:0 0 8px 8px;">
+              <p style="margin:0;font-size:11px;line-height:1.5;color:#94a3b8;text-align:center;">${escapeHtml(BUSINESS_ADDRESS_LINE1)}<br/>${escapeHtml(BUSINESS_ADDRESS_LINE2)}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 /**
  * Gmail/iOS: inline-block + padding — display:block breaks taps in Gmail.
  */
@@ -261,14 +356,6 @@ export function buildClientCaseEmailHtml(
   </table>
 </body>
 </html>`;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 /** @deprecated Use buildWhatsAppUrl(caseId) — kept for imports that expect a constant */

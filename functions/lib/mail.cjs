@@ -115,7 +115,7 @@ async function sendRecoveryEmails(safeData, env = process.env) {
       from: `"Crypto Recovery Asset" <${SMTP_USER}>`,
       to: clientEmail,
       replyTo: ADMIN_EMAIL,
-      subject: `Your intake reference ${generatedCaseId} — Crypto Recovery Asset`,
+      subject: `Intake confirmation — ${generatedCaseId}`,
       text: textBody,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; color: #334155; line-height: 1.65;">
@@ -128,7 +128,6 @@ async function sendRecoveryEmails(safeData, env = process.env) {
       `,
       headers: {
         "X-Auto-Response-Suppress": "All",
-        Precedence: "normal",
         "X-Entity-Ref-ID": `intake-${generatedCaseId}`,
       },
     });
