@@ -18,6 +18,7 @@
     "favicons": "node scripts/make-favicons-solid.mjs public/logo.png",
     "sitemap": "tsx scripts/generate-sitemap.ts",
     "prerender": "tsx scripts/prerender-seo-shells.ts",
+    "indexnow": "tsx scripts/submit-indexnow.ts",
     "blog:images": "node scripts/generate-blog-images.mjs",
     "email:previews": "tsx scripts/generate-marketing-email-previews.ts",
     "deploy:functions": "cd functions && npm install && cd .. && firebase deploy --only functions"

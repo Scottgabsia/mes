@@ -39,4 +39,16 @@ if (!fs.existsSync(sampleShell) && !fs.existsSync(servicesShell)) {
   process.exit(1);
 }
 
+const indexNowKey = "3ef70e5fa77e6c5c243d32496fe3f858.txt";
+const indexNowInPublic = path.join(root, "public", indexNowKey);
+const indexNowInDist = path.join(dist, indexNowKey);
+if (!fs.existsSync(indexNowInPublic)) {
+  console.error("[build] Missing IndexNow key file in public/:", indexNowKey);
+  process.exit(1);
+}
+if (fs.existsSync(dist) && fs.existsSync(path.join(dist, "index.html")) && !fs.existsSync(indexNowInDist)) {
+  console.warn("[build] IndexNow key not found in dist/ yet — ensure vite copies public/ assets");
+}
+
 console.log("[build] OK:", [...rootFiles, ...required.map((f) => `dist/${f}`)].join(", "));
+console.log("[build] IndexNow key file present:", indexNowKey);
