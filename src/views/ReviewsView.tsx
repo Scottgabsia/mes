@@ -672,7 +672,508 @@ const REVIEWS_DATA: Review[] = [
     date: '2026-06-02',
     verified: true,
     tag: 'DETAILED_REPORTING'
+  },
+  {
+    id: 'rev_65',
+    user: 'MARCUS_CHI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I lost just over $210,000 in USDT after wiring funds into what I believed was a regulated offshore trading desk. For weeks I was stuck talking to fake 'compliance officers' who kept asking for more deposits. Crypto Recovery Assets took my case seriously from the first call. They rebuilt the entire money trail, identified the exchange deposit addresses used by the operators, and prepared a freeze packet that compliance actually acted on. It took about eleven weeks, but we recovered a substantial majority of the stolen balance. What stood out most was how honest they were about what could and could not be recovered — no miracle promises, just disciplined forensic work.",
+    date: '2026-06-04',
+    verified: true,
+    tag: 'OTC_DESK_FRAUD'
+  },
+  {
+    id: 'rev_66',
+    user: 'LINDA_ORL',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "After a romance scam drained my savings, I felt completely broken and ashamed. I had already paid two so-called recovery companies that vanished with my remaining cash. A friend pushed me toward Crypto Recovery Assets, and the difference was immediate. They never asked for seed phrases, never requested upfront payment, and assigned a case analyst who walked me through every hop on the blockchain like I was a person, not a ticket number. Their report was clear enough for my attorney and for the bank fraud department. We did not get everything back, but we got enough to stabilize my life again. I will always be grateful for how carefully they handled both the technical and the human side of this.",
+    date: '2026-06-05',
+    verified: true,
+    tag: 'ROMANCE_RECOVERY'
+  },
+  {
+    id: 'rev_67',
+    user: 'YUSUF_IST',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "My SIM was swapped overnight and within forty minutes the attackers emptied my exchange accounts and drained two hot wallets. Local police were sympathetic but had no crypto expertise. CRA moved incredibly fast. Within the first forty-eight hours they had mapped the outbound transactions, flagged the destination clusters, and opened escalation channels with two major exchanges. Their client portal showed live milestones so I always knew what was happening. Roughly two months later we secured a freeze and eventual release of a large share of the assets. Speed mattered more than anything in my case, and they understood that from minute one.",
+    date: '2026-06-06',
+    verified: true,
+    tag: 'SIM_SWAP_FAST'
+  },
+  {
+    id: 'rev_68',
+    user: 'CLAIRE_LYON',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "I approached Crypto Recovery Assets after a bridge exploit moved my ETH through several chains and into mixer-linked wallets. Their analysts produced a visual hop map that my French counsel said was among the clearest forensic packages they had seen. The recovery itself took longer than I hoped because of offshore compliance delays, which is why I am leaving four stars rather than five. Still, communication never dropped off, deadlines were explained honestly, and the final outcome was far better than what any other firm I consulted even claimed was possible. If you need serious chain analysis rather than marketing slogans, this is the team.",
+    date: '2026-06-07',
+    verified: true,
+    tag: 'BRIDGE_EXPLOIT'
+  },
+  {
+    id: 'rev_69',
+    user: 'ANDRE_SAO',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I was targeted through a Discord NFT mint that silently approved a malicious spender. In under an hour my wallet was drained of ETH and several blue-chip NFTs. Most people online told me it was hopeless. Crypto Recovery Assets disagreed. They reconstructed the approval transaction, traced the secondary sales of my NFTs, and worked with marketplace compliance teams while simultaneously pursuing the ETH trail. Their documentation was meticulous — timestamps, tx hashes, counterparties, everything. We recovered a meaningful portion of the value and, just as importantly, I finally understood exactly how the attack worked so I could harden my setup going forward.",
+    date: '2026-06-08',
+    verified: true,
+    tag: 'NFT_APPROVAL_DRAIN'
+  },
+  {
+    id: 'rev_70',
+    user: 'HELEN_TOR',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Our family office lost a six-figure amount to a sophisticated phishing kit that cloned a Tier-1 exchange login page. Because multiple beneficiaries were involved, we needed institutional-grade handling, not a consumer support chat. CRA assigned a senior analyst and coordinated cleanly with our outside counsel. Their chain-of-custody notes, wallet clustering methodology, and exchange liaison letters were all court-ready. The process took several months, but every week we received a structured update with next actions. We recovered the majority of the stolen funds and now use their post-incident hardening checklist across our wallets. Highly professional from intake to closeout.",
+    date: '2026-06-09',
+    verified: true,
+    tag: 'FAMILY_OFFICE'
+  },
+  {
+    id: 'rev_71',
+    user: 'RAVI_BLR',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I fell for a fake mining contract sold through Telegram. After months of fabricated dashboards showing 'profits,' withdrawals were blocked and the operators disappeared. I was terrified I had lost everything I had saved for my sister's education. Crypto Recovery Assets reviewed my chat logs, payment hashes, and wallet history, then identified the laundering path into exchange deposit addresses in two jurisdictions. They were patient with me when I struggled to gather old screenshots and never made me feel foolish. The recovery was partial but substantial, and their fee structure only applied to what they actually brought back. That alone separates them from the recovery scams flooding Instagram.",
+    date: '2026-06-10',
+    verified: true,
+    tag: 'FAKE_MINING'
+  },
+  {
+    id: 'rev_72',
+    user: 'NADIA_AMS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "As a DeFi power user I thought I could investigate my own exploit. After two sleepless nights I realized I was out of my depth. The attacker had hopped through a flash-loan-assisted drain, bridged to another L2, then split funds across dozens of wallets. CRA's team produced a clustering analysis that connected those wallets to known infrastructure and prior scam campaigns. Their report helped a European exchange freeze remaining balances before they could be fully cashed out. I especially appreciated that they explained uncertainties instead of pretending every hop was a certainty. That intellectual honesty is rare in this industry.",
+    date: '2026-06-11',
+    verified: true,
+    tag: 'FLASH_LOAN_TRACE'
+  },
+  {
+    id: 'rev_73',
+    user: 'TOMAS_PRG',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Someone impersonating Coinbase support contacted me after I posted about a failed login on social media. Within hours I had given them remote access and watched my account get cleaned out. Shame does not begin to cover it. Crypto Recovery Assets treated the case like an investigation, not a lecture. They captured device indicators, reconstructed the social-engineering timeline, and linked the stolen assets to cash-out routes. Working with exchange security and local authorities, they helped recover a large percentage of what was taken. Their secure portal and refusal to ever request private keys gave me confidence I had finally found a legitimate firm.",
+    date: '2026-06-12',
+    verified: true,
+    tag: 'SUPPORT_IMPERSONATION'
+  },
+  {
+    id: 'rev_74',
+    user: 'AISHA_LAG',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I was caught in a pig-butchering investment scheme that spanned nearly eight months. By the time I understood what was happening, more than $95,000 was gone. Friends told me recovery was impossible. CRA proved otherwise. They analyzed every USDT transfer, identified intermediary wallets, and built a narrative report that law enforcement could actually use. Updates arrived on schedule, questions were answered in plain language, and the team never pressured me for additional payments. We recovered a significant share through exchange freezes. If you are reading this after a similar scam, please contact them before you lose more money to fake recovery agents.",
+    date: '2026-06-13',
+    verified: true,
+    tag: 'PIG_BUTCHERING'
+  },
+  {
+    id: 'rev_75',
+    user: 'GREG_PHX',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content: "My hardware wallet seed was compromised after I stored a poorly protected backup photo in cloud storage. Attackers swept BTC and ETH the same week. Crypto Recovery Assets were transparent that full recovery was unlikely once funds hit mixers, and I respect them for saying that upfront. Even so, they traced residual amounts that had not yet been obfuscated and secured freezes on those portions. The process was slower than advertised timelines for simpler cases, which is why this is four stars. But the quality of the forensic work, the calm communication, and the ethical standards were excellent. I would hire them again without hesitation.",
+    date: '2026-06-14',
+    verified: true,
+    tag: 'SEED_COMPROMISE'
+  },
+  {
+    id: 'rev_76',
+    user: 'YUKI_OSAKA',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Clipboard malware replaced a withdrawal address on my desktop and I sent a large ETH transfer to an attacker before noticing. Panic set in immediately. Within hours of contacting Crypto Recovery Assets, an analyst had confirmed the destination cluster and begun monitoring for exchange deposits. Their speed and precision were remarkable. They prepared a legal-ready incident package in both English and a format my Japanese counsel could work with. Several weeks later we obtained a successful freeze and recovery of most of the transfer. I have recommended them to two colleagues who were similarly targeted. Outstanding technical work paired with genuine care for the client.",
+    date: '2026-06-15',
+    verified: true,
+    tag: 'CLIPBOARD_MALWARE'
+  },
+  {
+    id: 'rev_77',
+    user: 'PATRICIA_MAD',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I am not a crypto native. My late husband left wallets I barely understood, and when a 'helpful' recovery specialist online asked for the seed phrase, I almost handed it over. Thankfully I found Crypto Recovery Assets first. They guided me through legitimate wallet restoration, verified ownership carefully, and helped recover access without ever putting the keys at risk. Along the way they also spotted unauthorized small drains that had already started and stopped further loss. For families dealing with inheritance and digital assets, this kind of careful, ethical help is invaluable. Five stars is not enough.",
+    date: '2026-06-16',
+    verified: true,
+    tag: 'INHERITANCE_WALLET'
+  },
+  {
+    id: 'rev_78',
+    user: 'OMAR_CAS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Our small trading desk was hit by an insider-assisted withdrawal scheme. We needed discretion, speed, and forensic clarity for both insurance and potential litigation. CRA delivered all three. Their analysts reconstructed privileged access timelines, correlated on-chain movements with internal logs we provided, and produced a report our insurer accepted without major pushback. The recovery pathway involved multi-jurisdictional exchange outreach, which they handled professionally. Throughout the engagement they treated sensitive business information with care. This was not consumer-level support — it felt like hiring a specialized investigative unit.",
+    date: '2026-06-17',
+    verified: true,
+    tag: 'INSIDER_THEFT'
+  },
+  {
+    id: 'rev_79',
+    user: 'SOPHIE_EDI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "A fake airdrop site drained approvals from my wallet while I was traveling. I discovered the theft late at night in a hotel room and felt completely helpless. Crypto Recovery Assets responded the next morning with a clear intake, immediate revoke guidance for remaining approvals, and a full trace of the stolen tokens. Their portal made it easy to upload evidence and track progress across time zones. Over the following weeks they coordinated with two exchanges and recovered a large portion of what was taken. The combination of technical competence and steady communication made an awful situation manageable.",
+    date: '2026-06-18',
+    verified: true,
+    tag: 'AIRDROP_DRAINER'
+  },
+  {
+    id: 'rev_80',
+    user: 'KEVIN_SEA',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I had already filed an IC3 report and spoken with my bank before finding Crypto Recovery Assets. What they added was the blockchain expertise those channels lacked. They translated my case into a forensic package with annotated transaction graphs, counterparties, and recommended freeze targets. That package materially improved engagement with exchange compliance teams. Recovery was not instantaneous — anyone promising that is lying — but it was methodical and ultimately successful for a major share of the loss. I also valued their post-case security review. They helped me lock down 2FA, withdrawal whitelists, and device hygiene so this does not happen again.",
+    date: '2026-06-19',
+    verified: true,
+    tag: 'IC3_SUPPORT'
+  },
+  {
+    id: 'rev_81',
+    user: 'INES_LIS',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "After sending USDT to a fraudulent 'guaranteed yield' platform, I contacted several recovery services. Most replied with WhatsApp messages demanding Bitcoin fees. Crypto Recovery Assets was the first firm that felt legitimate. Their website matched their process: secure portal, written agreements, no private-key requests, and success-aligned fees. The investigation uncovered that my funds had been pooled with other victims and partially parked on a KYC exchange. That finding changed everything. With their documentation, a freeze request succeeded. It took patience, but the outcome restored both money and my faith that ethical recovery work still exists.",
+    date: '2026-06-20',
+    verified: true,
+    tag: 'YIELD_SCAM'
+  },
+  {
+    id: 'rev_82',
+    user: 'BRETT_AUCK',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Cross-border recovery is messy, and my case involved wallets touching Asia, Eastern Europe, and a Caribbean-facing exchange. CRA never sugarcoated the complexity. They set realistic checkpoints and hit most of them. The final recovery percentage was solid though not complete, and a couple of update cycles slipped during holiday periods, hence four stars. Even with those caveats, their forensic quality and legal packaging were excellent. My solicitor in Auckland said the evidence bundle saved weeks of work. If your case spans multiple jurisdictions, these are people who already know how painful that is and plan accordingly.",
+    date: '2026-06-21',
+    verified: true,
+    tag: 'MULTI_JURISDICTION'
+  },
+  {
+    id: 'rev_83',
+    user: 'CHIOMA_ABJ',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I nearly destroyed what little I had left by paying a Telegram 'recovery agent' who claimed he needed gas fees to unlock my funds. Thankfully I stopped and searched for real companies instead. Crypto Recovery Assets explained, calmly and clearly, how those secondary scams work and why no legitimate firm needs your seed phrase. Then they actually investigated my original investment fraud case. Their analyst showed me hop by hop where the money went and which portions were still potentially recoverable. We succeeded in reclaiming a meaningful amount. More than the money, they protected me from being scammed twice.",
+    date: '2026-06-22',
+    verified: true,
+    tag: 'SECONDARY_SCAM_STOP'
+  },
+  {
+    id: 'rev_84',
+    user: 'ERIC_MTL',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Our company treasury wallet was drained after a compromised employee browser session approved a malicious contract. We needed enterprise responsiveness and airtight documentation for board reporting. CRA delivered a full incident timeline within days, including first-seen indicators, affected assets, and recommended containment steps. They then pursued recovery through exchange channels while our internal security team remediated access controls. Weekly executive summaries were concise and useful. We recovered a majority of the stolen crypto and walked away with better controls than we had before the incident. Rare to find a vendor that improves both outcome and process maturity.",
+    date: '2026-06-23',
+    verified: true,
+    tag: 'TREASURY_INCIDENT'
+  },
+  {
+    id: 'rev_85',
+    user: 'LAURA_VIE',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I lost funds to a fake OTC broker who used deepfake video calls to appear as a known market maker. It felt surreal. Crypto Recovery Assets treated it as a serious financial crime case. They correlated payment rails, wallet clustering, and messaging metadata I provided into one coherent narrative. That narrative unlocked cooperation from an exchange that had previously ignored my solo tickets. Recovery took time, but every milestone in the portal was real. I especially appreciated that they never overstated probabilities. When they said a path looked promising, it usually was. Professional, humane, and technically sharp.",
+    date: '2026-06-24',
+    verified: true,
+    tag: 'DEEPFAKE_OTC'
+  },
+  {
+    id: 'rev_86',
+    user: 'NOAH_TLV',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "A malicious browser extension drained SOL and associated tokens from my Phantom wallet. I contacted CRA expecting a long shot. Instead I got a structured investigation that identified the cash-out pattern within days. Their team monitored for consolidation events and moved quickly when funds hit a centralized venue. The freeze request succeeded. Communication across time zones was smooth, and their explanations helped me understand Solana-specific nuances I had never considered. If you are dealing with an extension or approval-based drain, do not waste weeks on forums — get a real forensic team involved early.",
+    date: '2026-06-25',
+    verified: true,
+    tag: 'EXTENSION_DRAIN'
+  },
+  {
+    id: 'rev_87',
+    user: 'MARIA_BOG',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "Escribí primero en español porque estaba demasiado nerviosa para pensar en inglés, and their team still handled everything with patience. My case involved a fake forex-crypto hybrid platform that pushed constant deposits. Crypto Recovery Assets reconstructed the flow of USDT across several intermediaries and prepared bilingual materials I could share with local counsel. They never rushed me, never shamed me, and never asked for unsafe access to my wallets. After months of work we recovered enough to make a real difference for my family. Competence plus compassion is a rare combination, and they have both.",
+    date: '2026-06-26',
+    verified: true,
+    tag: 'BILINGUAL_CASE'
+  },
+  {
+    id: 'rev_88',
+    user: 'HANS_MUC',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I am an engineer, so I evaluate vendors harshly. Crypto Recovery Assets passed. Their methodology for wallet clustering, change-address heuristics, and exchange attribution was explained with enough rigor that I could independently sanity-check key claims. When evidence was weak, they labeled it as such. When a hop was high-confidence, they showed why. That discipline produced a report German counsel and a compliance team both trusted. Recovery outcome exceeded my conservative expectations. If you want forensics that can survive scrutiny rather than a glossy PDF full of buzzwords, hire these people.",
+    date: '2026-06-27',
+    verified: true,
+    tag: 'ENGINEER_REVIEW'
+  },
+  {
+    id: 'rev_89',
+    user: 'RACHEL_PHIL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "My elderly father was socially engineered into transferring BTC to a 'secure vault' address controlled by scammers. Watching him realize what happened was devastating. Crypto Recovery Assets spoke with us gently, gathered every detail without overwhelm, and began tracing immediately. They coordinated with the exchange side while helping us file the right reports at home. The case took persistence — scammers tried to hop quickly — but CRA stayed ahead of several movements. We recovered a large portion of the Bitcoin. More than that, they helped my father feel less alone in a situation he barely understood. Exceptional service.",
+    date: '2026-06-28',
+    verified: true,
+    tag: 'ELDER_FRAUD'
+  },
+  {
+    id: 'rev_90',
+    user: 'VIKTOR_KRK',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Solid work on a messy DeFi rug-pull where liquidity was yanked and tokens collapsed. CRA traced insider wallets and linked them to earlier campaigns, which was useful even beyond my personal recovery. Funds that remained on-ramped to exchanges were partially frozen and returned. I mark it four stars only because absolute recovery was limited by how quickly the operators off-ramped through privacy tools — a limitation of the case, not a failure of effort. Still, their transparency about those limits and their refusal to invent false hope earned my trust. Worth every bit of the contingency fee.",
+    date: '2026-06-29',
+    verified: true,
+    tag: 'RUG_PULL_TRACE'
+  },
+  {
+    id: 'rev_91',
+    user: 'AMINA_DOH',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I transferred a large USDT sum to what looked like a licensed broker website complete with fake certificates and fabricated testimonials. When withdrawals failed, the website went dark. Crypto Recovery Assets started with a calm evidence intake and then mapped every transaction into a forensic timeline. They identified exchange landing points I would never have found alone and drafted freeze language that compliance teams responded to. Throughout the process the client portal kept me informed without forcing me to chase people on chat apps. We recovered the majority of the loss. Professional, secure, and results-driven.",
+    date: '2026-06-30',
+    verified: true,
+    tag: 'BROKER_CLONE'
+  },
+  {
+    id: 'rev_92',
+    user: 'JONAS_CPH',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "After a sophisticated email compromise, attackers requested a crypto payment from our accounts payable wallet using a forged invoice thread. By the time we noticed, the transaction had confirmed. CRA treated it as both a crypto and a business-email-compromise case. They correlated mail headers we provided with on-chain activity and pursued the destination aggressively. Their report was detailed enough for cyber insurance and for internal audit. We recovered a significant amount and received practical recommendations to prevent recurrence. Hiring them felt like bringing in specialists who already knew the playbook for this exact failure mode.",
+    date: '2026-07-01',
+    verified: true,
+    tag: 'BEC_CRYPTO'
+  },
+  {
+    id: 'rev_93',
+    user: 'SANA_KHI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I was drowning in shame after losing money to a fake celebrity investment channel on social media. Crypto Recovery Assets never made me feel stupid. They focused on facts: payment proofs, wallet addresses, chat exports, and timelines. Their investigation showed my funds had been aggregated with other victims and partially held on an exchange still reachable through compliance. That finding became the turning point. Weeks of coordinated work later, a freeze and recovery process succeeded for a large share of what I lost. The team was respectful, relentless, and clear at every stage. I recommend them without reservation.",
+    date: '2026-07-02',
+    verified: true,
+    tag: 'SOCIAL_CELEB_SCAM'
+  },
+  {
+    id: 'rev_94',
+    user: 'DREW_ATL',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I work in compliance myself, so I am allergic to vague recovery claims. Crypto Recovery Assets impressed me with process discipline. Intake was structured. Evidence requests were specific. Attribution language in their reports carefully distinguished confirmed links from probable clustering. When they engaged exchange partners, the packets looked like something a real investigations unit would send. We achieved a strong recovery outcome on a phishing-driven USDC theft. Beyond the money, their work product was something I would be comfortable putting in front of regulators or auditors. That is the standard this industry needs.",
+    date: '2026-07-03',
+    verified: true,
+    tag: 'COMPLIANCE_GRADE'
+  },
+  {
+    id: 'rev_95',
+    user: 'ELENA_BUC',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "My case involved stolen funds moved through multiple mixers and then into fresh wallets. Many firms told me it was impossible and hung up. CRA did not promise miracles, but they also did not quit. They waited for operational mistakes by the thieves — consolidation events, exchange deposits, reusable infrastructure — and struck when opportunities appeared. That patience paid off. We recovered less than a total win but far more than zero, which is what every other conversation had offered me. If your trail looks 'too mixed' for amateurs, these analysts still know how to work the edges of the problem.",
+    date: '2026-07-04',
+    verified: true,
+    tag: 'MIXER_EDGE_CASE'
+  },
+  {
+    id: 'rev_96',
+    user: 'CHRIS_VANC',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "A fake customer-support pop-up on a phishing domain harvested my exchange credentials and drained BTC overnight. I contacted Crypto Recovery Assets the next morning. Their rapid-response playbook was obvious: confirm remaining exposure, preserve evidence, begin destination monitoring, and escalate freeze requests as soon as funds touched a cooperative venue. I received daily updates during the critical first week and weekly deep-dives afterward. We recovered most of the Bitcoin. The experience was stressful, but never chaotic, because they ran the case like professionals who have done this hundreds of times.",
+    date: '2026-07-05',
+    verified: true,
+    tag: 'EXCHANGE_PHISH'
+  },
+  {
+    id: 'rev_97',
+    user: 'NOOR_AMM',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I had almost given up after months of silence from an offshore platform that froze withdrawals. Crypto Recovery Assets reviewed my account statements, blockchain deposits, and the platform's historical wallet patterns. They demonstrated that operators were still moving assets through identifiable channels. That evidence changed the posture of the conversation with intermediaries. Eventually we secured a substantial recovery. What I valued most was consistency — same analyst, same portal, same standards from first call to final settlement. No disappearing account managers, no sudden new fees. Just disciplined work until there was a real result.",
+    date: '2026-07-06',
+    verified: true,
+    tag: 'WITHDRAWAL_FREEZE'
+  },
+  {
+    id: 'rev_98',
+    user: 'LUCA_MIL',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Very strong forensic team and excellent portal experience. My recovery involved Tron USDT moved across many peels and exchange deposit addresses. CRA mapped it clearly and pushed freezes where possible. Some counterparties were slow, and a slice of funds was already gone beyond reach, so this is four stars for outcome completeness rather than effort. Communication remained first-class even when news was imperfect. I would still choose them again over any alternative I researched. In a space full of fake recovery ads, they operate like an actual investigative firm.",
+    date: '2026-07-07',
+    verified: true,
+    tag: 'TRON_USDT_PEEL'
+  },
+  {
+    id: 'rev_99',
+    user: 'HANNAH_OSL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I lost funds after approving a malicious Permit2 signature I did not fully understand. Crypto Recovery Assets not only traced the theft but taught me what went wrong in language I could follow. Their incident report included the exact signature components, spender contract, and subsequent asset movements. That educational clarity mattered almost as much as the recovery itself. Working with exchange compliance, they helped reclaim a major portion of the stolen tokens. Since then I have used their hardening guidance religiously. Competent, ethical, and unusually good at explaining complex crypto mechanics to regular people.",
+    date: '2026-07-08',
+    verified: true,
+    tag: 'PERMIT2_DRAIN'
+  },
+  {
+    id: 'rev_100',
+    user: 'JAMES_CAPE',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "Our nonprofit received a crypto donation that was later disputed as stolen funds moving through our wallet. We were caught in the middle and needed an independent forensic review fast. Crypto Recovery Assets produced a neutral, carefully sourced analysis showing provenance and onward flows. That report protected our organization in discussions with counsel and payment partners. They were sensitive to the reputational stakes and extremely precise with wording. Not every case is a simple 'get my coins back' story — sometimes you need trusted chain analysis. They delivered exactly that.",
+    date: '2026-07-09',
+    verified: true,
+    tag: 'PROVENANCE_REVIEW'
+  },
+  {
+    id: 'rev_101',
+    user: 'FARAH_KUL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I was scammed by a fake crypto escrow service during a peer-to-peer trade. The escrow site looked polished and even had live chat. Once my BTC was gone, so were they. CRA reconstructed the flow, identified reuse of infrastructure from prior escrow scams, and found an exchange offramp window that was still actionable. Their persistence over several weeks made the difference. I always knew who owned my case and what the next action was. We recovered a large percentage of the Bitcoin. If you trade P2P, save this company in your notes before you ever need them.",
+    date: '2026-07-10',
+    verified: true,
+    tag: 'FAKE_ESCROW'
+  },
+  {
+    id: 'rev_102',
+    user: 'OWEN_DUB',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "After a SIM-swap adjacent account takeover on my email, attackers reset exchange access and drained holdings over a weekend. Local responders were out of their depth with crypto rails. Crypto Recovery Assets stepped in with a clear command of both the identity-theft angle and the on-chain pursuit. They helped me secure remaining accounts while simultaneously tracing stolen assets. The dual-track approach prevented further loss and created a viable recovery path. Final outcome was strong. Documentation quality was superb for insurance. I cannot recommend them highly enough for account-takeover cases.",
+    date: '2026-07-11',
+    verified: true,
+    tag: 'ACCOUNT_TAKEOVER'
+  },
+  {
+    id: 'rev_103',
+    user: 'MEI_TPE',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I invested through a friend-of-a-friend into what turned out to be a closed Ponzi using crypto deposits. When the scheme collapsed, chaos followed. Crypto Recovery Assets ignored the noise and focused on wallet-level truth. They identified operator-controlled addresses, tracked distributions, and prepared materials that a group of victims could use consistently with exchanges and counsel. Coordinating many victims is hard; CRA brought order. My personal recovery was meaningful, and the collective documentation helped others too. Professional leadership in a moment when everyone else was panicking.",
+    date: '2026-07-12',
+    verified: true,
+    tag: 'PONZI_COLLAPSE'
+  },
+  {
+    id: 'rev_104',
+    user: 'BRAD_SLC',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I am leaving this review months after case close because the result held up. CRA recovered a significant amount of stolen ETH from a phishing incident, and the funds remained securely returned with clean documentation for my records. During the case they were responsive, sober in their forecasts, and excellent about security hygiene. No one ever asked for my seed phrase. No one pushed weird urgency tactics. Just methodical investigation and exchange coordination. In hindsight, hiring them early — instead of waiting while I 'watched the wallets myself' — would have improved odds even more. Still, outstanding work.",
+    date: '2026-07-13',
+    verified: true,
+    tag: 'LONG_TERM_RESULT'
+  },
+  {
+    id: 'rev_105',
+    user: 'GABRIELA_SCL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "My husband and I lost a large USDT sum to a trading-signal group that slowly groomed us into bigger deposits. When we tried to withdraw, the excuses started. Crypto Recovery Assets handled the case with discretion and empathy. They collected chat evidence carefully, traced every transfer, and built a package strong enough for both exchange compliance and our attorney. Updates arrived even when there was no dramatic news, which I appreciated — silence is torture during these cases. Recovery was substantial. We are rebuilding, and we finally feel like someone competent stood with us.",
+    date: '2026-07-14',
+    verified: true,
+    tag: 'SIGNAL_GROUP_SCAM'
+  },
+  {
+    id: 'rev_106',
+    user: 'ARJUN_HYD',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Good experience overall on a complex cross-chain theft involving BTC wrapped assets and an L2 bridge. The forensic graphs were excellent and helped my counsel immediately. Recovery took longer than the initial estimate because one exchange's compliance queue moved slowly. CRA kept pressure on without creating false expectations, which I respect. Final recovered amount was still life-changing for me. Four stars for timeline variance, five for integrity and skill. If your funds have hopped chains, do not try to DIY this — the tooling and relationships these analysts have are the real advantage.",
+    date: '2026-07-15',
+    verified: true,
+    tag: 'WRAPPED_ASSET_TRACE'
+  },
+  {
+    id: 'rev_107',
+    user: 'CATHERINE_ZRH',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "As a private-client advisor, I referred a victim to Crypto Recovery Assets after screening multiple vendors. Their intake professionalism, conflict handling, and evidence standards were clearly above the rest. The client's funds had been stolen via a cloned wealth-management crypto portal. CRA produced an investigation file that our external counsel described as 'unusually complete.' Recovery proceedings with intermediaries succeeded for a majority share. I now keep them on my shortlist for digital-asset incidents. Rare endorsement from me, but they earned it through process quality, not marketing.",
+    date: '2026-07-16',
+    verified: true,
+    tag: 'ADVISOR_REFERRAL'
+  },
+  {
+    id: 'rev_108',
+    user: 'SAMIR_BEY',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I was hit by a fake job-offer scam that required purchasing equipment crypto 'training credits.' It sounds ridiculous writing it now, but the recruiters were polished and persistent. When I realized the fraud, Crypto Recovery Assets traced the payments and identified cash-out points still within reach. They were kind about the social-engineering aspect and ruthless about the blockchain pursuit. We recovered a large portion of what I lost. The secure portal, written case plan, and refusal to handle private keys all signaled legitimacy immediately. I tell everyone in my network: if you need recovery help, start here and ignore the WhatsApp impostors.",
+    date: '2026-07-17',
+    verified: true,
+    tag: 'FAKE_JOB_SCAM'
+  },
+  {
+    id: 'rev_109',
+    user: 'EMILY_CGY',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "After my wallet was drained through a malicious dApp front-end that had been DNS-hijacked, I needed experts who understood both web compromise and crypto tracing. CRA connected those dots. They documented the hijack window, correlated victim transactions in that period, and pursued aggregated attacker wallets. Their report helped the legitimate project team as well, which I did not expect but deeply appreciated. Personally, we recovered a major share of my lost assets. The whole engagement felt collaborative, transparent, and highly competent. This is what real incident response looks like in crypto.",
+    date: '2026-07-18',
+    verified: true,
+    tag: 'DNS_HIJACK_DAPP'
+  },
+  {
+    id: 'rev_110',
+    user: 'PEDRO_LIM',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I contacted Crypto Recovery Assets after losing BTC to a fraudulent mining-cloud dashboard. Other companies wanted large retainers before doing anything. CRA explained their contingency model clearly and began analysis only after a proper evidence review. Their findings showed repeated reuse of deposit addresses tied to earlier complaints, which strengthened the freeze narrative. Over the following weeks they coordinated the recovery path and kept me updated in plain language. We got back far more than I thought possible after the first month of despair. Honest pricing plus serious forensics — that combination won my trust.",
+    date: '2026-07-19',
+    verified: true,
+    tag: 'CLOUD_MINING_FRAUD'
+  },
+  {
+    id: 'rev_111',
+    user: 'IRIS_HKG',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "High-value cases attract fake helpers. After my loss, I was flooded with LinkedIn messages from people claiming they could reverse blockchain transactions. Crypto Recovery Assets was the only firm that immediately called out those claims as impossible and focused on real recovery mechanisms: tracing, attribution, exchange freezes, and legal packaging. That honesty sold me. Their work then backed it up. We recovered a substantial percentage of stolen USDT through persistent compliance escalation. The analysts were discreet, precise, and always prepared. If you are dealing with a large loss, skip the magicians and hire investigators.",
+    date: '2026-07-20',
+    verified: true,
+    tag: 'HIGH_VALUE_CASE'
+  },
+  {
+    id: 'rev_112',
+    user: 'NATHAN_BOS',
+    platform: 'GOOGLE',
+    rating: 4,
+    content: "Thorough, ethical, and technically strong. My stolen funds had already been through several swaps by the time I hired CRA, so expectations had to be realistic. They recovered a partial but important amount and produced a report my attorney called 'court-ready.' A few communications landed later than promised during a heavy workload week, which keeps this at four stars. Everything else — security posture, no-key policy, portal clarity, forensic depth — was excellent. I would still recommend them as the first call after a theft, especially if you need documentation that holds up outside Twitter screenshots.",
+    date: '2026-07-21',
+    verified: true,
+    tag: 'PARTIAL_BUT_SOLID'
+  },
+  {
+    id: 'rev_113',
+    user: 'LEILA_TUN',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content: "I sent USDT to a fraudulent 'account upgrade' address after receiving a convincing in-app style email. The moment it confirmed, I knew I had made a catastrophic mistake. Crypto Recovery Assets responded quickly, confirmed the destination pattern matched a known campaign, and began monitoring for exchange deposits. When the opportunity appeared, they moved. The freeze and recovery process that followed restored most of what I lost. Beyond the result, their kindness during the worst week of my financial life mattered enormously. They combine elite chain skills with basic human decency. That is why this review is five stars.",
+    date: '2026-07-22',
+    verified: true,
+    tag: 'ACCOUNT_UPGRADE_SCAM'
+  },
+  {
+    id: 'rev_114',
+    user: 'STEVEN_PERTH',
+    platform: 'GOOGLE',
+    rating: 5,
+    content: "I waited too long before getting help, convinced I could watch the attacker wallets myself with free explorers. All I did was burn time. When I finally contacted Crypto Recovery Assets, they rebuilt the trail properly, identified consolidation behavior I had missed, and opened the right exchange channels. Their client portal made the process feel organized instead of hopeless. We recovered a majority of the stolen ETH and I received a post-incident briefing that permanently changed how I store and move assets. If you take one thing from this review: get professional forensic help early. These are the people I wish I had called on day one.",
+    date: '2026-07-23',
+    verified: true,
+    tag: 'EARLY_HELP_LESSON'
   }
+
 ];
 
 interface ReviewsViewProps {
