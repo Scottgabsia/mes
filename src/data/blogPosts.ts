@@ -1,6 +1,7 @@
 import { SITE_URL } from "../constants";
 import { EUROPE_BLOG_POSTS } from "./blogPostsEurope";
 import { BATCH_50_BLOG_POSTS } from "./blogPostsBatch50";
+import { ITALY_BLOG_POSTS } from "./blogPostsItaly";
 
 export type BlogPost = {
   id: number;
@@ -4292,6 +4293,7 @@ Many Monaco residents maintain ties to **crypto recovery London**, Manchester, o
 
 /** Newest posts first */
 export const FEATURED_BLOG_POSTS: BlogPost[] = [
+  ...(ITALY_BLOG_POSTS as BlogPost[]),
   ...(BATCH_50_BLOG_POSTS as BlogPost[]),
   ...(EUROPE_BLOG_POSTS as BlogPost[]),
   CRYPTO_RECOVERY_MONACO_GUIDE,
