@@ -830,12 +830,25 @@ async function startServer() {
         fallthrough: true,
         setHeaders(res, filePath) {
           res.setHeader("X-Content-Type-Options", "nosniff");
+          if (/\.txt$/i.test(filePath)) {
+            res.setHeader("Content-Type", "text/plain; charset=utf-8");
+            res.setHeader("Cache-Control", "public, max-age=3600");
+          }
           if (/\.(php|phtml|phar|cgi)$/i.test(filePath)) {
             res.setHeader("Content-Type", "text/plain; charset=utf-8");
           }
         },
       })
     );
+
+    /** IndexNow ownership proof — must be plain text at site root */
+    app.get(/^\/[a-f0-9]{8,128}\.txt$/i, (req, res, next) => {
+      const filePath = path.join(distPath, path.basename(req.path));
+      if (!fs.existsSync(filePath)) return next();
+      res.type("text/plain; charset=utf-8");
+      res.setHeader("Cache-Control", "public, max-age=3600");
+      res.sendFile(filePath);
+    });
 
     app.get("/", (_req, res) => {
       res.sendFile(indexPath);
