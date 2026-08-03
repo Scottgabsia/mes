@@ -12,7 +12,7 @@ import {
 
 import { SEO } from '../components/SEO';
 
-interface Review {
+export interface Review {
   id: string;
   user: string;
   platform: 'GOOGLE' | 'TRUSTPILOT';
@@ -23,7 +23,7 @@ interface Review {
   tag: string;
 }
 
-const REVIEWS_DATA: Review[] = [
+export const REVIEWS_DATA: Review[] = [
   {
     id: 'rev_01',
     user: 'ALEX_W_44',
@@ -1184,12 +1184,15 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
   const [filter, setFilter] = React.useState<'ALL' | 'GOOGLE' | 'TRUSTPILOT'>('ALL');
   const [searchQuery, setSearchQuery] = React.useState('');
 
-  const filteredReviews = REVIEWS_DATA.filter(rev => {
-    const matchesPlatform = filter === 'ALL' || rev.platform === filter;
-    const matchesSearch = rev.content.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          rev.user.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesPlatform && matchesSearch;
-  });
+  const filteredReviews = REVIEWS_DATA
+    .filter(rev => {
+      const matchesPlatform = filter === 'ALL' || rev.platform === filter;
+      const matchesSearch = rev.content.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            rev.user.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesPlatform && matchesSearch;
+    })
+    // Newest reviews first
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
 
   return (
     <main className="pt-36 sm:pt-40 pb-24 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen">

@@ -242,11 +242,23 @@ export const BlogView = () => {
 
   const categories = ['ALL_POSTS', 'TECHNICAL', 'LEGAL', 'INTELLIGENCE', 'CASE_STUDIES'];
 
-  const filteredPosts = posts.filter(post => 
-    (activeCategory === 'ALL_POSTS' || post.category === activeCategory) &&
-    (post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-     post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const parseBlogDate = (value: string) => {
+    const parsed = Date.parse(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  };
+
+  const filteredPosts = posts
+    .filter(post => 
+      (activeCategory === 'ALL_POSTS' || post.category === activeCategory) &&
+      (post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+    // Newest blog posts first
+    .sort((a, b) => {
+      const dateDiff = parseBlogDate(b.date) - parseBlogDate(a.date);
+      if (dateDiff !== 0) return dateDiff;
+      return (b.id ?? 0) - (a.id ?? 0);
+    });
 
   if (selectedPost) {
     return (

@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BadgeCheck, ChevronRight } from 'lucide-react';
+import { REVIEWS_DATA } from '../views/ReviewsView';
 
-interface Review {
+interface CarouselReview {
   id: string;
   user: string;
   platform: string;
@@ -12,53 +13,20 @@ interface Review {
   platformType: 'GOOGLE' | 'TRUSTPILOT';
 }
 
-const REVIEWS: Review[] = [
-  {
-    id: 'rev_01',
-    user: 'ALEX_W_44',
-    platform: 'TRUSTPILOT',
-    rating: 5,
-    content: "The only agency that actually delivered results. Their legal team worked alongside technicians to freeze the thief's account on a Tier-1 exchange.",
-    tag: 'Verified_Case',
-    platformType: 'TRUSTPILOT'
-  },
-  {
-    id: 'rev_02',
-    user: 'ROBERT_VAL',
-    platform: 'GOOGLE_REV',
-    rating: 5,
-    content: "Absolute life savers. Thought my retirement savings were gone forever after a phishing attack. The forensic report was accepted immediately.",
-    tag: 'SECURE_RECOVERY',
-    platformType: 'GOOGLE'
-  },
-  {
-    id: 'rev_03',
-    user: 'SARAH_K_DEV',
-    platform: 'GOOGLE_REV',
-    rating: 5,
-    content: "Technical depth is unmatched. They traced my ETH through three different mixers. Highly recommend for high-value recoveries.",
-    tag: 'EXPERT_STATUS',
-    platformType: 'GOOGLE'
-  },
-  {
-    id: 'rev_04',
-    user: 'MICHAEL_B82',
-    platform: 'TRUSTPILOT',
-    rating: 5,
-    content: "Very skeptical at first, but Digital Assets Forensics is the real deal. No upfront fees and they recovered 85% of my stolen USDT.",
-    tag: 'ASSET_RECLAIM',
-    platformType: 'TRUSTPILOT'
-  },
-  {
-    id: 'rev_05',
-    user: 'ELENA_FIN',
-    platform: 'GOOGLE_REV',
-    rating: 5,
-    content: "Excellent communication throughout. It took longer than expected due to legal hurdles, but they never gave up until the funds were released.",
-    tag: 'LEGAL_WIN',
-    platformType: 'GOOGLE'
-  }
-];
+/** Newest reviews first for homepage carousel */
+const REVIEWS: CarouselReview[] = [...REVIEWS_DATA]
+  .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
+  .slice(0, 5)
+  .map((rev) => ({
+    id: rev.id,
+    user: rev.user,
+    platform: rev.platform === 'GOOGLE' ? 'GOOGLE_REV' : 'TRUSTPILOT',
+    rating: rev.rating,
+    content:
+      rev.content.length > 220 ? `${rev.content.slice(0, 217).trimEnd()}…` : rev.content,
+    tag: rev.tag,
+    platformType: rev.platform,
+  }));
 
 interface ReviewsSectionProps {
   onSeeMore: () => void;
@@ -70,7 +38,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => 
   // Rotate reviews every 5 seconds
   React.useEffect(() => {
     const timer = setInterval(() => {
-      setActiveReviewIndex((prev) => (prev + 1) % (REVIEWS.length - 2));
+      setActiveReviewIndex((prev) => (prev + 1) % Math.max(1, REVIEWS.length - 2));
     }, 5000);
     return () => clearInterval(timer);
   }, []);
