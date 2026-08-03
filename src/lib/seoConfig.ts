@@ -223,13 +223,31 @@ export function getSeoForPath(pathname: string): SeoRouteConfig & { canonical: s
     }
   }
 
-  const match = SEO_ROUTES.find((r) => r.path === path);
+  // Aliases → contact
+  if (path === "/client-portal" || path === "/btc") {
+    const contact = SEO_ROUTES.find((r) => r.path === "/contact")!;
+    return {
+      ...contact,
+      path,
+      canonical: `${SITE_URL}/contact`,
+      noindex: false,
+    };
+  }
 
-  const fallback = SEO_ROUTES[0]!;
-  const config = match ?? fallback;
+  const match = SEO_ROUTES.find((r) => r.path === path);
+  if (!match) {
+    return {
+      path,
+      title: "Page Not Found",
+      description: "This page is not available. Return to Crypto Recovery Assets for crypto recovery services and case intake.",
+      canonical: `${SITE_URL}${path}`,
+      noindex: true,
+      priority: 0.1,
+    };
+  }
 
   return {
-    ...config,
+    ...match,
     canonical: path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`,
     noindex: NOINDEX_PATHS.has(path) || path.startsWith("/admin"),
   };
@@ -266,14 +284,6 @@ export function buildWebSiteSchema() {
         url: `${SITE_URL}/brand-icon-512.png`,
       },
     },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/faq?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
@@ -303,9 +313,39 @@ export function buildProfessionalServiceSchema() {
       "Exchange recovery",
     ],
     sameAs: [
-      `${SITE_URL}/`,
-      `${SITE_URL}/blog`,
-      `${SITE_URL}/reviews`,
+      "https://www.facebook.com/share/1D9wkP3Hoz/",
+      "https://www.quora.com/profile/Crypto-Recovery-Asset",
+      "https://www.tiktok.com/@crypto_recovery_asset",
     ],
+  };
+}
+
+export function buildBreadcrumbForPath(pathname: string): Record<string, unknown> | null {
+  const path = normalizePath(pathname);
+  if (path === "/") return null;
+
+  const crumbs: { name: string; path: string }[] = [
+    { name: "Home", path: "/" },
+  ];
+
+  const blogMatch = path.match(/^\/blog\/([^/]+)$/);
+  if (blogMatch) {
+    crumbs.push({ name: "Blog", path: "/blog" });
+    const post = getBlogPostBySlug(blogMatch[1]!);
+    crumbs.push({ name: post?.title ?? "Article", path });
+  } else {
+    const route = SEO_ROUTES.find((r) => r.path === path);
+    crumbs.push({ name: route?.title ?? path, path });
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.path === "/" ? `${SITE_URL}/` : `${SITE_URL}${item.path}`,
+    })),
   };
 }

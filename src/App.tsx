@@ -17,7 +17,7 @@ import {
   Terminal,
   Star,
 } from 'lucide-react';
-import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
 import { CONTACT_EMAIL, LOGO_URL } from './constants';
 import { FooterSocialLinks } from './components/SocialIcons';
 import { RouteSEO } from './components/RouteSEO';
@@ -84,23 +84,51 @@ const VIEWS_WITHOUT_SIDEBAR: View[] = [
   'admin',
 ];
 
+const VIEW_PATHS: Record<string, string> = {
+  home: '/',
+  about: '/about',
+  blog: '/blog',
+  services: '/services',
+  intelligence: '/intelligence',
+  clientPortal: '/contact',
+  admin: '/admin/login',
+  caseLookup: '/case-lookup',
+  privacyPolicy: '/privacy',
+  termsOfService: '/terms',
+  reviews: '/reviews',
+  submitReview: '/reviews/submit',
+  faq: '/faq',
+  chainTraceability: '/traceability',
+  exchangeRecovery: '/recovery',
+  legalEnforcement: '/legal',
+  riskMonitoring: '/risk',
+  tools: '/tools',
+  iso27001: '/iso27001',
+  soc2: '/soc2',
+  gdpr: '/gdpr',
+  amlkyc: '/amlkyc',
+};
+
 const NavLink = ({ 
   children, 
   active = false, 
+  to,
   onClick 
 }: { 
   children: React.ReactNode; 
   active?: boolean;
+  to: string;
   onClick?: () => void;
 }) => (
-  <button 
+  <Link 
+    to={to}
     onClick={onClick}
     className={`font-manrope text-sm font-bold tracking-widest uppercase transition-colors cursor-pointer ${
       active ? 'text-blue-500' : 'text-slate-400 hover:text-blue-400'
     }`}
   >
     {children}
-  </button>
+  </Link>
 );
 
 export default function App() {
@@ -229,34 +257,8 @@ export default function App() {
     closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'instant' });
     
-    // Navigation mapping
-    const pathMap: Record<string, string> = {
-      'home': '/',
-      'about': '/about',
-      'blog': '/blog',
-      'services': '/services',
-      'intelligence': '/intelligence',
-      'clientPortal': '/contact',
-      'admin': '/admin/login',
-      'caseLookup': '/case-lookup',
-      'privacyPolicy': '/privacy',
-      'termsOfService': '/terms',
-      'reviews': '/reviews',
-      'submitReview': '/reviews/submit',
-      'faq': '/faq',
-      'chainTraceability': '/traceability',
-      'exchangeRecovery': '/recovery',
-      'legalEnforcement': '/legal',
-      'riskMonitoring': '/risk',
-      'tools': '/tools',
-      'iso27001': '/iso27001',
-      'soc2': '/soc2',
-      'gdpr': '/gdpr',
-      'amlkyc': '/amlkyc'
-    };
-
-    if (pathMap[view]) {
-      navigate(pathMap[view]);
+    if (VIEW_PATHS[view]) {
+      navigate(VIEW_PATHS[view]);
     }
   };
 
@@ -279,7 +281,8 @@ export default function App() {
       {/* TopAppBar */}
       <header ref={headerRef} className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
         <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">
-            <div className="flex items-center gap-2 sm:gap-4 cursor-pointer group min-w-0" onClick={() => handleNavClick('home')}>
+            <div className="flex items-center gap-2 sm:gap-4 cursor-pointer group min-w-0">
+              <Link to="/" onClick={() => handleNavClick('home')} className="flex items-center gap-2 sm:gap-4 min-w-0 no-underline">
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center">
                 <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-lg group-hover:bg-blue-500/30 transition-all"></div>
                 <img 
@@ -296,23 +299,26 @@ export default function App() {
                 </div>
                 <span className="text-[7px] sm:text-[8px] font-mono text-blue-400/80 tracking-[0.2em] uppercase mt-1 font-bold">Professional Forensic Analysis & Crypto Recovery Services</span>
               </div>
+              </Link>
             </div>
           
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-10 ml-auto mr-4 xl:mr-6">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 ml-auto mr-4 xl:mr-6">
             <div className="flex flex-col items-end mr-2 xl:mr-4">
               <span className="font-fira text-[10px] text-blue-500/60 uppercase tracking-widest">Live Network Status</span>
               <span className="font-fira text-[11px] text-blue-400 animate-pulse">● SECURING NODE 8.21.03...</span>
             </div>
-            <NavLink active={currentView === 'home'} onClick={() => handleNavClick('home')}>Home</NavLink>
-            <NavLink active={currentView === 'about'} onClick={() => handleNavClick('about')}>About</NavLink>
-            <NavLink active={currentView === 'services'} onClick={() => handleNavClick('services')}>Services</NavLink>
-            <NavLink active={currentView === 'intelligence'} onClick={() => handleNavClick('intelligence')}>Intelligence</NavLink>
-            <NavLink active={currentView === 'faq'} onClick={() => handleNavClick('faq')}>FAQ</NavLink>
-            <NavLink active={currentView === 'clientPortal'} onClick={() => handleNavClick('clientPortal')}>Contact</NavLink>
+            <NavLink to="/" active={currentView === 'home'} onClick={() => handleNavClick('home')}>Home</NavLink>
+            <NavLink to="/about" active={currentView === 'about'} onClick={() => handleNavClick('about')}>About</NavLink>
+            <NavLink to="/services" active={currentView === 'services'} onClick={() => handleNavClick('services')}>Services</NavLink>
+            <NavLink to="/blog" active={currentView === 'blog'} onClick={() => handleNavClick('blog')}>Blog</NavLink>
+            <NavLink to="/reviews" active={currentView === 'reviews'} onClick={() => handleNavClick('reviews')}>Reviews</NavLink>
+            <NavLink to="/faq" active={currentView === 'faq'} onClick={() => handleNavClick('faq')}>FAQ</NavLink>
+            <NavLink to="/contact" active={currentView === 'clientPortal'} onClick={() => handleNavClick('clientPortal')}>Contact</NavLink>
             
-            <button 
+            <Link 
+              to="/case-lookup"
               onClick={() => handleNavClick('caseLookup')}
-              className={`ml-4 mr-6 px-4 py-2 rounded-lg border font-manrope text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${
+              className={`ml-2 mr-2 px-4 py-2 rounded-lg border font-manrope text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 no-underline ${
                 currentView === 'caseLookup' 
                 ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_15px_rgba(0,98,255,0.4)]' 
                 : 'border-white/10 text-slate-400 hover:border-blue-500/50 hover:text-white'
@@ -320,7 +326,7 @@ export default function App() {
             >
               <FileText className="w-3.5 h-3.5" />
               Check Status
-            </button>
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2.5 xs:gap-4 lg:gap-6 flex-shrink-0">
@@ -383,76 +389,83 @@ export default function App() {
                   <span className="font-fira text-[10px] text-blue-500/60 uppercase tracking-widest">Network Status</span>
                   <span className="font-fira text-[11px] text-blue-400">● NODE 8.21.03 SECURED</span>
                 </div>
-                <button 
+                <Link 
+                  to="/"
                   onClick={() => handleNavClick('home')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'home' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <LayoutDashboard className="w-5 h-5" /> Home
                   </div>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/about"
                   onClick={() => handleNavClick('about')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'about' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Users className="w-5 h-5" /> About Us
                   </div>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/services"
                   onClick={() => handleNavClick('services')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'services' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Layers className="w-5 h-5" /> Services
                   </div>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/intelligence"
                   onClick={() => handleNavClick('intelligence')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'intelligence' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Activity className="w-5 h-5" /> Intelligence
                   </div>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/faq"
                   onClick={() => handleNavClick('faq')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'faq' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <FileText className="w-5 h-5" /> FAQ
                   </div>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/reviews"
                   onClick={() => handleNavClick('reviews')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'reviews' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Star className="w-5 h-5" /> Reviews
                   </div>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/contact"
                   onClick={() => handleNavClick('clientPortal')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
                     currentView === 'clientPortal' ? 'text-blue-500' : 'text-slate-400'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <ShieldCheck className="w-5 h-5" /> Contact Us
                   </div>
-                </button>
+                </Link>
                 <div className="pt-6 border-t border-white/5 space-y-4">
                   <div 
                     className="flex items-center gap-4 cursor-pointer group"
@@ -694,19 +707,20 @@ export default function App() {
             <h5 className="text-white text-[10px] tracking-[0.2em] uppercase font-bold">Services</h5>
             <ul className="space-y-4 text-slate-400 text-sm font-medium">
               {[
-                { label: 'Chain Traceability', view: 'chainTraceability' },
-                { label: 'Exchange Recovery', view: 'exchangeRecovery' },
-                { label: 'Legal Enforcement', view: 'legalEnforcement' },
-                { label: 'Risk Monitoring', view: 'riskMonitoring' },
-                { label: 'Forensic Toolkit', view: 'tools' }
+                { label: 'Chain Traceability', view: 'chainTraceability' as View },
+                { label: 'Exchange Recovery', view: 'exchangeRecovery' as View },
+                { label: 'Legal Enforcement', view: 'legalEnforcement' as View },
+                { label: 'Risk Monitoring', view: 'riskMonitoring' as View },
+                { label: 'Forensic Toolkit', view: 'tools' as View }
               ].map((item, i) => (
                 <li key={i}>
-                  <button 
-                    onClick={() => handleNavClick(item.view as View)}
-                    className="hover:text-blue-400 transition-colors flex items-center gap-2 cursor-pointer text-left"
+                  <Link 
+                    to={VIEW_PATHS[item.view]}
+                    onClick={() => handleNavClick(item.view)}
+                    className="hover:text-blue-400 transition-colors flex items-center gap-2 cursor-pointer text-left no-underline text-slate-400"
                   >
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" /> {item.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -716,18 +730,19 @@ export default function App() {
             <h5 className="text-white text-[10px] tracking-[0.2em] uppercase font-bold">Compliance</h5>
             <ul className="space-y-4 text-slate-400 text-sm font-medium">
               {[
-                { label: 'ISO/IEC 27001', view: 'iso27001' },
-                { label: 'SOC2 Type II', view: 'soc2' },
-                { label: 'GDPR Protocol', view: 'gdpr' },
-                { label: 'AML/KYC Stds', view: 'amlkyc' }
+                { label: 'ISO/IEC 27001', view: 'iso27001' as View },
+                { label: 'SOC2 Type II', view: 'soc2' as View },
+                { label: 'GDPR Protocol', view: 'gdpr' as View },
+                { label: 'AML/KYC Stds', view: 'amlkyc' as View }
               ].map((item, i) => (
                 <li key={i}>
-                  <button 
-                    onClick={() => handleNavClick(item.view as View)}
-                    className="hover:text-blue-400 transition-colors flex items-center gap-2 cursor-pointer text-left"
+                  <Link 
+                    to={VIEW_PATHS[item.view]}
+                    onClick={() => handleNavClick(item.view)}
+                    className="hover:text-blue-400 transition-colors flex items-center gap-2 cursor-pointer text-left no-underline text-slate-400"
                   >
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" /> {item.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -764,48 +779,24 @@ export default function App() {
         
         <div className="max-w-[1600px] mx-auto pt-10 border-t border-white/5 flex flex-col items-center justify-between lg:flex-row gap-8 relative z-10">
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-8">
-            <button 
-              onClick={() => handleNavClick('clientPortal')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
-            >
-              Contact Us
-            </button>
-            <button 
-              onClick={() => handleNavClick('about')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
-            >
-              About Us
-            </button>
-            <button 
-              onClick={() => handleNavClick('blog')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
-            >
-              Blog
-            </button>
-            <button 
-              onClick={() => handleNavClick('reviews')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
-            >
-              Reviews
-            </button>
-            <button 
-              onClick={() => handleNavClick('faq')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none"
-            >
-              FAQ
-            </button>
-            <button 
-              onClick={() => handleNavClick('privacyPolicy')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
-            >
-              Privacy Policy
-            </button>
-            <button 
-              onClick={() => handleNavClick('termsOfService')}
-              className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
-            >
-              Terms of Service
-            </button>
+            {([
+              { label: 'Contact Us', view: 'clientPortal' as View },
+              { label: 'About Us', view: 'about' as View },
+              { label: 'Blog', view: 'blog' as View },
+              { label: 'Reviews', view: 'reviews' as View },
+              { label: 'FAQ', view: 'faq' as View },
+              { label: 'Privacy Policy', view: 'privacyPolicy' as View },
+              { label: 'Terms of Service', view: 'termsOfService' as View },
+            ]).map((item) => (
+              <Link
+                key={item.view}
+                to={VIEW_PATHS[item.view]}
+                onClick={() => handleNavClick(item.view)}
+                className="text-slate-400 hover:text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none no-underline"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
           <p className="text-slate-600 text-[10px] uppercase tracking-widest font-bold">
             © 2026 CRYPTO RECOVERY ASSETS // NEW HAMPSHIRE, USA REGISTERED LLC // ALL RIGHTS RESERVED // CLASSIFIED

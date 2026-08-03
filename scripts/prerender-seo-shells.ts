@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { BLOG_SLUGS, FEATURED_BLOG_POSTS, getBlogPostBySlug } from "../src/data/blogPosts";
-import { SEO_ROUTES, getSeoForPath } from "../src/lib/seoConfig";
+import { SEO_ROUTES, getSeoForPath, buildFaqPageSchema } from "../src/lib/seoConfig";
 import { SITE_URL } from "../src/constants";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,11 +44,6 @@ function buildJsonLd(pathname: string): Record<string, unknown>[] {
       "@type": "WebSite",
       name: "Crypto Recovery Assets",
       url: `${SITE_URL}/`,
-      potentialAction: {
-        "@type": "SearchAction",
-        target: `${SITE_URL}/faq?q={search_term_string}`,
-        "query-input": "required name=search_term_string",
-      },
     });
     schemas.push({
       "@context": "https://schema.org",
@@ -57,20 +52,33 @@ function buildJsonLd(pathname: string): Record<string, unknown>[] {
       url: `${SITE_URL}/`,
       telephone: "+1-401-684-4683",
       email: "info@cryptorecoveryasset.com",
+      sameAs: [
+        "https://www.facebook.com/share/1D9wkP3Hoz/",
+        "https://www.quora.com/profile/Crypto-Recovery-Asset",
+        "https://www.tiktok.com/@crypto_recovery_asset",
+      ],
     });
+  }
+
+  if (pathname === "/faq") {
+    schemas.push(buildFaqPageSchema());
   }
 
   const blogMatch = pathname.match(/^\/blog\/([^/]+)$/);
   if (blogMatch) {
     const post = getBlogPostBySlug(blogMatch[1]!);
     if (post) {
+      const published = Number.isNaN(Date.parse(post.date))
+        ? post.date
+        : new Date(post.date).toISOString();
       schemas.push({
         "@context": "https://schema.org",
         "@type": "Article",
         headline: post.title,
         description: post.excerpt,
         author: { "@type": "Person", name: post.author },
-        datePublished: post.date,
+        datePublished: published,
+        dateModified: published,
         mainEntityOfPage: canonical,
         publisher: {
           "@type": "Organization",

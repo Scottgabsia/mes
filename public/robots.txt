@@ -1,34 +1,46 @@
 # https://cryptorecoveryasset.com/robots.txt
+# Crawl rules for Google, Bing, and other search engines
+
 User-agent: *
 Allow: /
-Allow: /blog/
-Allow: /services
-Allow: /contact
-Allow: /about
-Allow: /faq
-Allow: /reviews
-Allow: /traceability
-Allow: /recovery
-Allow: /legal
-Allow: /tools
 Disallow: /admin/
 Disallow: /api/
 Disallow: /reviews/submit
 
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reviews/submit
 
 User-agent: Googlebot-Image
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reviews/submit
 
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reviews/submit
 
 User-agent: Slurp
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reviews/submit
+
+User-agent: Yandex
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /reviews/submit
 
 User-agent: facebookexternalhit
 Allow: /
@@ -40,3 +52,4 @@ User-agent: LinkedInBot
 Allow: /
 
 Sitemap: https://cryptorecoveryasset.com/sitemap.xml
+Sitemap: https://cryptorecoveryasset.com/sitemap-images.xml

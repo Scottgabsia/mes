@@ -1,6 +1,6 @@
 import React from 'react';
-import { 
 import { SeoEnrichment } from '../components/SeoEnrichment';
+import { 
   ShieldCheck, 
   Network, 
   Info, 

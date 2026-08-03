@@ -83,6 +83,21 @@ async function main() {
   }
 
   console.log(`[indexnow] Done. Submitted ${submitted} URLs.`);
+
+  // Also ping major engines with the sitemap URL (complements IndexNow)
+  const sitemapUrl = encodeURIComponent(`${SITE_URL.replace(/\/$/, "")}/sitemap.xml`);
+  const pings = [
+    `https://www.bing.com/indexnow?url=${encodeURIComponent(`${SITE_URL}/`)}&key=${INDEXNOW_KEY}`,
+    `https://www.google.com/ping?sitemap=${sitemapUrl}`,
+  ];
+  for (const ping of pings) {
+    try {
+      const res = await fetch(ping, { method: "GET" });
+      console.log(`[indexnow] Discovery ping ${new URL(ping).host} → HTTP ${res.status}`);
+    } catch (err) {
+      console.warn(`[indexnow] Ping failed for ${ping}:`, err);
+    }
+  }
 }
 
 main().catch((err) => {

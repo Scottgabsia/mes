@@ -1,0 +1,30 @@
+# Crypto Recovery Assets
+
+> Professional cryptocurrency recovery and blockchain forensics for stolen or lost digital assets.
+
+Website: https://cryptorecoveryasset.com/
+Contact: https://cryptorecoveryasset.com/contact
+Email: info@cryptorecoveryasset.com
+Phone: +1-401-684-4683
+
+## Services
+- Crypto recovery case intake: https://cryptorecoveryasset.com/contact
+- Wallet, exchange & scam recovery services: https://cryptorecoveryasset.com/services
+- Blockchain chain traceability: https://cryptorecoveryasset.com/traceability
+- Exchange / VASP recovery: https://cryptorecoveryasset.com/recovery
+- Legal & enforcement support: https://cryptorecoveryasset.com/legal
+- Risk monitoring: https://cryptorecoveryasset.com/risk
+- Free forensic toolkit: https://cryptorecoveryasset.com/tools
+
+## Help for victims
+- FAQ: https://cryptorecoveryasset.com/faq
+- Client reviews: https://cryptorecoveryasset.com/reviews
+- Case status lookup: https://cryptorecoveryasset.com/case-lookup
+- Blog / recovery guides: https://cryptorecoveryasset.com/blog
+- About the team: https://cryptorecoveryasset.com/about
+- Threat intelligence: https://cryptorecoveryasset.com/intelligence
+
+## Important policies
+- We never ask for seed phrases or private keys.
+- Avoid Telegram/WhatsApp “recovery agents” demanding upfront crypto fees.
+- Sitemap: https://cryptorecoveryasset.com/sitemap.xml

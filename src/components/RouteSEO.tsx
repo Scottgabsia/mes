@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { SEO } from "./SEO";
 import {
+  buildBreadcrumbForPath,
   buildProfessionalServiceSchema,
   buildWebSiteSchema,
   getSeoForPath,
@@ -19,6 +20,9 @@ export function RouteSEO() {
   if (config.path === "/") {
     jsonLd.push(buildWebSiteSchema(), buildProfessionalServiceSchema());
   }
+  const crumbs = buildBreadcrumbForPath(pathname);
+  if (crumbs) jsonLd.push(crumbs);
+
   return (
     <SEO
       title={config.title}

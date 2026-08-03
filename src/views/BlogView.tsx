@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   Newspaper, 
   ChevronRight, 
@@ -294,12 +294,14 @@ export const BlogView = () => {
                   },
                   publisher: {
                     "@type": "Organization",
-                    name: "Crypto Recovery Asset",
+                    name: "Crypto Recovery Assets",
                     logo: {
                       "@type": "ImageObject",
                       url: `${SITE_URL}/brand-icon-512.png`,
                     },
                   },
+                  datePublished: selectedPost.date,
+                  dateModified: selectedPost.date,
                   mainEntityOfPage: `${SITE_URL}/blog/${selectedPost.slug}`,
                   keywords: selectedPost.keywords?.join(", "),
                 }
@@ -529,16 +531,20 @@ export const BlogView = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              onClick={() => openPost(post)}
               transition={{ 
                 duration: 0.4, 
                 delay: idx * 0.1,
                 layout: { duration: 0.3 }
               }}
-              className={`group relative flex flex-col glass-panel border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all duration-500 cursor-pointer ${
+              className={`group relative flex flex-col glass-panel border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all duration-500 ${
                 idx === 0 ? 'xl:col-span-8' : 'xl:col-span-4'
               }`}
             >
+              <Link
+                to={'slug' in post && post.slug ? `/blog/${post.slug}` : '/blog'}
+                onClick={() => openPost(post)}
+                className="flex flex-col flex-1 no-underline text-inherit cursor-pointer"
+              >
               {/* Card Meta Header */}
               <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
                 <span className="bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-white font-mono text-[9px] font-bold uppercase tracking-widest flex items-center gap-2">
@@ -555,6 +561,10 @@ export const BlogView = () => {
                 <img 
                   src={blogImageSrc(post.image)} 
                   alt={post.title} 
+                  width={1200}
+                  height={675}
+                  loading={idx < 2 ? "eager" : "lazy"}
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-1000"
                 />
@@ -593,19 +603,20 @@ export const BlogView = () => {
                     ))}
                   </div>
                   
-                  <button className="flex items-center gap-4 group/btn">
+                  <div className="flex items-center gap-4 group/btn">
                     <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white group-hover/btn:text-blue-400 transition-colors">
                       DECRYPT_FILE
                     </span>
                     <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover/btn:bg-blue-600 group-hover/btn:border-blue-600 transition-all">
                       <ChevronRight size={16} className="text-white" />
                     </div>
-                  </button>
+                  </div>
                 </div>
               </div>
 
               {/* Hover Glow Effect */}
               <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/[0.02] transition-colors pointer-events-none"></div>
+              </Link>
             </motion.article>
           ))}
         </AnimatePresence>
