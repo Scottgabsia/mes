@@ -28,6 +28,7 @@ import { CRYPTO_CURRENCIES } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReviewsSection } from '../components/ReviewsSection';
 import { WhatsAppSupportPanel } from '../components/WhatsAppSupportPanel';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 const SHAPE_POOL = [
   Triangle,
@@ -741,6 +742,8 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       <div className="mt-20 border-t border-white/5 pt-20">
         <ReviewsSection onSeeMore={() => onNavigate && onNavigate('reviews')} />
       </div>
+    
+      <SeoEnrichment page="contact" />
     </main>
   );
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Eye, ShieldAlert, Bell, Cpu, Radar, Activity, ArrowRight } from 'lucide-react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const RiskMonitoringView = () => {
   return (
@@ -138,6 +139,8 @@ export const RiskMonitoringView = () => {
            ))}
         </div>
       </div>
-    </div>
+    
+      <SeoEnrichment page="risk" />
+</div>
   );
 };

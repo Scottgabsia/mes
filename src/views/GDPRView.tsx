@@ -1,6 +1,7 @@
 import React from 'react';
 import { Fingerprint, ShieldAlert, Database, Scale, Globe, UserCheck } from 'lucide-react';
 import { motion } from 'motion/react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const GDPRView = () => {
   return (
@@ -104,6 +105,8 @@ export const GDPRView = () => {
           </div>
         </div>
       </div>
+    
+      <SeoEnrichment page="gdpr" />
     </main>
   );
 };

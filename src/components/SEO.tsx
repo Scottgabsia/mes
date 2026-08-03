@@ -26,11 +26,14 @@ export const SEO: React.FC<SEOProps> = ({
   jsonLd,
 }) => {
   const siteTitle = "Crypto Recovery Assets";
+  const brandSuffix = ` | ${siteTitle}`;
   const fullTitle = title
-    ? `${title} | ${siteTitle}`
+    ? title.includes(siteTitle)
+      ? title
+      : `${title}${brandSuffix}`
     : `${siteTitle} | Professional Crypto Recovery & Blockchain Forensics`;
   const defaultDescription =
-    "Professional cryptocurrency recovery and blockchain forensics for stolen or lost digital assets. Licensed investigators worldwide.";
+    "Hire licensed investigators for stolen Bitcoin, Ethereum, and DeFi losses. Fast case intake, on-chain tracing, and exchange freeze support—no seed phrases required.";
   const metaDescription = description || defaultDescription;
   const url = canonical || `${SITE_URL}/`;
   const siteOrigin = url.replace(/\/$/, "") || SITE_URL;

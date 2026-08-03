@@ -21,6 +21,7 @@ import { apiPost } from '../lib/api';
 import { sha256HexFromFile, fileToBase64, encryptAesEnvelope } from '../lib/forensic/crypto';
 import { encryptWithPgpPublicKey } from '../lib/forensic/pgp';
 import {
+import { SeoEnrichment } from '../components/SeoEnrichment';
   analyzeDexLiquidity,
   authenticateNftOrigin,
   isEvmAddress,
@@ -660,6 +661,8 @@ export const ToolsView = () => {
           </div>
         </div>
       </div>
+    
+      <SeoEnrichment page="tools" />
     </main>
   );
 };

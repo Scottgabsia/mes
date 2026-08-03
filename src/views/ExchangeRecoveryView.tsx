@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowUpDown, Landmark, ShieldCheck, Zap, Globe, Briefcase } from 'lucide-react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 type ExchangeRecoveryViewProps = {
   onNavigate?: (view: 'clientPortal') => void;
@@ -104,6 +105,8 @@ export const ExchangeRecoveryView = ({ onNavigate }: ExchangeRecoveryViewProps) 
         </div>
       </div>
 
+
+      <SeoEnrichment page="recovery" />
       <div className="text-center mb-20">
         <button
           type="button"

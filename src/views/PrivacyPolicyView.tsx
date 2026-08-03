@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, Lock, Eye, Database } from 'lucide-react';
 import { CONTACT_EMAIL } from '../constants';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const PrivacyPolicyView = () => {
   return (
@@ -104,6 +105,8 @@ export const PrivacyPolicyView = () => {
           </p>
         </div>
       </div>
-    </div>
+    
+      <SeoEnrichment page="privacy" />
+</div>
   );
 };

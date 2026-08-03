@@ -12,13 +12,13 @@ export type SeoRouteConfig = {
   noindex?: boolean;
 };
 
-/** Public routes — used for default meta and sitemap generation */
+/** Public routes — unique titles/descriptions for CTR + indexing (single source of truth) */
 export const SEO_ROUTES: SeoRouteConfig[] = [
   {
     path: "/",
     title: "Crypto Recovery Service & Blockchain Forensics",
     description:
-      "Professional cryptocurrency recovery and blockchain forensics for stolen or lost digital assets. Bitcoin, Ethereum, and DeFi case intake with licensed investigators.",
+      "Hire licensed investigators for stolen Bitcoin, Ethereum, and DeFi losses. Fast case intake, on-chain tracing, and exchange freeze support—no seed phrases required.",
     keywords:
       "crypto recovery service, cryptocurrency recovery, bitcoin recovery expert, blockchain forensics, scammed crypto recovery",
     changefreq: "weekly",
@@ -26,160 +26,166 @@ export const SEO_ROUTES: SeoRouteConfig[] = [
   },
   {
     path: "/services",
-    title: "Crypto Recovery Services",
+    title: "Wallet, Exchange & Scam Recovery Services",
     description:
-      "Wallet recovery, exchange recovery, forensic tracking, and scam assistance. End-to-end digital asset investigation services worldwide.",
+      "Compare wallet restoration, exchange liaison, scam tracing, and forensic investigation programs. End-to-end digital asset recovery services for individuals and institutions.",
     keywords: "crypto recovery services, wallet recovery, exchange recovery, forensic tracking",
     changefreq: "monthly",
     priority: 0.9,
   },
   {
     path: "/contact",
-    title: "Contact & Case Intake",
+    title: "Start a Confidential Crypto Recovery Case",
     description:
-      "Submit a confidential crypto recovery case. Secure intake form for lost wallets, scams, and exchange disputes.",
+      "Secure intake for lost wallets, romance scams, phishing drains, and exchange disputes. Submit TxIDs and evidence—never your seed phrase—to begin professional review.",
     keywords: "crypto recovery contact, report crypto scam, hire crypto recovery specialist",
     changefreq: "monthly",
     priority: 0.95,
   },
   {
     path: "/about",
-    title: "About Our Forensic Team",
+    title: "About Crypto Recovery Assets Investigators",
     description:
-      "Licensed blockchain investigators and recovery specialists. Learn about Crypto Recovery Assets and our global enforcement network.",
+      "Meet the blockchain forensics team behind Crypto Recovery Assets. Learn how licensed investigators, analysts, and counsel partners handle global recovery cases.",
     keywords: "crypto recovery company, blockchain investigation firm, about crypto recovery assets",
     changefreq: "monthly",
     priority: 0.8,
   },
   {
     path: "/faq",
-    title: "Crypto Recovery FAQ",
+    title: "Crypto Recovery FAQ: Seeds, Wallets & Scams",
     description:
-      "Answers on seed phrase recovery, MetaMask and Ledger issues, scam response, and how to hire a legitimate crypto recovery specialist.",
+      "Clear answers on MetaMask and Ledger recovery, partial seed phrases, FBI/IC3 reporting, and how to hire a legitimate specialist without falling for secondary scams.",
     keywords: "crypto recovery faq, recover lost crypto, metamask recovery help",
     changefreq: "weekly",
     priority: 0.85,
   },
   {
     path: "/reviews",
-    title: "Client Reviews",
+    title: "Verified Client Crypto Recovery Reviews",
     description:
-      "Verified client experiences with our cryptocurrency recovery and forensic investigation services.",
+      "Read verified Google and Trustpilot-style client reviews covering freezes, partial recoveries, and forensic reporting from real cryptocurrency recovery cases.",
     keywords: "crypto recovery reviews, recovery service testimonials",
     changefreq: "weekly",
     priority: 0.8,
   },
   {
     path: "/blog",
-    title: "Recovery Intelligence Blog",
+    title: "Crypto Recovery & Forensics Blog",
     description:
-      "Expert guides on blockchain forensics, scam prevention, and cryptocurrency recovery best practices.",
+      "In-depth guides on stolen crypto recovery, scam red flags, exchange freezes, and blockchain forensics—written for victims who need actionable next steps.",
     keywords: "crypto recovery blog, blockchain forensics articles",
     changefreq: "weekly",
     priority: 0.75,
   },
   {
     path: "/intelligence",
-    title: "Threat Intelligence",
+    title: "Crypto Threat Intelligence Desk",
     description:
-      "Live blockchain threat intelligence, exploit monitoring, and secure reporting for digital asset incidents.",
+      "Monitor emerging drainers, scam desks, and exploit patterns. Use threat intelligence insights to respond faster when digital assets are at risk.",
     keywords: "crypto threat intelligence, blockchain security monitoring",
     changefreq: "weekly",
     priority: 0.75,
   },
   {
     path: "/case-lookup",
-    title: "Case Status Lookup",
+    title: "Crypto Recovery Case Status Lookup",
     description:
-      "Check the status of your crypto recovery case with your secure case reference ID.",
+      "Enter your secure case reference to check recovery milestones, tracing updates, and next actions without sharing private keys.",
     keywords: "crypto recovery case status, case lookup",
     changefreq: "monthly",
     priority: 0.7,
   },
   {
     path: "/traceability",
-    title: "Chain Traceability",
+    title: "Blockchain Chain Traceability Service",
     description:
-      "On-chain forensic tracing across Bitcoin, Ethereum, Solana, and major L2 networks for asset recovery cases.",
+      "Multi-chain forensic tracing across Bitcoin, Ethereum, Solana, Tron, and major L2s. Cluster analysis and hop maps built for freeze packages.",
     keywords: "blockchain traceability, crypto transaction tracing",
     changefreq: "monthly",
     priority: 0.8,
   },
   {
     path: "/recovery",
-    title: "Exchange Recovery",
+    title: "Centralized Exchange Crypto Recovery",
     description:
-      "Exchange account recovery and VASP liaison for frozen or misdirected centralized exchange assets.",
+      "VASP liaison for frozen, misdirected, or stolen exchange balances. Compliance-ready evidence packages that support preservation and return workflows.",
     keywords: "exchange crypto recovery, recover funds from exchange",
     changefreq: "monthly",
     priority: 0.8,
   },
   {
     path: "/legal",
-    title: "Legal & Enforcement Support",
+    title: "Crypto Legal & Enforcement Support",
     description:
-      "Forensic evidence, subpoena preparation, and coordination with law enforcement for crypto asset seizures.",
+      "Court-ready forensic reports, subpoena preparation support, and coordination pathways for seizures and counsel-led digital asset cases.",
     keywords: "crypto legal enforcement, asset seizure support",
     changefreq: "monthly",
     priority: 0.75,
   },
   {
     path: "/risk",
-    title: "Risk Monitoring",
+    title: "Enterprise Crypto Wallet Risk Monitoring",
     description:
-      "Enterprise crypto risk monitoring, wallet health scoring, and proactive threat alerts for institutions.",
+      "Continuous wallet surveillance, exposure scoring, and alert workflows for family offices and institutions that need proactive crypto risk controls.",
     keywords: "crypto risk monitoring, wallet security monitoring",
     changefreq: "monthly",
     priority: 0.7,
   },
   {
     path: "/tools",
-    title: "Forensic Toolkit",
+    title: "Free Crypto Forensic Toolkit Online",
     description:
-      "Free forensic utilities: address risk audit, integrity verification, PGP encoding, NFT provenance, and DEX liquidity analysis.",
+      "Run address risk checks, file integrity hashing, PGP helpers, NFT provenance tests, and DEX liquidity analysis while preparing a recovery case.",
     keywords: "crypto forensic tools, blockchain analysis tools",
     changefreq: "monthly",
     priority: 0.75,
   },
   {
     path: "/privacy",
-    title: "Privacy Policy",
-    description: "How Crypto Recovery Assets collects, uses, and protects your personal and case data.",
+    title: "Privacy Policy for Recovery Case Data",
+    description:
+      "How Crypto Recovery Assets collects, stores, and protects personal and case evidence during cryptocurrency investigations.",
     changefreq: "yearly",
     priority: 0.3,
   },
   {
     path: "/terms",
-    title: "Terms of Service",
-    description: "Terms governing use of Crypto Recovery Assets website and professional services.",
+    title: "Terms of Service for Recovery Engagements",
+    description:
+      "Legal terms for using cryptorecoveryasset.com and engaging investigative recovery services, including scope and outcome limitations.",
     changefreq: "yearly",
     priority: 0.3,
   },
   {
     path: "/iso27001",
-    title: "ISO/IEC 27001",
-    description: "Information security management standards alignment for forensic operations.",
+    title: "ISO/IEC 27001 Security Practices",
+    description:
+      "How information-security controls aligned with ISO/IEC 27001 principles protect forensic operations and sensitive client evidence.",
     changefreq: "yearly",
     priority: 0.4,
   },
   {
     path: "/soc2",
-    title: "SOC 2 Type II",
-    description: "SOC 2 compliance overview for Crypto Recovery Assets security controls.",
+    title: "SOC 2 Security Controls Overview",
+    description:
+      "Overview of SOC 2-oriented security, availability, and confidentiality controls that support trusted crypto recovery case handling.",
     changefreq: "yearly",
     priority: 0.4,
   },
   {
     path: "/gdpr",
-    title: "GDPR Protocol",
-    description: "GDPR data protection practices for EU clients and case subjects.",
+    title: "GDPR Data Protection for EU Clients",
+    description:
+      "GDPR-oriented practices for EU cryptocurrency recovery clients, including purpose limitation and channels for privacy requests.",
     changefreq: "yearly",
     priority: 0.4,
   },
   {
     path: "/amlkyc",
-    title: "AML/KYC Standards",
-    description: "Anti-money laundering and KYC standards for cryptocurrency recovery investigations.",
+    title: "AML & KYC Standards in Crypto Recovery",
+    description:
+      "How AML/KYC expectations at exchanges affect freeze and return requests—and how victim evidence packages support compliant reclaim efforts.",
     changefreq: "yearly",
     priority: 0.4,
   },
@@ -295,6 +301,11 @@ export function buildProfessionalServiceSchema() {
       "Blockchain forensics",
       "Wallet recovery",
       "Exchange recovery",
+    ],
+    sameAs: [
+      `${SITE_URL}/`,
+      `${SITE_URL}/blog`,
+      `${SITE_URL}/reviews`,
     ],
   };
 }

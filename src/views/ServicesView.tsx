@@ -59,9 +59,9 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
   return (
     <div className="pt-40 sm:pt-52 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto min-h-screen">
       <SEO 
-        title="Forensic Services | Wallet Recovery & Tracking" 
-        description="Comprehensive crypto recovery services including wallet reconstruction for MetaMask, Trust Wallet, Ledger, and Coinbase. Expert seed phrase recovery and chain tracking."
-        keywords="recover metamask wallet, trust wallet seed phrase recovery, recover ledger nano without seed phrase, recover coinbase wallet, recover deleted crypto wallet, how to recover 12 word seed phrase, lost bitcoin private key recovery, crypto wallet password reset"
+        title="Wallet, Exchange & Scam Recovery Services" 
+        description="Compare wallet restoration, exchange liaison, scam tracing, and forensic investigation programs. End-to-end digital asset recovery services for individuals and institutions."
+        keywords="crypto recovery services, wallet recovery, exchange recovery, forensic tracking, recover metamask wallet, trust wallet seed phrase recovery"
       />
       {/* Hero Section */}
       <div className="relative mb-6 sm:mb-stack-lg">

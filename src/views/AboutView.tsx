@@ -22,8 +22,8 @@ export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
   return (
     <div className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto">
       <SEO 
-        title="About Us | Global Leaders in Blockchain Intelligence" 
-        description="Hire a crypto recovery specialist from our global network of forensic analysts and blockchain engineers. Digital Assets Forensics: your trusted bitcoin recovery expert."
+        title="About Crypto Recovery Assets Investigators" 
+        description="Meet the blockchain forensics team behind Crypto Recovery Assets. Learn how licensed investigators, analysts, and counsel partners handle global recovery cases."
         keywords="bitcoin recovery expert, hire crypto recovery specialist, crypto recovery agency, blockchain investigation experts, professional crypto recovery"
       />
       {/* Hero Section */}

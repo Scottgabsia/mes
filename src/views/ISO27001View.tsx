@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Lock, FileText, CheckCircle2, ShieldAlert, Activity } from 'lucide-react';
 import { motion } from 'motion/react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const ISO27001View = () => {
   return (
@@ -98,6 +99,8 @@ export const ISO27001View = () => {
           <p className="mt-4 text-[8px] font-mono text-blue-400 uppercase tracking-widest">Scanning Grid Status: ACTIVE</p>
         </div>
       </div>
+    
+      <SeoEnrichment page="iso27001" />
     </main>
   );
 };

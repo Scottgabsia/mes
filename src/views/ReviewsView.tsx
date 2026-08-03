@@ -1197,8 +1197,8 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
   return (
     <main className="pt-36 sm:pt-40 pb-24 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen">
       <SEO 
-        title="Client Reviews | Verified Crypto Recovery Success Stories" 
-        description="Authentic reviews for our crypto recovery service. Read how our bitcoin recovery experts have helped hundreds of clients reclaim their stolen digital assets."
+        title="Verified Client Crypto Recovery Reviews" 
+        description="Read verified Google and Trustpilot-style client reviews covering freezes, partial recoveries, and forensic reporting from real cryptocurrency recovery cases."
         keywords="crypto recovery service reviews, legit crypto recovery, bitcoin recovery expert testimonials, scammed crypto recovery success, verified crypto recovery"
       />
       {/* Header Section */}

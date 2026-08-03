@@ -39,8 +39,8 @@ export const FAQView = ({ onNavigate }: FAQViewProps) => {
   return (
     <main className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1200px] mx-auto min-h-screen">
       <SEO
-        title="Crypto Recovery FAQ"
-        description="Frequently asked questions about crypto recovery. Learn how to recover 12 word seed phrases, recover deleted wallets, and handle scammed assets safely."
+        title="Crypto Recovery FAQ: Seeds, Wallets & Scams"
+        description="Clear answers on MetaMask and Ledger recovery, partial seed phrases, FBI/IC3 reporting, and how to hire a legitimate specialist without falling for secondary scams."
         keywords="crypto recovery faq, how to recover lost crypto, recover metamask wallet help, trust wallet recovery guide, ledger nano recovery help"
         canonical="https://cryptorecoveryasset.com/faq"
         jsonLd={[

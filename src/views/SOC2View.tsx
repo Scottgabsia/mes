@@ -1,6 +1,7 @@
 import React from 'react';
 import { FileCheck, Shield, Lock, Eye, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { motion } from 'motion/react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const SOC2View = () => {
   return (
@@ -112,6 +113,8 @@ export const SOC2View = () => {
            </div>
         </div>
       </div>
+    
+      <SeoEnrichment page="soc2" />
     </main>
   );
 };

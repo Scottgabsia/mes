@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Gavel, Scale, FileSignature, ShieldAlert, BookOpen, UserCheck } from 'lucide-react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const LegalEnforcementView = () => {
   return (
@@ -80,6 +81,8 @@ export const LegalEnforcementView = () => {
         </div>
       </div>
 
+
+      <SeoEnrichment page="legal" />
       <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="p-8 glass-panel border border-white/5 rounded-3xl relative overflow-hidden">
           <div className="flex items-center gap-4 mb-6">

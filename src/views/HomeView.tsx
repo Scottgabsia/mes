@@ -128,7 +128,7 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
     <div className="pt-24 xs:pt-28 sm:pt-40 lg:pt-44 xl:pt-48 pb-20 px-4 sm:px-6 max-w-[1600px] mx-auto w-full">
       <SEO
         title="Crypto Recovery Service & Blockchain Forensics"
-        description="Global leader in cryptocurrency recovery service. Expert forensic analysis for Bitcoin, Ethereum, and DeFi exploits. Recover scammed crypto with licensed investigators."
+        description="Hire licensed investigators for stolen Bitcoin, Ethereum, and DeFi losses. Fast case intake, on-chain tracing, and exchange freeze support—no seed phrases required."
         keywords="crypto recovery service, cryptocurrency recovery tool, bitcoin recovery expert, scammed crypto recovery, hire crypto recovery specialist, how to recover lost crypto, blockchain forensics"
         canonical="https://cryptorecoveryasset.com/"
       />

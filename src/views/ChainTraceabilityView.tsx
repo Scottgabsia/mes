@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Search, Share2, Database, Shield, Zap, Activity } from 'lucide-react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 type ChainTraceabilityViewProps = {
   onNavigate?: (view: 'clientPortal') => void;
@@ -135,6 +136,8 @@ export const ChainTraceabilityView = ({ onNavigate }: ChainTraceabilityViewProps
         </div>
       </div>
 
+
+      <SeoEnrichment page="traceability" />
       {/* Final CTA */}
       <div className="text-center">
         <button

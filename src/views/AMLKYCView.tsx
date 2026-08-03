@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserCheck, ShieldAlert, Landmark, Search, BookOpen, Activity } from 'lucide-react';
 import { motion } from 'motion/react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const AMLKYCView = () => {
   return (
@@ -122,6 +123,8 @@ export const AMLKYCView = () => {
            </div>
         </div>
       </div>
+    
+      <SeoEnrichment page="amlkyc" />
     </main>
   );
 };

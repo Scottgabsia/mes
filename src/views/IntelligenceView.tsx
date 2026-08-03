@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+import { SeoEnrichment } from '../components/SeoEnrichment';
   ShieldCheck, 
   Network, 
   Info, 
@@ -450,6 +451,8 @@ export const IntelligenceView = () => {
           <p className="mt-10 text-slate-500 font-mono text-[10px] uppercase tracking-widest">ESTABLISHED SECURE P2P CONNECTION: 256-BIT ENCRYPTION ACTIVE</p>
         </div>
       </div>
+    
+      <SeoEnrichment page="intelligence" />
     </main>
   );
 };

@@ -382,6 +382,54 @@ export const BlogView = () => {
             </div>
           )}
 
+          <div className="mt-16 p-8 rounded-2xl border border-white/10 bg-slate-950/40">
+            <h3 className="font-mono text-xs font-bold text-white uppercase tracking-widest mb-6">
+              Related recovery guides
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {FEATURED_BLOG_POSTS.filter(
+                (p) => p.slug && p.slug !== selectedPost.slug && p.category === selectedPost.category
+              )
+                .slice(0, 4)
+                .concat(
+                  FEATURED_BLOG_POSTS.filter(
+                    (p) =>
+                      p.slug &&
+                      p.slug !== selectedPost.slug &&
+                      p.category !== selectedPost.category
+                  ).slice(0, 4)
+                )
+                .filter(
+                  (p, i, arr) => arr.findIndex((x) => x.slug === p.slug) === i
+                )
+                .slice(0, 4)
+                .map((p) => (
+                  <button
+                    key={p.slug}
+                    type="button"
+                    onClick={() => openPost(p)}
+                    className="text-left p-4 rounded-xl border border-white/10 hover:border-blue-500/40 bg-white/5 transition-colors cursor-pointer"
+                  >
+                    <p className="text-[10px] font-mono text-blue-400 uppercase tracking-widest mb-2">
+                      {p.category}
+                    </p>
+                    <p className="text-sm font-semibold text-white leading-snug">{p.title}</p>
+                  </button>
+                ))}
+            </div>
+            <div className="mt-6 flex flex-wrap gap-4 text-sm">
+              <a className="text-blue-400 hover:text-blue-300 underline underline-offset-2" href={`${SITE_URL}/contact`}>
+                Start a recovery case
+              </a>
+              <a className="text-blue-400 hover:text-blue-300 underline underline-offset-2" href={`${SITE_URL}/services`}>
+                View services
+              </a>
+              <a className="text-blue-400 hover:text-blue-300 underline underline-offset-2" href={`${SITE_URL}/traceability`}>
+                Chain traceability
+              </a>
+            </div>
+          </div>
+
           <div className="mt-12 pt-12 border-t border-white/5">
             <h3 className="font-mono text-xs font-bold text-white uppercase tracking-widest mb-6">TAGS & METADATA</h3>
             <div className="flex flex-wrap gap-3">
@@ -400,9 +448,9 @@ export const BlogView = () => {
   return (
     <main className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative z-10">
       <SEO 
-        title="Forensic Intelligence | How to Recover Lost Crypto" 
-        description="Educational guides on how to recover 12 word seed phrases, lost private keys, and scammed crypto assets. Expert insights from our forensic analysts."
-        keywords="how to recover lost crypto, recover deleted crypto wallet, how to recover 12 word seed phrase, lost bitcoin private key recovery, crypto wallet password reset, recover metamask wallet, trust wallet seed phrase recovery, recover ledger nano without seed phrase, recover coinbase wallet"
+        title="Crypto Recovery & Forensics Blog" 
+        description="In-depth guides on stolen crypto recovery, scam red flags, exchange freezes, and blockchain forensics—written for victims who need actionable next steps."
+        keywords="crypto recovery blog, blockchain forensics articles, how to recover lost crypto, recover deleted crypto wallet, scammed crypto recovery"
       />
       {/* Hero Header */}
       <div className="relative mb-24 flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-12">

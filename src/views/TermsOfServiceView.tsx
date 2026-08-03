@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, Hammer, Scale, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 export const TermsOfServiceView = () => {
   return (
@@ -84,6 +85,8 @@ export const TermsOfServiceView = () => {
           <p className="text-slate-500 text-xs mb-4 uppercase tracking-widest italic">Proceeding with a case lookup or consultation implies full acceptance of these terms.</p>
         </div>
       </div>
-    </div>
+    
+      <SeoEnrichment page="terms" />
+</div>
   );
 };

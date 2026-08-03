@@ -12,6 +12,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { lookupCaseByEmail } from '../lib/caseLookupApi';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { SeoEnrichment } from '../components/SeoEnrichment';
 
 interface CaseLookupViewProps {
   onCaseFound: (caseData: any) => void;
@@ -171,6 +172,8 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
           </div>
         </div>
       </div>
+    
+      <SeoEnrichment page="case-lookup" />
     </main>
   );
 };
