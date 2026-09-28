@@ -35,6 +35,64 @@ Hostinger started the app before a build finished. **Fix:** set Build command to
 
 ---
 
+## Build error: `TAR_ENTRY_ERROR Unknown system error -122`
+
+Linux error **-122** is **EDQUOT** (disk quota or inode/file-count limit exceeded). Hostinger is not failing on your code. `npm` ran out of room while unpacking `node_modules` (often `lucide-react` or `motion`, which contain thousands of tiny files).
+
+The failing path is usually:
+
+`/home/u695441817/domains/cryptorecoveryasset.com/.builds/source/repository/node_modules/...`
+
+`.builds` is Hostinger’s Git deploy cache. Failed installs leave half-written `node_modules` behind, so the next deploy has even less space.
+
+### 1. Check usage
+
+hPanel → **Usage** (or **Disk Usage**). Note both:
+
+- **Disk space**
+- **Inodes** (number of files) — this is the usual limit on shared plans
+
+### 2. Free space (do this before Redeploy)
+
+In **File Manager** (enable hidden files) or SSH, go to:
+
+`/home/u695441817/domains/cryptorecoveryasset.com/`
+
+Delete these if they exist (do **not** delete `data` or `case-data`):
+
+- `.builds/` — old GitHub build copies
+- `.npm/` — npm cache
+- leftover `node_modules/` inside the Node app folder and any old clone
+- Hostinger **Trash** (deleted files still count until emptied)
+- old backups / unused websites on the same account
+
+SSH (if enabled):
+
+```bash
+cd /home/u695441817/domains/cryptorecoveryasset.com
+rm -rf .builds .npm
+find . -name node_modules -type d -prune -print
+# review the list, then remove leftover install folders only — never data/case-data
+```
+
+### 3. Redeploy
+
+hPanel → Node.js app:
+
+| Setting | Value |
+|---------|--------|
+| Install command | `npm ci --omit=optional --no-audit --no-fund` |
+| Build command | `npm run build` |
+| Start command | `npm start` |
+| Entry file | `app.cjs` |
+| Output directory | leave empty |
+
+Click **Redeploy**.
+
+If it still fails at `-122`, the account is still over quota. Upgrade the Hostinger plan or delete more files until Usage is well under the limit, then redeploy again.
+
+---
+
 ## Environment variables (email)
 
 **Titan SMTP (recommended):**
