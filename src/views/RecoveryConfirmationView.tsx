@@ -13,9 +13,20 @@ import { WhatsAppSupportPanel } from '../components/WhatsAppSupportPanel';
 
 interface RecoveryConfirmationViewProps {
   onBackToDashboard: () => void;
+  caseId?: string;
+  email?: string;
+  operatorAlias?: string;
 }
 
-export const RecoveryConfirmationView = ({ onBackToDashboard }: RecoveryConfirmationViewProps) => {
+export const RecoveryConfirmationView = ({
+  onBackToDashboard,
+  caseId,
+  email,
+  operatorAlias,
+}: RecoveryConfirmationViewProps) => {
+  const displayCaseId = caseId?.trim() && !caseId.includes('@') ? caseId.trim() : null;
+  const displayEmail = email?.trim() || null;
+  const displayName = operatorAlias?.trim() || null;
   return (
     <main className="pt-40 pb-32 px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen relative z-10 flex flex-col items-center text-center">
       {/* Success Icon */}
@@ -118,7 +129,7 @@ export const RecoveryConfirmationView = ({ onBackToDashboard }: RecoveryConfirma
 
         <WhatsAppSupportPanel className="mb-12 w-full text-left" />
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <button 
             onClick={onBackToDashboard}
             className="bg-blue-600 text-white px-10 py-4 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center gap-3 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group cursor-pointer"
@@ -127,9 +138,20 @@ export const RecoveryConfirmationView = ({ onBackToDashboard }: RecoveryConfirma
             Click to access your dashboard
           </button>
           
-          <div className="flex items-center gap-2 px-6 py-4 rounded-lg border border-white/5 bg-white/5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Case ID: #DF-8829-PENDING</span>
+          <div className="flex flex-col items-start gap-1 px-6 py-4 rounded-lg border border-white/5 bg-white/5 text-left min-w-[220px]">
+            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+              Case ID: {displayCaseId ? `#${displayCaseId}` : 'Assigning…'}
+            </span>
+            {displayName && (
+              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+                Name: {displayName}
+              </span>
+            )}
+            {displayEmail && (
+              <span className="text-[10px] font-mono text-blue-400/90 lowercase tracking-wide">
+                {displayEmail}
+              </span>
+            )}
           </div>
         </div>
       </motion.div>

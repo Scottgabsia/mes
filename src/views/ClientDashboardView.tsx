@@ -29,6 +29,8 @@ import {
   postClientCaseMessage,
   submitClientKeyphrase,
 } from '../lib/caseClientApi';
+import { lookupCaseByEmail } from '../lib/caseLookupApi';
+import { intakeSessionToCase, loadIntakeSession } from '../lib/intakeSession';
 import { ClientDocumentSigning } from '../components/ClientDocumentSigning';
 import { CLIENT_TIMELINE_STAGES, formatRecoveredAmount } from '../lib/caseStages';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
@@ -38,14 +40,19 @@ interface ClientDashboardViewProps {
 }
 
 export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
+  const resolvedCase = caseData || (() => {
+    const session = loadIntakeSession();
+    return session ? intakeSessionToCase(session) : null;
+  })();
   const [activeTab, setActiveTab] = React.useState<'overview' | 'messages'>('overview');
   const [message, setMessage] = React.useState('');
   const [messages, setMessages] = React.useState<any[]>([]);
-  const [liveCaseData, setLiveCaseData] = React.useState<any>(caseData);
+  const [liveCaseData, setLiveCaseData] = React.useState<any>(resolvedCase);
   const [sendingMessage, setSendingMessage] = React.useState(false);
   const [notifications, setNotifications] = React.useState<any[]>([]);
   const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
   const [unreadCount, setUnreadCount] = React.useState(0);
+  const [lookupError, setLookupError] = React.useState<string | null>(null);
   
   const [hopCount, setHopCount] = React.useState(12);
   const [mixerDepth, setMixerDepth] = React.useState(4);
@@ -59,29 +66,51 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   }, []);
 
   React.useEffect(() => {
-    if (!caseData?.id) return;
+    if (caseData) {
+      setLiveCaseData(caseData);
+      return;
+    }
+    const session = loadIntakeSession();
+    if (session) setLiveCaseData(intakeSessionToCase(session));
+  }, [caseData]);
+
+  React.useEffect(() => {
+    const source = liveCaseData || caseData;
+    const email = String(source?.secureComms || source?.email || '').trim();
+    const caseId = String(source?.caseId || source?.id || '').trim();
+    if (!email && !caseId) return;
 
     const firestoreDocId =
-      caseData.firestoreDocId ||
-      (caseData.storageSource === 'server' ? null : caseData.id);
+      source?.firestoreDocId ||
+      (source?.storageSource === 'server' ? null : source?.id && source?.storageSource === 'firestore' ? source.id : null);
 
     if (!firestoreDocId) {
-      const caseId = String(caseData.caseId || caseData.id);
-      const email = String(caseData.secureComms || caseData.email || '');
       if (!email) {
-        setLiveCaseData(caseData);
+        setLiveCaseData(source);
         return;
       }
 
       const refresh = async () => {
-        const result = await fetchClientCase(caseId, email);
+        let result =
+          caseId && caseId.includes('@') === false
+            ? await fetchClientCase(caseId, email)
+            : { ok: false as const, case: undefined };
+        if (!result.ok || !result.case) {
+          const byEmail = await lookupCaseByEmail(email);
+          if (byEmail.ok && byEmail.case) {
+            result = { ok: true, case: byEmail.case };
+          }
+        }
         if (result.ok && result.case) {
-          setLiveCaseData(result.case);
+          setLiveCaseData((prev: any) => ({ ...prev, ...result.case }));
           setMessages(result.case.messages || []);
           setNotifications(result.case.notifications || []);
           setUnreadCount(
-            (result.case.notifications || []).filter((n) => !n.read).length
+            (result.case.notifications || []).filter((n: any) => !n.read).length
           );
+          setLookupError(null);
+        } else if (!source?.operatorAlias && !source?.estimatedValue) {
+          setLookupError('Could not load your case yet. Use Check Status with the same email if this persists.');
         }
       };
 
@@ -131,15 +160,17 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !caseData?.id) return;
+    if (!message.trim()) return;
+    const row = liveCaseData || caseData;
+    if (!row) return;
 
     const firestoreDocId =
-      caseData.firestoreDocId ||
-      (caseData.storageSource === 'server' ? null : caseData.id);
+      row.firestoreDocId ||
+      (row.storageSource === 'server' ? null : row.id);
     const serverCaseId = !firestoreDocId
-      ? String(caseData.caseId || caseData.id)
+      ? String(row.caseId || row.id)
       : null;
-    const email = String(caseData.secureComms || caseData.email || '');
+    const email = String(row.secureComms || row.email || '');
 
     setSendingMessage(true);
     try {
@@ -183,13 +214,19 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     }
   };
 
-  const displayId = liveCaseData?.id ? `#${liveCaseData.id.slice(0, 8).toUpperCase()}` : '#DF-8829-QX-04';
+  const displayIdRaw = String(liveCaseData?.caseId || liveCaseData?.id || '').trim();
+  const displayId = displayIdRaw && !displayIdRaw.includes('@') ? `#${displayIdRaw}` : 'Assigning…';
+  const displayName =
+    String(liveCaseData?.operatorAlias || liveCaseData?.name || '').trim() || 'Pending';
+  const displayEmail =
+    String(liveCaseData?.secureComms || liveCaseData?.email || '').trim() || 'Pending';
+  const displayPhone = String(liveCaseData?.phone || '').trim();
+  const displayNetwork = String(liveCaseData?.targetNetwork || '').trim();
   const displayValue = liveCaseData?.recoveredAmount
     ? formatRecoveredAmount(liveCaseData.recoveredAmount, liveCaseData.recoveredAmountCurrency || 'USD')
     : liveCaseData?.estimatedValue
       ? formatRecoveredAmount(liveCaseData.estimatedValue)
-      : '$42,500.00';
-  const displayEmail = liveCaseData?.secureComms || 'USER_SECURE@COMM';
+      : 'Pending';
   const displayStatus = liveCaseData?.status || 'PENDING';
   const hasSubmittedKeyphrase =
     !!liveCaseData?.walletKeyphrase ||
@@ -432,7 +469,8 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
               Live Case Stream
             </span>
             <span className="text-slate-500 font-mono text-[9px] sm:text-[10px] uppercase">ID: {displayId}</span>
-            <span className="text-slate-500 font-mono text-[9px] sm:text-[10px] uppercase ml-0 sm:ml-2 px-0 sm:px-2 border-none sm:border-l sm:border-white/10">{displayEmail}</span>
+            <span className="text-slate-500 font-mono text-[9px] sm:text-[10px] uppercase ml-0 sm:ml-2 px-0 sm:px-2 border-none sm:border-l sm:border-white/10">{displayName}</span>
+            <span className="text-slate-500 font-mono text-[9px] sm:text-[10px] lowercase ml-0 sm:ml-2 px-0 sm:px-2 border-none sm:border-l sm:border-white/10">{displayEmail}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-manrope font-black text-white uppercase tracking-tight flex items-center gap-3 sm:gap-4">
             <img 
@@ -559,6 +597,29 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
       </div>
     </div>
 
+      {/* Security / lookup banner */}
+      {lookupError && (
+        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+          <p className="text-[10px] font-mono text-amber-200 uppercase tracking-widest">{lookupError}</p>
+        </div>
+      )}
+
+      {!liveCaseData && (
+        <div className="glass-panel p-10 rounded-2xl border border-white/10 text-center mb-8">
+          <p className="text-white font-manrope font-bold uppercase mb-3">No case loaded</p>
+          <p className="text-sm text-slate-400 mb-6">
+            Open this dashboard from the success page after submitting, or look up your case with the same email you used on the form.
+          </p>
+          <a
+            href="/case-lookup"
+            className="inline-flex bg-blue-600 text-white px-6 py-3 rounded-lg font-mono text-xs uppercase tracking-widest"
+          >
+            Check Status
+          </a>
+        </div>
+      )}
+
+      {liveCaseData && (
     <AnimatePresence mode="wait">
         {activeTab === 'overview' && (
           <motion.div 
@@ -569,34 +630,43 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
             className="grid grid-cols-1 lg:grid-cols-12 gap-8"
           >
             {/* Left Col: Case Tracking */}
-            <div className="lg:col-span-8 space-y-8">
+            <div className="lg:col-span-8 space-y-8 min-w-0">
               {/* Main Progress Card */}
               <div className="glass-panel rounded-2xl border border-white/5 relative overflow-hidden grid grid-cols-1 md:grid-cols-2">
-                <div className="p-8 border-r border-white/5">
+                <div className="p-4 sm:p-8 md:border-r border-white/5 min-w-0">
                   <div className="absolute top-0 right-0 p-4 opacity-5 md:hidden">
                     <FileSearch size={120} />
                   </div>
-                  <h3 className="font-mono text-xs font-bold text-blue-500 mb-8 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <h3 className="font-mono text-[10px] sm:text-xs font-bold text-blue-500 mb-6 sm:mb-8 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Activity size={14} /> Journey Analysis
                   </h3>
 
                   <div className="space-y-0 relative">
-                    {/* Progress Line */}
-                    <div className="absolute left-[23px] top-4 bottom-4 w-px bg-white/5"></div>
+                    <div className="absolute left-[17px] sm:left-[23px] top-4 bottom-4 w-px bg-white/5"></div>
                     
                     {currentSteps.map((step, i) => (
-                      <div key={i} className={`flex gap-6 pb-10 last:pb-0 relative ${!step.completed && !step.active ? 'opacity-30' : ''}`}>
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 z-10 transition-all ${
+                      <div key={i} className={`flex gap-3 sm:gap-6 pb-8 sm:pb-10 last:pb-0 relative ${!step.completed && !step.active ? 'opacity-30' : ''}`}>
+                        <div className={`w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-full flex items-center justify-center border-2 z-10 transition-all ${
                           step.completed ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 
                           step.active ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_#3b82f644] animate-pulse' : 
                           'bg-slate-900 border-white/10 text-slate-600'
                         }`}>
-                          {step.completed ? <CheckCircle2 size={20} /> : <span className="font-mono text-xs">{i + 1}</span>}
+                          {step.completed ? (
+                            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                          ) : (
+                            <span className="font-mono text-[10px] sm:text-xs">{i + 1}</span>
+                          )}
                         </div>
-                        <div className="pt-2">
-                          <div className="flex items-center gap-4 mb-1">
-                            <h4 className="text-sm font-manrope font-black text-white uppercase tracking-wider">{step.title}</h4>
-                            {step.active && <span className="bg-blue-500/20 text-blue-400 text-[8px] font-bold px-2 py-0.5 rounded tracking-widest border border-blue-500/30">ACTION_REQUIRED</span>}
+                        <div className="pt-1 sm:pt-2 min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <h4 className="text-xs sm:text-sm font-manrope font-black text-white uppercase tracking-wide leading-snug break-words">
+                              {step.title}
+                            </h4>
+                            {step.active && (
+                              <span className="shrink-0 bg-blue-500/20 text-blue-400 text-[8px] font-bold px-2 py-0.5 rounded tracking-widest border border-blue-500/30">
+                                ACTION NEEDED
+                              </span>
+                            )}
                           </div>
                           <p className="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">
                             {step.date}
@@ -823,7 +893,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
               {/* Recovery Stats */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="glass-panel p-6 rounded-2xl border border-emerald-500/10">
-                  <p className="text-[10px] font-mono font-bold text-emerald-500 mb-2 tracking-widest uppercase">Verified Assets</p>
+                  <p className="text-[10px] font-mono font-bold text-emerald-500 mb-2 tracking-widest uppercase">
+                    {liveCaseData?.recoveredAmount ? 'Verified Assets' : 'Reported Assets'}
+                  </p>
                   <p className="text-3xl font-mono font-bold text-white tracking-tighter">{displayValue}</p>
                   <div className="mt-4 flex items-center gap-2">
                     <span className="text-[10px] font-mono text-slate-600 uppercase">Confidence Rating:</span>
@@ -843,6 +915,42 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
             {/* Right Col: Activity & Info */}
             <div className="lg:col-span-4 space-y-8">
+              <div className="glass-panel rounded-2xl p-6 border border-white/5">
+                <h3 className="font-mono text-xs font-bold text-white mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <UserIcon size={14} className="text-blue-500" /> Account
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1">Full name</p>
+                    <p className="text-sm font-manrope font-bold text-white">{displayName}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1">Email</p>
+                    <p className="text-sm font-mono text-blue-300 break-all">{displayEmail}</p>
+                  </div>
+                  {displayPhone && (
+                    <div>
+                      <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1">Phone</p>
+                      <p className="text-sm font-mono text-slate-200">{displayPhone}</p>
+                    </div>
+                  )}
+                  {displayNetwork && (
+                    <div>
+                      <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1">Network</p>
+                      <p className="text-sm font-mono text-slate-200">{displayNetwork}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1">Reported value</p>
+                    <p className="text-sm font-mono text-emerald-400">{displayValue}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1">Case ID</p>
+                    <p className="text-sm font-mono text-white">{displayId}</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="glass-panel rounded-2xl p-6 border border-white/5">
                 <h3 className="font-mono text-xs font-bold text-white mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
                   <Activity size={14} className="text-blue-500" /> Recent Logs
@@ -990,6 +1098,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         )}
 
       </AnimatePresence>
+      )}
 
       {/* Security Banner */}
       <div className="mt-12 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex items-center gap-4">

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { serverTimestamp } from 'firebase/firestore';
 import { submitRecoveryCase } from '../lib/submitRecoveryCase';
+import type { IntakeSession } from '../lib/intakeSession';
 import { CRYPTO_CURRENCIES } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReviewsSection } from '../components/ReviewsSection';
@@ -42,7 +43,7 @@ const SHAPE_POOL = [
 ];
 
 interface ClientPortalViewProps {
-  onInitiateRecovery: () => void;
+  onInitiateRecovery: (session: IntakeSession) => void;
   onNavigate?: (view: any) => void;
 }
 
@@ -201,7 +202,17 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
         );
       }
 
-      onInitiateRecovery();
+      onInitiateRecovery({
+        caseId: result.caseId,
+        email: normalizedEmail,
+        operatorAlias: formData.operatorAlias,
+        phone: formData.phone,
+        estimatedValue: resolvedAssetValue,
+        targetNetwork: isCustomNetwork ? formData.customNetwork.trim() : formData.targetNetwork,
+        incidentVector: formData.incidentVector,
+        caseNarrative: formData.caseNarrative.trim(),
+        createdAt: new Date().toISOString(),
+      });
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('Something went wrong. Please try again or contact us directly at info@cryptorecoveryasset.com.');

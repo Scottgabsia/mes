@@ -15,12 +15,14 @@ import { CertificationsPartnershipsSection } from '../components/CertificationsP
 import { SEO } from '../components/SEO';
 import { serverTimestamp } from 'firebase/firestore';
 import { submitRecoveryCase } from '../lib/submitRecoveryCase';
+import type { IntakeSession } from '../lib/intakeSession';
 
 interface HomeViewProps {
   onNavigate: (view: any) => void;
+  onIntakeComplete: (session: IntakeSession) => void;
 }
 
-export const HomeView = ({ onNavigate }: HomeViewProps) => {
+export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
   const [balance, setBalance] = React.useState<number | string>(50000);
   const traceCount = getActiveTraceCount();
   const [secondsSinceLast, setSecondsSinceLast] = React.useState(12.4);
@@ -120,8 +122,25 @@ export const HomeView = ({ onNavigate }: HomeViewProps) => {
       service: formData.service
     };
 
-    await submitRecoveryCase(submissionData);
-    onNavigate('recoveryConfirmation');
+    try {
+      const result = await submitRecoveryCase(submissionData);
+      onIntakeComplete({
+        caseId: result.caseId,
+        email: normalizedEmail,
+        operatorAlias: formData.name,
+        phone: formData.phone,
+        estimatedValue: numericBalance,
+        targetNetwork: resolvedNetwork,
+        incidentVector: formData.service.toUpperCase().replace(/\s/g, '_'),
+        caseNarrative: formData.caseNarrative.trim(),
+        createdAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert(
+        'Something went wrong. Please try again or contact us directly at info@cryptorecoveryasset.com.'
+      );
+    }
   };
 
   return (

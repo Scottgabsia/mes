@@ -97,6 +97,22 @@ export const SEO_ROUTES: SeoRouteConfig[] = [
     priority: 0.7,
   },
   {
+    path: "/intake-received",
+    title: "Recovery Intake Received",
+    description: "Your crypto recovery intake was received. Open your client dashboard to track the case.",
+    noindex: true,
+    changefreq: "monthly",
+    priority: 0.2,
+  },
+  {
+    path: "/portal",
+    title: "Client Recovery Portal",
+    description: "Private client dashboard for an active cryptocurrency recovery case.",
+    noindex: true,
+    changefreq: "monthly",
+    priority: 0.2,
+  },
+  {
     path: "/traceability",
     title: "Blockchain Chain Traceability Service",
     description:

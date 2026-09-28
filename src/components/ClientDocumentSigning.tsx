@@ -174,16 +174,16 @@ export const ClientDocumentSigning = ({
   }
 
   return (
-    <div className="glass-panel p-5 sm:p-8 rounded-2xl border-2 border-amber-500/40 bg-amber-500/5 space-y-6">
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-        <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-slate-950 shrink-0">
-          <ShieldCheck size={24} />
+    <div className="glass-panel p-3 sm:p-8 rounded-2xl border-2 border-amber-500/40 bg-amber-500/5 space-y-5 sm:space-y-6 overflow-x-hidden max-w-full min-w-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <div className="w-11 h-11 sm:w-12 sm:h-12 bg-amber-500 rounded-xl flex items-center justify-center text-slate-950 shrink-0">
+          <ShieldCheck size={22} />
         </div>
-        <div className="text-center sm:text-left">
-          <h3 className="text-xl font-manrope font-black text-white uppercase tracking-tight">
+        <div className="min-w-0 text-left">
+          <h3 className="text-lg sm:text-xl font-manrope font-black text-white uppercase tracking-tight leading-snug">
             Required: Review and sign documents
           </h3>
-          <p className="text-[10px] font-mono text-amber-300 uppercase tracking-widest">
+          <p className="text-[9px] sm:text-[10px] font-mono text-amber-300 uppercase tracking-widest">
             Phase 06 // Document acknowledgement
           </p>
         </div>
@@ -194,7 +194,7 @@ export const ClientDocumentSigning = ({
         After you submit, signing is locked and you can only open the stored PDF.
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {DOCUMENT_TYPES.map((doc) => {
           const done = Boolean(signed[doc.id]);
           return (
@@ -202,7 +202,7 @@ export const ClientDocumentSigning = ({
               key={doc.id}
               type="button"
               onClick={() => resetSigningSurface(doc.id)}
-              className={`px-3 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest border ${
+              className={`px-3 py-2.5 rounded-lg text-[10px] font-mono uppercase tracking-widest border text-left leading-snug ${
                 activeType === doc.id
                   ? "bg-blue-600 border-blue-400 text-white"
                   : done
@@ -210,7 +210,7 @@ export const ClientDocumentSigning = ({
                     : "bg-white/5 border-white/10 text-slate-400"
               }`}
             >
-              <FileText size={12} className="inline mr-2" />
+              <FileText size={12} className="inline mr-2 align-text-bottom" />
               {doc.shortLabel}
               {done ? " · Signed" : ""}
             </button>
@@ -233,15 +233,17 @@ export const ClientDocumentSigning = ({
         </div>
       ) : (
         <>
-          <OfficialDocument
-            documentType={activeType}
-            caseId={caseId}
-            clientName={displayName}
-            recoveredAmount={amount}
-            currency={currency}
-            signatureDataUrl={signature}
-            signerName={displayName}
-          />
+          <div className="rounded-xl border border-white/10 bg-black/20 p-0 sm:p-3 overflow-hidden min-w-0">
+            <OfficialDocument
+              documentType={activeType}
+              caseId={caseId}
+              clientName={displayName}
+              recoveredAmount={amount}
+              currency={currency}
+              signatureDataUrl={signature}
+              signerName={displayName}
+            />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 relative z-20">
             <label className="block space-y-2">
@@ -280,7 +282,7 @@ export const ClientDocumentSigning = ({
               >
                 {acknowledged && <Check size={16} strokeWidth={3} />}
               </span>
-              <span className="text-sm leading-relaxed">
+              <span className="text-xs sm:text-sm leading-relaxed">
                 I have reviewed this document, acknowledge the recovered funds
                 details where shown, and will follow the actions provided by the
                 blockchain company for settlement.

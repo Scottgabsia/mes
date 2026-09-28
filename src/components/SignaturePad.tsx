@@ -95,7 +95,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onChange, disabled }
       <div className="relative rounded-xl border-2 border-slate-300 bg-[#f8f5ee] overflow-hidden">
         <canvas
           ref={canvasRef}
-          className="w-full h-36 touch-none cursor-crosshair"
+          className="w-full h-28 sm:h-36 touch-none cursor-crosshair"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}

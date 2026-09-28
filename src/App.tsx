@@ -46,6 +46,12 @@ import { SubmitReviewView } from './views/SubmitReviewView';
 import { AdminLoginView } from './views/AdminLoginView';
 import { FAQView } from './views/FAQView';
 import CaseManagerView from './views/AdminDashboardView';
+import {
+  intakeSessionToCase,
+  loadIntakeSession,
+  saveIntakeSession,
+  type IntakeSession,
+} from './lib/intakeSession';
 
 type View = 
   | 'home' 
@@ -91,6 +97,8 @@ const VIEW_PATHS: Record<string, string> = {
   services: '/services',
   intelligence: '/intelligence',
   clientPortal: '/contact',
+  recoveryConfirmation: '/intake-received',
+  clientDashboard: '/portal',
   admin: '/admin/login',
   caseLookup: '/case-lookup',
   privacyPolicy: '/privacy',
@@ -133,7 +141,10 @@ const NavLink = ({
 
 export default function App() {
   const [currentView, setCurrentView] = React.useState<View>('home');
-  const [selectedCase, setSelectedCase] = React.useState<any>(null);
+  const [selectedCase, setSelectedCase] = React.useState<any>(() => {
+    const session = loadIntakeSession();
+    return session ? intakeSessionToCase(session) : null;
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const headerRef = React.useRef<HTMLElement>(null);
@@ -218,6 +229,8 @@ export default function App() {
       '/contact': 'clientPortal',
       '/client-portal': 'clientPortal',
       '/btc': 'clientPortal',
+      '/intake-received': 'recoveryConfirmation',
+      '/portal': 'clientDashboard',
       '/admin/login': 'admin',
       '/admin/dashboard': 'admin',
       '/case-lookup': 'caseLookup',
@@ -260,6 +273,24 @@ export default function App() {
     if (VIEW_PATHS[view]) {
       navigate(VIEW_PATHS[view]);
     }
+  };
+
+  const handleIntakeComplete = (session: IntakeSession) => {
+    saveIntakeSession(session);
+    setSelectedCase(intakeSessionToCase(session));
+    handleNavClick('recoveryConfirmation');
+  };
+
+  const openClientDashboard = (caseRecord?: any) => {
+    const next =
+      caseRecord ||
+      selectedCase ||
+      (() => {
+        const session = loadIntakeSession();
+        return session ? intakeSessionToCase(session) : null;
+      })();
+    if (next) setSelectedCase(next);
+    handleNavClick('clientDashboard');
   };
 
   // Dedicated Route handlers for Admin
@@ -630,17 +661,46 @@ export default function App() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            {currentView === 'home' && <HomeView onNavigate={(view) => handleNavClick(view)} />}
+            {currentView === 'home' && (
+              <HomeView
+                onNavigate={(view) => handleNavClick(view)}
+                onIntakeComplete={handleIntakeComplete}
+              />
+            )}
             {currentView === 'services' && <ServicesView onServiceClick={() => handleNavClick('clientPortal')} />}
             {currentView === 'intelligence' && <IntelligenceView />}
             {currentView === 'about' && <AboutView onContactClick={() => handleNavClick('clientPortal')} onNavigate={handleNavClick} />}
             {currentView === 'blog' && <BlogView />}
-            {currentView === 'clientPortal' && <ClientPortalView onInitiateRecovery={() => handleNavClick('recoveryConfirmation')} onNavigate={handleNavClick} />}
-            {currentView === 'recoveryConfirmation' && <RecoveryConfirmationView onBackToDashboard={() => handleNavClick('clientDashboard')} />}
+            {currentView === 'clientPortal' && (
+              <ClientPortalView
+                onInitiateRecovery={handleIntakeComplete}
+                onNavigate={handleNavClick}
+              />
+            )}
+            {currentView === 'recoveryConfirmation' && (
+              <RecoveryConfirmationView
+                onBackToDashboard={() => openClientDashboard()}
+                caseId={selectedCase?.caseId || selectedCase?.id}
+                email={selectedCase?.secureComms || selectedCase?.email}
+                operatorAlias={selectedCase?.operatorAlias || selectedCase?.name}
+              />
+            )}
             {currentView === 'caseLookup' && (
               <CaseLookupView onCaseFound={(data) => {
                 setSelectedCase(data);
-                handleNavClick('clientDashboard');
+                if (data?.secureComms || data?.email) {
+                  saveIntakeSession({
+                    caseId: String(data.caseId || data.id || ''),
+                    email: String(data.secureComms || data.email || ''),
+                    operatorAlias: String(data.operatorAlias || data.name || ''),
+                    estimatedValue: Number(data.estimatedValue) || undefined,
+                    targetNetwork: data.targetNetwork ? String(data.targetNetwork) : undefined,
+                    incidentVector: data.incidentVector ? String(data.incidentVector) : undefined,
+                    phone: data.phone ? String(data.phone) : undefined,
+                    createdAt: data.createdAt ? String(data.createdAt) : undefined,
+                  });
+                }
+                openClientDashboard(data);
               }} />
             )}
             {currentView === 'clientDashboard' && <ClientDashboardView caseData={selectedCase} />}

@@ -135,8 +135,10 @@ export const ComplianceSeal = ({ className = "" }: { className?: string }) => {
 };
 
 export const DocumentStampRow = ({ className = "" }: { className?: string }) => (
-  <div className={`flex flex-row flex-nowrap items-center justify-end gap-3 sm:gap-4 ${className}`}>
-    <AgencySeal className="w-[7.5rem] h-[7.5rem] sm:w-40 sm:h-40 shrink-0" />
-    <ComplianceSeal className="w-[7.5rem] h-[7.5rem] sm:w-40 sm:h-40 shrink-0" />
+  <div
+    className={`grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-[13.25rem] sm:max-w-[15.5rem] shrink-0 ${className}`}
+  >
+    <AgencySeal className="w-full h-auto block aspect-square" />
+    <ComplianceSeal className="w-full h-auto block aspect-square" />
   </div>
 );
