@@ -71,7 +71,13 @@ function drawLine(img, x0, y0, x1, y1, color, thickness = 2) {
   }
 }
 
-async function createCover(slug, accent) {
+async function createCover(slug, accent, { force = false } = {}) {
+  const out = path.join(blogDir, `${slug}.png`);
+  if (!force && fs.existsSync(out)) {
+    console.log("Skip existing", out);
+    return;
+  }
+
   const img = new Jimp({ width: W, height: H, color: BG });
   drawGradient(img);
 
@@ -120,7 +126,6 @@ async function createCover(slug, accent) {
     }
   }
 
-  const out = path.join(blogDir, `${slug}.png`);
   await img.write(out);
   console.log("Wrote", out);
 }
@@ -128,6 +133,16 @@ async function createCover(slug, accent) {
 fs.mkdirSync(blogDir, { recursive: true });
 
 const covers = [
+  ["crypto-recovery-services-spain-guide-2026", 0xaa1514ff],
+  ["crypto-recovery-madrid-central-spain-cities", 0xf1bf00ff],
+  ["crypto-recovery-barcelona-catalonia-spain-cities", 0xda291cff],
+  ["crypto-recovery-valencia-east-spain-cities", 0x0077b6ff],
+  ["crypto-recovery-seville-andalusia-south-spain-cities", 0xc2410cff],
+  ["crypto-recovery-bilbao-north-spain-cities", 0x0f766eff],
+  ["crypto-recovery-services-portugal-guide-2026", 0x006600ff],
+  ["crypto-recovery-lisbon-central-portugal-cities", 0xcc0000ff],
+  ["crypto-recovery-porto-north-portugal-cities", 0x1d4ed8ff],
+  ["crypto-recovery-algarve-madeira-portugal-cities", 0x0ea5e9ff],
   ["crypto-recovery-services-italy-guide-2026", 0x009246ff],
   ["crypto-recovery-rome-lazio-central-italy-cities", 0xce2b37ff],
   ["crypto-recovery-milan-lombardy-north-italy-cities", 0xdc2626ff],

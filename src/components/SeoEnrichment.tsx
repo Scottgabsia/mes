@@ -331,6 +331,8 @@ export function SeoEnrichment({
           items={[
             { label: "Privacy Policy", href: "/privacy" },
             { label: "EU recovery guides (blog)", href: "/blog/crypto-recovery-services-germany-guide-2026" },
+            { label: "Spain crypto recovery guide", href: "/blog/crypto-recovery-services-spain-guide-2026" },
+            { label: "Portugal crypto recovery guide", href: "/blog/crypto-recovery-services-portugal-guide-2026" },
             { label: "Contact", href: "/contact" },
           ]}
         />

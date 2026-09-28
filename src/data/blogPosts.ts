@@ -2,6 +2,7 @@ import { SITE_URL } from "../constants";
 import { EUROPE_BLOG_POSTS } from "./blogPostsEurope";
 import { BATCH_50_BLOG_POSTS } from "./blogPostsBatch50";
 import { ITALY_BLOG_POSTS } from "./blogPostsItaly";
+import { IBERIA_BLOG_POSTS } from "./blogPostsIberia";
 
 export type BlogPost = {
   id: number;
@@ -22,6 +23,14 @@ const U = SITE_URL.replace(/\/$/, "");
 
 /** Keyword → on-site destination for in-article links */
 export const BLOG_KEYWORD_LINKS: Record<string, string> = {
+  "crypto recovery services Spain": "/blog/crypto-recovery-services-spain-guide-2026",
+  "crypto recovery Spain": "/blog/crypto-recovery-services-spain-guide-2026",
+  "crypto recovery Madrid": "/blog/crypto-recovery-madrid-central-spain-cities",
+  "crypto recovery Barcelona": "/blog/crypto-recovery-barcelona-catalonia-spain-cities",
+  "crypto recovery services Portugal": "/blog/crypto-recovery-services-portugal-guide-2026",
+  "crypto recovery Portugal": "/blog/crypto-recovery-services-portugal-guide-2026",
+  "crypto recovery Lisbon": "/blog/crypto-recovery-lisbon-central-portugal-cities",
+  "crypto recovery Porto": "/blog/crypto-recovery-porto-north-portugal-cities",
   "crypto recovery services": "/contact",
   "recover stolen crypto": "/contact",
   "lost Bitcoin recovery": "/contact",
@@ -4293,6 +4302,7 @@ Many Monaco residents maintain ties to **crypto recovery London**, Manchester, o
 
 /** Newest posts first */
 export const FEATURED_BLOG_POSTS: BlogPost[] = [
+  ...(IBERIA_BLOG_POSTS as BlogPost[]),
   ...(ITALY_BLOG_POSTS as BlogPost[]),
   ...(BATCH_50_BLOG_POSTS as BlogPost[]),
   ...(EUROPE_BLOG_POSTS as BlogPost[]),
