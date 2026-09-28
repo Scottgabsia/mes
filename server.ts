@@ -38,6 +38,7 @@ import {
   initCaseStore,
   listRecoveryCases,
   markNotificationsRead,
+  mergeRecoveryCases,
   submitCaseKeyphrase,
   submitCaseDocumentSignature,
   updateRecoveryCase,
@@ -822,6 +823,29 @@ async function startServer() {
       `[Admin] ${admin.email} loaded ${cases.length} case(s) from server store`
     );
     res.json({ success: true, cases, count: cases.length });
+  });
+
+  app.post("/api/admin/cases/restore", async (req, res) => {
+    const admin = await requireAdminFromRequest(req.headers.authorization);
+    if (!admin) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+    const incoming = Array.isArray(req.body?.cases) ? req.body.cases : [];
+    if (!incoming.length) {
+      return res
+        .status(400)
+        .json({ success: false, error: "No cases in restore payload" });
+    }
+    const result = mergeRecoveryCases(incoming);
+    console.log(
+      `[Admin] ${admin.email} restored ${result.imported} case(s); store now ${result.total}`
+    );
+    res.json({
+      success: true,
+      imported: result.imported,
+      total: result.total,
+      cases: listRecoveryCases(),
+    });
   });
 
   app.get("/api/admin/cases/:caseId", async (req, res) => {

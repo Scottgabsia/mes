@@ -1,7 +1,11 @@
 import crypto from "crypto";
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { generateCaseId } from "./email";
+
+const STORE_DIR_NAME = "cryptorecovery-case-data";
+const STORE_FILE_NAME = "recovery-cases.json";
 
 export type StoredMessage = {
   id: string;
@@ -81,29 +85,79 @@ function normalizeStoredCase(row: StoredCase): StoredCase {
   };
 }
 
-function resolveDataDir(): string {
-  const fromEnv = process.env.CASE_DATA_DIR?.trim();
-  if (fromEnv) return path.resolve(fromEnv);
-
-  const cwd = process.cwd();
-  const appRoot = process.env.APP_ROOT?.trim()
+function getAppRoot(): string {
+  return process.env.APP_ROOT?.trim()
     ? path.resolve(process.env.APP_ROOT.trim())
-    : cwd;
+    : process.cwd();
+}
 
-  const candidates = [
-    path.join(appRoot, "..", "..", "case-data"),
-    path.join(appRoot, "..", "case-data"),
-    path.join(cwd, "data"),
-    path.join(cwd, "..", "data"),
-  ];
+function isUnsafeDir(dir: string): boolean {
+  const n = path.resolve(dir).replace(/\\/g, "/").toLowerCase();
+  return (
+    n.includes("/.builds/") ||
+    n.endsWith("/.builds") ||
+    n.includes("/node_modules/") ||
+    n.includes("/tmp/") ||
+    n.includes("/.npm/")
+  );
+}
 
-  for (const dir of candidates) {
-    if (fs.existsSync(path.join(dir, "recovery-cases.json"))) {
+function isInsideDeployFolder(dir: string): boolean {
+  const resolved = path.resolve(dir);
+  const rootResolved = getAppRoot();
+  return (
+    resolved === rootResolved ||
+    resolved.startsWith(rootResolved + path.sep)
+  );
+}
+
+function dirLooksPersistent(dir: string): boolean {
+  return !isUnsafeDir(dir) && !isInsideDeployFolder(dir);
+}
+
+function isWritableDir(dir: string): boolean {
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    const probe = path.join(dir, `.write-test-${process.pid}`);
+    fs.writeFileSync(probe, "ok", "utf8");
+    fs.unlinkSync(probe);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function resolveDataDir(): string {
+  const appRoot = getAppRoot();
+  const homeStore = path.join(os.homedir(), STORE_DIR_NAME);
+
+  const ranked: string[] = [];
+  const fromEnv = process.env.CASE_DATA_DIR?.trim();
+  if (fromEnv) ranked.push(path.resolve(fromEnv));
+  ranked.push(homeStore);
+  ranked.push(path.join(os.homedir(), "case-data"));
+  ranked.push(path.join(appRoot, "..", "..", STORE_DIR_NAME));
+  ranked.push(path.join(appRoot, "..", STORE_DIR_NAME));
+
+  const unique = [...new Set(ranked.map((d) => path.resolve(d)))];
+  const persistent = unique.filter(dirLooksPersistent);
+
+  for (const dir of persistent) {
+    if (
+      fs.existsSync(path.join(dir, STORE_FILE_NAME)) &&
+      isWritableDir(dir)
+    ) {
       return dir;
     }
   }
+  for (const dir of persistent) {
+    if (isWritableDir(dir)) return dir;
+  }
+  for (const dir of unique) {
+    if (!isUnsafeDir(dir) && isWritableDir(dir)) return dir;
+  }
 
-  return candidates[0];
+  return homeStore;
 }
 
 let cachedDataDir: string | null = null;
@@ -111,28 +165,17 @@ let cachedDataDir: string | null = null;
 function getDataDir(): string {
   if (!cachedDataDir) {
     cachedDataDir = resolveDataDir();
+    process.env.CASE_DATA_DIR = cachedDataDir;
   }
   return cachedDataDir;
 }
 
 function getCasesFile(): string {
-  return path.join(getDataDir(), "recovery-cases.json");
+  return path.join(getDataDir(), STORE_FILE_NAME);
 }
 
-function isInsideDeployFolder(dir: string): boolean {
-  const appRoot = process.env.APP_ROOT?.trim()
-    ? path.resolve(process.env.APP_ROOT.trim())
-    : process.cwd();
-  const resolved = path.resolve(dir);
-  const rootResolved = path.resolve(appRoot);
-  return (
-    resolved === rootResolved ||
-    resolved.startsWith(rootResolved + path.sep)
-  );
-}
-
-function isExplicitPersistentDir(): boolean {
-  return Boolean(process.env.CASE_DATA_DIR?.trim());
+function backupFilePath(): string {
+  return `${getCasesFile()}.bak`;
 }
 
 export function getCaseStorePath(): string {
@@ -157,30 +200,54 @@ function readStoreFile(filePath: string): { cases: StoredCase[] } | null {
 }
 
 function legacyCaseFilePaths(): string[] {
-  const cwd = process.cwd();
-  const appRoot = process.env.APP_ROOT?.trim()
-    ? path.resolve(process.env.APP_ROOT.trim())
-    : cwd;
-  const canonical = getCasesFile();
-
-  const candidates = [
-    path.join(appRoot, "data", "recovery-cases.json"),
-    path.join(cwd, "data", "recovery-cases.json"),
-    path.join(cwd, "..", "data", "recovery-cases.json"),
-    path.join(appRoot, "..", "data", "recovery-cases.json"),
-    path.join(appRoot, "..", "case-data", "recovery-cases.json"),
-    path.join(appRoot, "..", "..", "case-data", "recovery-cases.json"),
+  const appRoot = getAppRoot();
+  const canonical = path.resolve(getCasesFile());
+  const subdirs = [
+    "",
+    "data",
+    "case-data",
+    STORE_DIR_NAME,
+    "persistent-data",
   ];
+  const bases = new Set<string>([
+    os.homedir(),
+    appRoot,
+    path.join(os.homedir(), STORE_DIR_NAME),
+    path.join(os.homedir(), "case-data"),
+  ]);
 
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const file of candidates) {
-    const resolved = path.resolve(file);
-    if (resolved === path.resolve(canonical)) continue;
-    if (seen.has(resolved)) continue;
-    seen.add(resolved);
-    if (fs.existsSync(resolved)) out.push(resolved);
+  let cur = appRoot;
+  for (let i = 0; i < 6; i++) {
+    bases.add(cur);
+    const parent = path.dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
   }
+
+  const out: string[] = [];
+  const seen = new Set<string>();
+
+  const addIfExists = (file: string) => {
+    const resolved = path.resolve(file);
+    if (resolved === canonical || seen.has(resolved)) return;
+    if (!fs.existsSync(resolved)) return;
+    seen.add(resolved);
+    out.push(resolved);
+  };
+
+  for (const base of bases) {
+    for (const sub of subdirs) {
+      const dir = sub ? path.join(base, sub) : base;
+      addIfExists(path.join(dir, STORE_FILE_NAME));
+      addIfExists(path.join(dir, `${STORE_FILE_NAME}.bak`));
+    }
+    addIfExists(
+      path.join(base, ".builds", "source", "repository", "data", STORE_FILE_NAME)
+    );
+    addIfExists(path.join(base, ".builds", "case-data", STORE_FILE_NAME));
+    addIfExists(path.join(base, ".builds", STORE_DIR_NAME, STORE_FILE_NAME));
+  }
+
   return out;
 }
 
@@ -189,6 +256,13 @@ function migrateLegacyCaseFiles(): void {
   const canonical = readStoreFile(canonicalFile) || { cases: [] };
   let merged = [...canonical.cases];
   let imported = 0;
+
+  const bak = readStoreFile(backupFilePath());
+  if (bak?.cases.length) {
+    const before = merged.length;
+    merged = mergeCaseArrays(merged, bak.cases);
+    imported += Math.max(0, merged.length - before);
+  }
 
   for (const legacyPath of legacyCaseFilePaths()) {
     const legacy = readStoreFile(legacyPath);
@@ -199,7 +273,7 @@ function migrateLegacyCaseFiles(): void {
     if (added > 0) {
       imported += added;
       console.log(
-        `[CaseStore] Imported ${added} case(s) from legacy file ${legacyPath}`
+        `[CaseStore] Imported ${added} case(s) from ${legacyPath}`
       );
     }
   }
@@ -231,11 +305,11 @@ export function initCaseStore(): void {
       `[CaseStore] Directory may not be writable: ${dir}. Set CASE_DATA_DIR to a persistent path on Hostinger.`
     );
   }
-  if (isInsideDeployFolder(dir) && !isExplicitPersistentDir()) {
+  if (!dirLooksPersistent(dir)) {
     console.warn(
-      `[CaseStore] WARNING: Cases are stored inside the deploy folder (${dir}). ` +
+      `[CaseStore] WARNING: Cases are stored in a deploy/temp folder (${dir}). ` +
         `They will be LOST on the next GitHub redeploy. Set CASE_DATA_DIR in hPanel ` +
-        `to e.g. /home/USER/domains/cryptorecoveryasset.com/data`
+        `to /home/u695441817/cryptorecovery-case-data`
     );
   }
 }
@@ -257,19 +331,18 @@ export function getCaseStoreDiagnostics(): {
     writable = false;
   }
 
-  const persistent =
-    isExplicitPersistentDir() || !isInsideDeployFolder(dataDir);
+  const persistent = dirLooksPersistent(dataDir);
 
   let warning: string | undefined;
   if (!writable) {
     warning =
-      "Case data directory is not writable. Set CASE_DATA_DIR to a folder you created in Hostinger File Manager.";
+      "Case data directory is not writable. Set CASE_DATA_DIR to /home/u695441817/cryptorecovery-case-data in Hostinger hPanel.";
   } else if (!persistent) {
     warning =
-      "Cases are stored inside the app deploy folder and will be erased on redeploy. Set CASE_DATA_DIR to a path outside the repo (see HOSTINGER_DEPLOY.md).";
+      "Cases are stored inside the app deploy folder and will be erased on redeploy. Set CASE_DATA_DIR=/home/u695441817/cryptorecovery-case-data in hPanel.";
   } else if (store.cases.length === 0) {
     warning =
-      "No cases in store. If clients had cases before a deploy, set CASE_DATA_DIR to the folder that still contains recovery-cases.json or restore from backup.";
+      "No cases in store. If clients had cases before a deploy, search File Manager for recovery-cases.json and copy it into CASE_DATA_DIR, or restore from the admin cache.";
   }
 
   return {
@@ -282,6 +355,15 @@ export function getCaseStoreDiagnostics(): {
   };
 }
 
+function parseStoreJson(raw: string): { cases: StoredCase[] } | null {
+  try {
+    const parsed = JSON.parse(raw) as { cases?: StoredCase[] };
+    return { cases: Array.isArray(parsed.cases) ? parsed.cases : [] };
+  } catch {
+    return null;
+  }
+}
+
 function ensureStore(): { cases: StoredCase[] } {
   const dataDir = getDataDir();
   const casesFile = getCasesFile();
@@ -290,16 +372,46 @@ function ensureStore(): { cases: StoredCase[] } {
     fs.mkdirSync(dataDir, { recursive: true });
   }
   if (!fs.existsSync(casesFile)) {
+    const bak = readStoreFile(backupFilePath());
+    if (bak?.cases.length) {
+      console.warn(
+        `[CaseStore] Missing ${casesFile} — restored ${bak.cases.length} case(s) from backup`
+      );
+      writeStore(bak);
+      return bak;
+    }
     const empty = { cases: [] as StoredCase[] };
-    fs.writeFileSync(casesFile, JSON.stringify(empty, null, 2), "utf8");
+    writeStore(empty);
     return empty;
   }
   try {
     const raw = fs.readFileSync(casesFile, "utf8");
-    const parsed = JSON.parse(raw) as { cases?: StoredCase[] };
-    return { cases: Array.isArray(parsed.cases) ? parsed.cases : [] };
+    const parsed = parseStoreJson(raw);
+    if (parsed) return parsed;
+    const bak = readStoreFile(backupFilePath());
+    if (bak) {
+      console.warn(
+        `[CaseStore] Corrupt ${casesFile} — restored ${bak.cases.length} case(s) from backup`
+      );
+      writeStore(bak);
+      return bak;
+    }
+    return { cases: [] };
   } catch {
     return { cases: [] };
+  }
+}
+
+function atomicReplace(tmpPath: string, destPath: string): void {
+  try {
+    fs.renameSync(tmpPath, destPath);
+  } catch {
+    fs.copyFileSync(tmpPath, destPath);
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -309,7 +421,33 @@ function writeStore(store: { cases: StoredCase[] }) {
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
-  fs.writeFileSync(casesFile, JSON.stringify(store, null, 2), "utf8");
+  const json = JSON.stringify(store, null, 2);
+  const tmp = `${casesFile}.${process.pid}.tmp`;
+  fs.writeFileSync(tmp, json, "utf8");
+  if (fs.existsSync(casesFile)) {
+    try {
+      fs.copyFileSync(casesFile, backupFilePath());
+    } catch (err) {
+      console.warn("[CaseStore] Could not write backup:", err);
+    }
+  }
+  atomicReplace(tmp, casesFile);
+}
+
+export function mergeRecoveryCases(
+  incoming: StoredCase[]
+): { imported: number; total: number } {
+  const cleaned = incoming.filter(
+    (row) => row && typeof row === "object" && caseKey(row as StoredCase)
+  ) as StoredCase[];
+  const store = ensureStore();
+  const before = store.cases.length;
+  store.cases = mergeCaseArrays(store.cases, cleaned);
+  writeStore(store);
+  return {
+    imported: Math.max(0, store.cases.length - before),
+    total: store.cases.length,
+  };
 }
 
 export function getRecoveryCaseById(caseId: string): StoredCase | null {

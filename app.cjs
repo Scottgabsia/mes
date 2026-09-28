@@ -7,6 +7,7 @@
 "use strict";
 
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const { execSync } = require("child_process");
 
@@ -59,26 +60,47 @@ ensureBuild();
 // App root for legacy case-file migration (server/caseStore.ts)
 process.env.APP_ROOT = root;
 
+function isUnsafeDir(dir) {
+  const n = String(dir).replace(/\\/g, "/").toLowerCase();
+  return (
+    n.includes("/.builds/") ||
+    n.endsWith("/.builds") ||
+    n.includes("/node_modules/")
+  );
+}
+
 /**
  * Cases must live OUTSIDE the git deploy folder — Hostinger replaces the app on each push.
- * Default: domains/yoursite.com/case-data (two levels above app root).
+ * Default: /home/USER/cryptorecovery-case-data (survives GitHub redeploys and .builds cleanup).
  */
 if (!process.env.CASE_DATA_DIR?.trim()) {
-  const autoDir = pickWritableDir([
-    path.join(root, "..", "..", "case-data"),
-    path.join(root, "..", "case-data"),
-    path.join(root, "data"),
-  ]);
+  const homeStore = path.join(os.homedir(), "cryptorecovery-case-data");
+  const autoDir =
+    pickWritableDir(
+      [
+        homeStore,
+        path.join(root, "..", "..", "cryptorecovery-case-data"),
+        path.join(root, "..", "cryptorecovery-case-data"),
+      ].filter((dir) => !isUnsafeDir(dir))
+    ) || homeStore;
   process.env.CASE_DATA_DIR = autoDir;
   console.log(
     "[app] CASE_DATA_DIR not set — using persistent path:",
     autoDir
   );
   console.log(
-    "[app] Tip: set CASE_DATA_DIR in hPanel to e.g. /home/USER/domains/cryptorecoveryasset.com/data"
+    "[app] Tip: set CASE_DATA_DIR=/home/u695441817/cryptorecovery-case-data in hPanel"
   );
 } else {
   process.env.CASE_DATA_DIR = path.resolve(process.env.CASE_DATA_DIR.trim());
+  if (isUnsafeDir(process.env.CASE_DATA_DIR)) {
+    const homeStore = path.join(os.homedir(), "cryptorecovery-case-data");
+    console.warn(
+      "[app] CASE_DATA_DIR is under .builds/tmp — switching to",
+      homeStore
+    );
+    process.env.CASE_DATA_DIR = homeStore;
+  }
 }
 
 try {

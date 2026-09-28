@@ -53,6 +53,65 @@ export async function fetchAdminCases(): Promise<{
   };
 }
 
+const ADMIN_CASE_CACHE_KEY = "cra_admin_server_cases_v1";
+
+export function readCachedAdminCases(): AdminCaseRecord[] {
+  try {
+    const raw = localStorage.getItem(ADMIN_CASE_CACHE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as AdminCaseRecord[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function writeCachedAdminCases(cases: AdminCaseRecord[]): void {
+  if (!cases.length) return;
+  try {
+    localStorage.setItem(ADMIN_CASE_CACHE_KEY, JSON.stringify(cases));
+  } catch {
+    /* quota */
+  }
+}
+
+export async function restoreAdminCases(
+  cases: AdminCaseRecord[]
+): Promise<{
+  ok: boolean;
+  cases: AdminCaseRecord[];
+  imported?: number;
+  total?: number;
+  error?: string;
+}> {
+  const headers = await adminAuthHeaders();
+  if (!headers) {
+    return { ok: false, cases: [], error: "Not signed in" };
+  }
+  const { ok, data, error } = await apiFetch<{
+    success?: boolean;
+    cases?: AdminCaseRecord[];
+    imported?: number;
+    total?: number;
+    error?: string;
+  }>("/api/admin/cases/restore", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ cases }),
+  });
+  if (ok && data?.success) {
+    const next = data.cases || [];
+    writeCachedAdminCases(next);
+    return {
+      ok: true,
+      cases: next,
+      imported: data.imported,
+      total: data.total,
+    };
+  }
+  return { ok: false, cases: [], error: error || data?.error || "Restore failed" };
+}
+
 export async function patchAdminCase(
   caseId: string,
   body: {

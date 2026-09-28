@@ -58,7 +58,7 @@ In **File Manager** (enable hidden files) or SSH, go to:
 
 `/home/u695441817/domains/cryptorecoveryasset.com/`
 
-Delete these if they exist (do **not** delete `data` or `case-data`):
+Delete these if they exist (do **not** delete `data`, `case-data`, or `cryptorecovery-case-data`):
 
 - `.builds/` — old GitHub build copies
 - `.npm/` — npm cache
@@ -116,26 +116,36 @@ Redeploy after changing env vars.
 
 ## Persistent case data (critical — read this)
 
-**Every GitHub redeploy replaces the app folder.** If cases live only in `data/` inside the repo, **all client cases and admin data disappear** after each update.
+**Every GitHub redeploy replaces the app folder.** Cases must live in a folder Hostinger does **not** wipe: your **home directory**, not `data/` inside the Node app and not `.builds`.
 
-The app now defaults to **`../case-data`** (outside the deploy folder) and merges old `data/recovery-cases.json` on startup when possible.
+The app now defaults to:
 
-**Recommended:** set an explicit path in hPanel → Environment variables:
-
-```env
-CASE_DATA_DIR=/home/YOUR_USER/domains/cryptorecoveryasset.com/data
+```
+/home/u695441817/cryptorecovery-case-data
 ```
 
-1. In **File Manager**, create folder `data` under your domain (not inside the Node app clone).
-2. Add `CASE_DATA_DIR` above (use your real `/home/...` path from File Manager).
-3. **Redeploy** the Node app.
+It also scans leftover `recovery-cases.json` files (old `data/`, `case-data/`, even `.builds`) and merges them on startup. Writes are atomic with a `.bak` backup.
+
+**Recommended:** set this in hPanel → Node.js app → Environment variables:
+
+```env
+CASE_DATA_DIR=/home/u695441817/cryptorecovery-case-data
+```
+
+1. In **File Manager**, go up to `/home/u695441817/` (or use SSH) and create folder `cryptorecovery-case-data` if it does not exist.
+2. Add `CASE_DATA_DIR` above.
+3. **Do not delete** `cryptorecovery-case-data` when you clean `.builds` or `node_modules`.
+4. **Redeploy** the Node app.
 
 After deploy, open `/api/health` and confirm:
 
 - `"caseStore": { "writable": true, "persistent": true }`
-- No `warning` about deploy folder or missing cases
+- `"caseCount"` matches your cases
+- No `warning` about deploy folder
 
-If you had cases before this fix, search File Manager for **`recovery-cases.json`** (old app `data/` folder or email backups) and copy it into your `CASE_DATA_DIR` folder, then redeploy once.
+If admin looks empty after a past deploy, open admin on the **same browser** you used before — a **Restore cases to server** button appears if this browser still has the last list cached.
+
+If you had cases before this fix, search File Manager for **`recovery-cases.json`** (old app `data/` folder or email backups) and copy it into `cryptorecovery-case-data`, then restart/redeploy once.
 
 Full feature checklist: **`docs/PRODUCTION_CHECKLIST.md`**
 

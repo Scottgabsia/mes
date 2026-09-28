@@ -47,6 +47,9 @@ import {
   patchAdminCase,
   patchAdminCaseStatus,
   postAdminCaseMessage,
+  readCachedAdminCases,
+  restoreAdminCases,
+  writeCachedAdminCases,
   type AdminCaseRecord,
 } from '../lib/adminApi';
 import { CASE_STAGES, DOCUMENT_TYPES, formatRecoveredAmount } from '../lib/caseStages';
@@ -55,10 +58,16 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const CaseManagerView: React.FC = () => {
   const [firestoreCases, setFirestoreCases] = React.useState<AdminCaseRecord[]>([]);
-  const [serverCases, setServerCases] = React.useState<AdminCaseRecord[]>([]);
+  const [serverCases, setServerCases] = React.useState<AdminCaseRecord[]>(() =>
+    readCachedAdminCases()
+  );
   const [loading, setLoading] = React.useState(true);
   const [serverLoadError, setServerLoadError] = React.useState<string | null>(null);
   const [errorStatus, setErrorStatus] = React.useState<string | null>(null);
+  const [storeWarning, setStoreWarning] = React.useState<string | null>(null);
+  const [storePersistent, setStorePersistent] = React.useState<boolean | null>(null);
+  const [showingCache, setShowingCache] = React.useState(false);
+  const [restoringCache, setRestoringCache] = React.useState(false);
   const requests = React.useMemo(
     () => mergeAdminCases(firestoreCases, serverCases),
     [firestoreCases, serverCases]
@@ -81,13 +90,44 @@ const CaseManagerView: React.FC = () => {
   const loadServerCases = React.useCallback(async () => {
     const result = await fetchAdminCases();
     if (result.ok) {
-      setServerCases(result.cases);
-      setServerLoadError(null);
       if (result.cases.length > 0) {
+        setServerCases(result.cases);
+        writeCachedAdminCases(result.cases);
+        setShowingCache(false);
+        setServerLoadError(null);
         setErrorStatus(null);
+      } else {
+        const cached = readCachedAdminCases();
+        if (cached.length > 0) {
+          setServerCases(cached);
+          setShowingCache(true);
+          setServerLoadError(
+            'Server store is empty after a deploy. Restore the last saved cases below.'
+          );
+        } else {
+          setServerCases([]);
+          setShowingCache(false);
+          setServerLoadError(null);
+        }
       }
     } else {
+      const cached = readCachedAdminCases();
+      if (cached.length > 0) {
+        setServerCases(cached);
+        setShowingCache(true);
+      }
       setServerLoadError(result.error || 'Server cases unavailable');
+    }
+    try {
+      const healthRes = await fetch(apiUrl('/api/health'));
+      const health = await healthRes.json();
+      const store = health?.caseStore;
+      if (store) {
+        setStorePersistent(Boolean(store.persistent && store.writable));
+        setStoreWarning(typeof store.warning === 'string' ? store.warning : null);
+      }
+    } catch {
+      /* health is optional */
     }
     return result;
   }, []);
@@ -479,6 +519,44 @@ const CaseManagerView: React.FC = () => {
                 </span>
               </div>
             </div>
+            {storeWarning && (
+              <p className="text-[9px] font-mono text-rose-400/90 uppercase tracking-wide leading-relaxed">
+                {storeWarning}
+              </p>
+            )}
+            {storePersistent === false && (
+              <p className="text-[9px] font-mono text-rose-400/90 uppercase tracking-wide leading-relaxed">
+                Cases are not on a persistent disk path. Set CASE_DATA_DIR=/home/u695441817/cryptorecovery-case-data in Hostinger, then redeploy.
+              </p>
+            )}
+            {showingCache && (
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 space-y-2">
+                <p className="text-[9px] font-mono text-amber-200 uppercase tracking-wide leading-relaxed">
+                  Showing last saved cases from this browser. The server copy was wiped by a deploy.
+                </p>
+                <button
+                  type="button"
+                  disabled={restoringCache}
+                  onClick={async () => {
+                    setRestoringCache(true);
+                    const cached = readCachedAdminCases();
+                    const payload = cached.length ? cached : serverCases;
+                    const result = await restoreAdminCases(payload);
+                    setRestoringCache(false);
+                    if (result.ok) {
+                      setServerCases(result.cases);
+                      setShowingCache(false);
+                      setServerLoadError(null);
+                    } else {
+                      setServerLoadError(result.error || 'Restore failed');
+                    }
+                  }}
+                  className="w-full text-[9px] font-mono uppercase tracking-widest py-2 rounded-lg bg-amber-500 text-black font-bold disabled:opacity-50 cursor-pointer"
+                >
+                  {restoringCache ? 'Restoring…' : `Restore ${readCachedAdminCases().length || serverCases.length} cases to server`}
+                </button>
+              </div>
+            )}
             {serverLoadError && (
               <p className="text-[9px] font-mono text-amber-500/90 uppercase tracking-wide">
                 Server store: {serverLoadError}
