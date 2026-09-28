@@ -24,6 +24,7 @@ export type ClientCaseRecord = {
   storageSource?: string;
   firestoreDocId?: string | null;
   operatorAlias?: string;
+  name?: string;
   secureComms?: string;
   email?: string;
   status?: string;
@@ -32,6 +33,21 @@ export type ClientCaseRecord = {
   transactionHash?: string;
   caseNarrative?: string;
   estimatedValue?: number;
+  recoveredAmount?: number;
+  recoveredAmountCurrency?: string;
+  documentsReleased?: boolean;
+  documentsReleasedAt?: string;
+  documentsFullySigned?: boolean;
+  signedDocuments?: Record<
+    string,
+    {
+      signedAt?: string;
+      signerName?: string;
+      acknowledged?: boolean;
+      verifiedByAdmin?: boolean;
+      signatureDataUrl?: string;
+    }
+  >;
   completedSteps?: string[];
   messages?: CaseMessage[];
   notifications?: CaseNotification[];

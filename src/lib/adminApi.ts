@@ -1,4 +1,4 @@
-import { apiFetch } from "./api";
+import { apiFetch, apiFetchBlob, apiUrl } from "./api";
 import { auth } from "./firebase";
 
 export type AdminCaseRecord = Record<string, unknown> & {
@@ -58,24 +58,29 @@ export async function patchAdminCase(
   body: {
     status?: string;
     completedSteps?: string[];
+    recoveredAmount?: number;
+    recoveredAmountCurrency?: string;
+    documentsReleased?: boolean;
+    verifyDocuments?: boolean;
     notification?: { title: string; message: string; type: string };
   }
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; case?: AdminCaseRecord }> {
   const headers = await adminAuthHeaders();
   if (!headers) {
     return { ok: false, error: "Not signed in" };
   }
 
-  const { ok, data, error } = await apiFetch<{ success?: boolean; error?: string }>(
-    `/api/admin/cases/${encodeURIComponent(caseId)}`,
-    {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify(body),
-    }
-  );
+  const { ok, data, error } = await apiFetch<{
+    success?: boolean;
+    error?: string;
+    case?: AdminCaseRecord;
+  }>(`/api/admin/cases/${encodeURIComponent(caseId)}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+  });
 
-  if (ok && data?.success) return { ok: true };
+  if (ok && data?.success) return { ok: true, case: data.case };
   return { ok: false, error: error || data?.error || "Update failed" };
 }
 
@@ -127,6 +132,55 @@ export async function fetchAdminCase(
     return { ok: true, case: data.case };
   }
   return { ok: false, error: error || data?.error || "Load failed" };
+}
+
+export async function downloadAdminCasePdf(
+  caseId: string,
+  documentType: string
+): Promise<{ ok: boolean; error?: string }> {
+  const headers = await adminAuthHeaders();
+  if (!headers) return { ok: false, error: "Not signed in" };
+  const auth = (headers as Record<string, string>).Authorization;
+  const { ok, blob, error } = await apiFetchBlob(
+    `/api/admin/cases/${encodeURIComponent(caseId)}/documents/${encodeURIComponent(documentType)}/pdf?download=1`,
+    { headers: { Authorization: auth } }
+  );
+  if (!ok || !blob) {
+    return { ok: false, error: error || "Download failed" };
+  }
+  if (blob.type && !blob.type.includes("pdf") && !blob.type.includes("octet-stream")) {
+    return { ok: false, error: "Server did not return a PDF" };
+  }
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${caseId.slice(0, 10)}-${documentType}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  return { ok: true };
+}
+
+export async function fetchAdminCaseSignatureBlob(
+  caseId: string,
+  documentType: string
+): Promise<string | null> {
+  const headers = await adminAuthHeaders();
+  if (!headers) return null;
+  try {
+    const res = await fetch(
+      apiUrl(
+        `/api/admin/cases/${encodeURIComponent(caseId)}/documents/${encodeURIComponent(documentType)}/signature`
+      ),
+      { headers: { Authorization: (headers as Record<string, string>).Authorization } }
+    );
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  } catch {
+    return null;
+  }
 }
 
 function caseTime(c: AdminCaseRecord): number {

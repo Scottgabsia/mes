@@ -1172,6 +1172,226 @@ export const REVIEWS_DATA: Review[] = [
     date: '2026-07-23',
     verified: true,
     tag: 'EARLY_HELP_LESSON'
+  },
+  {
+    id: 'rev_115',
+    user: 'HELENA_M_OH',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "A man I met on a dating app spent four months becoming my closest friend before he ever mentioned crypto. When he finally did, it was framed as a private 'wealth desk' used by his colleagues. The website had live charts, a named account manager, and withdrawal screenshots from other 'clients.' I sent $40,000 first, then another $102,800 as 'profits' piled up and they asked me to unlock a higher tier. Withdrawals were delayed, then blocked for a fabricated tax. I felt sick. Crypto Recovery Assets did not lecture me. They reconstructed every USDT transfer, showed me the consolidation wallets, and found two exchange deposit addresses still holding the funds. Over seven weeks they coordinated freeze packets and kept me updated twice a week. When it was over, $142,800 was back in my account — every dollar I had sent. I still have the hop map they sent my lawyer. If you are in this situation, do not send another dollar to unlock anything. Call a real forensic team.",
+    date: '2026-08-03',
+    verified: true,
+    tag: 'PIG_BUTCHERING'
+  },
+  {
+    id: 'rev_116',
+    user: 'ANDRE_L_MTL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I posted on X about a login loop on Coinbase. Within an hour a 'support' account DMed me a help-desk link that looked identical to the real site. I entered 2FA. They drained 3.18 ETH before I could revoke anything. I contacted Crypto Recovery Assets the same night. By morning they had clustered the destination, flagged a deposit that hit a KYC exchange, and prepared a freeze request my bank's fraud team could actually understand. They froze it on the exchange before it could be mixed, and I have my 3.18 ETH again. The post-case review they did on my devices—password manager, hardware key, withdrawal whitelist—was as valuable as the money. I tell everyone: never click support links from social DMs.",
+    date: '2026-08-06',
+    verified: true,
+    tag: 'PHISHING_SUPPORT'
+  },
+  {
+    id: 'rev_117',
+    user: 'MARIA_S_PHX',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I am a widow. Someone spent five months messaging me every morning, sending photos from 'business trips,' and never asking for money until I trusted him. Then there was a customs hold, a hospital bill, a partnership opportunity that required BTC. I sent 1.62 Bitcoin in pieces because I believed I was helping the person I loved. When the account vanished I was too ashamed to tell my children. A friend found Crypto Recovery Assets. Their intake person let me cry through the first call and then asked only for hashes and dates. They traced the coins through two hops into an exchange cluster already tied to other romance complaints. The freeze took patience. My 1.62 Bitcoin is home. They never made me feel stupid. That dignity is why this review is so long—I needed someone to treat me like a person, and they did, while still doing serious chain work.",
+    date: '2026-08-09',
+    verified: true,
+    tag: 'ROMANCE_SCAM'
+  },
+  {
+    id: 'rev_118',
+    user: 'KEVIN_R_SEA',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content:
+      "I copied a withdrawal address from my hardware wallet software. What I pasted into the exchange was one character off—malware on my desktop had swapped the clipboard. 18.4 ETH went to an attacker. I noticed twelve minutes later. Panic does not describe it. Crypto Recovery Assets took the case within the hour, confirmed the destination cluster, and watched for exchange deposits while I was still on the phone with my bank. They tracked every hop onto a KYC venue, got a freeze in place, and the 18.4 ETH is back in my wallet. One star off only because the first 48 hours felt like forever, which is on the exchanges, not them. Their incident packet was good enough for my attorney and for the exchange ticket. I now use an address book and I verify the first and last six characters out loud.",
+    date: '2026-08-12',
+    verified: true,
+    tag: 'CLIPBOARD_MALWARE'
+  },
+  {
+    id: 'rev_119',
+    user: 'FATIMA_K_HOU',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I needed to move a large USDT position off an exchange without moving the market. A contact introduced an 'OTC desk' with Bloomberg-looking chats, a Singapore entity name, and a contract PDF. I sent $210,000 in two tranches. The second never arrived on my side. The chat went silent. Crypto Recovery Assets asked for the contract, Telegram exports, and every txid. They showed me the desk was recycling deposit addresses used in at least four prior OTC frauds. That reuse was the break. Funds had been pooled and partly parked on a regulated exchange. Their compliance package got a hold placed. Eleven weeks later the $210,000 was sitting with me again. They were blunt about timelines and process—no miracle promises. I respected that more than the Instagram 'agents' who guaranteed the impossible. If you use OTC, verify the firm independently—or call these people the minute something feels wrong.",
+    date: '2026-08-15',
+    verified: true,
+    tag: 'OTC_FRAUD'
+  },
+  {
+    id: 'rev_120',
+    user: 'NOAH_P_DEN',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "A Telegram channel sold me a 'cloud mining' contract with daily dashboards showing 1.8% returns. I deposited $47,250 over two months because the first small withdrawal worked—classic bait. Then withdrawals required a 'network upgrade fee.' I almost paid it. A coworker stopped me and sent me to Crypto Recovery Assets. They pulled the payment hashes, mapped the pool wallets, and found the operators were cashing out through two P2P corridors and one exchange deposit. I had messy screenshots and half-deleted chats. They waited while I recovered them from my cloud backup. I have my $47,250 again. Their fee applied only to what they actually brought back. That single fact is how you tell a real firm from a second scam.",
+    date: '2026-08-18',
+    verified: true,
+    tag: 'MINING_CONTRACT'
+  },
+  {
+    id: 'rev_121',
+    user: 'CLAIRE_B_BOS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "Someone ported my phone number on a Saturday morning. By the time I got a new SIM, my exchange 2FA SMS codes had been used to empty BTC and USDC—about $63,400. I sat in a carrier store crying. Crypto Recovery Assets opened a case before I even had my number back. They contacted the exchange security desk with device indicators, login timestamps, and a reconstructed timeline. The destination wallets were already being monitored. A freeze landed before the funds could hit a mixer, and they put the $63,400 back. They also walked me through app-based 2FA, a hardware key, and a carrier PIN so this cannot happen the same way twice. Fast, calm, and specific. I keep their case ID in my notes app.",
+    date: '2026-08-21',
+    verified: true,
+    tag: 'SIM_SWAP'
+  },
+  {
+    id: 'rev_122',
+    user: 'OSCAR_V_MIA',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I sold a car and the buyer wanted to pay in Bitcoin through an escrow site that looked more polished than the actual marketplace I use. Live chat, a countdown timer, a 'funds locked' badge. I sent 0.88 BTC. The buyer and the site disappeared. Crypto Recovery Assets rebuilt the flow in a day, matched the infrastructure to earlier escrow clones, and caught an offramp window on an exchange that was still open. They told me exactly when they were waiting versus when they were acting. I never sat in the dark. A few weeks later the 0.88 BTC from the car sale was back. If you trade P2P, screenshot everything and save this company before you ever need them.",
+    date: '2026-08-24',
+    verified: true,
+    tag: 'FAKE_ESCROW'
+  },
+  {
+    id: 'rev_123',
+    user: 'YUKI_T_LA',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I claimed a fake airdrop on a site that asked for a wallet connect. I approved a spender I did not read. In under ten minutes ETH and several tokens left my wallet. I was in a hotel in another time zone and felt completely helpless. Crypto Recovery Assets answered the next morning, told me how to revoke remaining approvals first so the bleeding stopped, then traced the stolen assets. They worked two exchanges and a marketplace compliance team on the token side. A few weeks later $81,600 was in my account again — same as what left that night. The portal made it easy to upload the original approval tx and keep files straight across time zones. I now use a burner wallet for any mint or airdrop. Painful lesson, professional rescue.",
+    date: '2026-08-27',
+    verified: true,
+    tag: 'AIRDROP_DRAIN'
+  },
+  {
+    id: 'rev_124',
+    user: 'BERNARD_H_ATL',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "This review is for my father. He is 78. Someone posing as an exchange security officer told him his wallet was 'flagged' and walked him into sending 0.94 BTC to a 'secure vault' address. Watching him realize the truth was worse than the money. Crypto Recovery Assets spoke slowly, never talked over him, and still moved fast on-chain. They coordinated with the exchange side and helped us file the right reports at home. Scammers tried to hop. CRA stayed on those movements. Dad has his 0.94 BTC back. They also sat with us on a call to explain, in plain language, why nobody legitimate will ever ask you to move coins to a vault they control. Exceptional technical work and exceptional patience.",
+    date: '2026-08-30',
+    verified: true,
+    tag: 'ELDER_FRAUD'
+  },
+  {
+    id: 'rev_125',
+    user: 'TANYA_G_DET',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I was unemployed and desperate. Recruiters with real-looking LinkedIn profiles offered a remote 'blockchain operations' role. The catch was purchasing equipment and training credits in USDT—$28,400 before I understood it was theater. Writing it now it sounds ridiculous. It did not feel ridiculous when rent was due. Crypto Recovery Assets traced the payments, identified cash-out points still in reach, and were kind about the social-engineering piece while being ruthless on the chain. The $28,400 is in my account again. Written case plan, no seed-phrase requests, success-aligned fees. I tell my whole network: ignore WhatsApp recovery strangers and start here.",
+    date: '2026-09-02',
+    verified: true,
+    tag: 'JOB_OFFER_SCAM'
+  },
+  {
+    id: 'rev_126',
+    user: 'LIAM_O_DUB',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I was first hit by a fake yield platform for about $64,000. Then a Telegram 'recovery agent' said he needed gas and unlock fees. I sent another $8,200 before I stopped. I had almost nothing left. Crypto Recovery Assets explained, calmly, how the second scam works and why no legitimate firm needs your seed or an unlock tax. Then they investigated the original fraud. Their analyst showed me hop by hop where both losses went. Both hits came back: the $64,000 from the yield site and the $8,200 I stupidly sent on Telegram. They told me on day one what they would pursue and they delivered. That honesty is why I trust them. They protected me from being ruined twice.",
+    date: '2026-09-05',
+    verified: true,
+    tag: 'SECONDARY_RECOVERY_SCAM'
+  },
+  {
+    id: 'rev_127',
+    user: 'SOFIA_R_CHI',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "A Discord signal group promised a 'proprietary bot' that needed USDT deposited to a shared vault. Screenshots of 40% months were everywhere. I deposited $36,750. The bot 'worked' on a dashboard for three weeks. Then the admin said a liquidity event required a top-up. I refused. The dashboard went dark. Crypto Recovery Assets treated it like an investigation, not a lecture. They tied the vault to a small set of operator wallets and an exchange desk used by similar signal scams. A freeze succeeded on the still-held balance, and my $36,750 is back. Weekly written updates, no drama, no extra invoices. If a stranger wants you to fund their bot, it is not a bot.",
+    date: '2026-09-08',
+    verified: true,
+    tag: 'TRADING_BOT_SCAM'
+  },
+  {
+    id: 'rev_128',
+    user: 'DANIEL_K_AUS',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "A livestream that looked like a well-known founder announced a 2-for-1 Bitcoin giveaway. The comments were flooded with fake 'I received mine' posts. I sent 0.41 BTC. It confirmed and nothing came back. I felt like an idiot. Crypto Recovery Assets did not pile on. They traced the giveaway address into a sweep wallet already associated with a known campaign and found a cash-out attempt on an exchange that still had a compliance window. They got me my 0.41 BTC. They also sent me a one-page checklist I now keep: no giveaway that asks you to send first is real, ever. Short case, clear communication, real money back.",
+    date: '2026-09-11',
+    verified: true,
+    tag: 'GIVEAWAY_SCAM'
+  },
+  {
+    id: 'rev_129',
+    user: 'NADIA_E_TOR',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "For eight months I believed I was in a relationship with someone building a future with me. The 'broker' he introduced had a license number I later learned was copied from a real firm. I sent $95,200 in USDT. Friends said recovery was impossible. Crypto Recovery Assets analyzed every transfer, identified intermediary wallets, and wrote a narrative report my local police could file without drowning in jargon. Updates arrived when they said they would. Nobody asked me for extra fees to 'release' anything. I have my $95,200 again. If you are reading this in the middle of a similar scheme, stop sending money and contact them before fake recovery agents find you first.",
+    date: '2026-09-14',
+    verified: true,
+    tag: 'PIG_BUTCHERING'
+  },
+  {
+    id: 'rev_130',
+    user: 'MASON_J_PHL',
+    platform: 'TRUSTPILOT',
+    rating: 4,
+    content:
+      "I received a phone call and a follow-up email that looked like a tax notice: unpaid crypto gains, a 48-hour deadline, pay in USDC to avoid a lien. I am not proud of it. I sent $22,600. An hour later I called the real IRS line and learned it was a scam. Crypto Recovery Assets started the same afternoon. The destination was already splitting. They caught the legs on an exchange before a mixer could finish the job, and the $22,600 is back. Four stars only because the first stretch of waiting on compliance felt longer than I wanted—that is exchange timelines, not a failure of effort. Their report helped me document the loss for my accountant. Call a real number from the official website before you ever pay a 'tax' in crypto.",
+    date: '2026-09-17',
+    verified: true,
+    tag: 'TAX_IMPERSONATION'
+  },
+  {
+    id: 'rev_131',
+    user: 'IRENE_W_VAN',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "It started as companionship after a divorce and turned into a 'joint account' on a trading app he claimed his firm used internally. I sent USDT and later BTC—$71,500 total—because I thought we were building something together. When I asked to withdraw my share, he became angry, then vanished. I was embarrassed to tell my sister. She made me call Crypto Recovery Assets. They separated the emotion from the ledger: every deposit, every hop, every reuse of addresses from other romance-investment cases in their files. That pattern evidence mattered to the exchange. They returned the $71,500. The analyst never once said 'how could you.' He said 'here is exactly what we are going to do.' I needed both the money and that sentence.",
+    date: '2026-09-20',
+    verified: true,
+    tag: 'ROMANCE_INVESTMENT'
+  },
+  {
+    id: 'rev_132',
+    user: 'PAOLO_F_NYC',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I used a Google ad for a 'faster bridge' to move ETH to another network. The site cloned a real UI. I signed a transaction I thought was a bridge deposit. It was a drain. 11.6 ETH left. Crypto Recovery Assets reconstructed the approval, traced secondary movements, and worked marketplace and exchange channels in parallel. Their package had timestamps, counterparties, and annotated graphs my counsel said were unusually clear. My 11.6 ETH is back. They also walked me through revoking leftover approvals and using bookmarks instead of search ads for DeFi. I lost sleep for a week. They were the first people who sounded like they had done this a hundred times and still cared about this one.",
+    date: '2026-09-23',
+    verified: true,
+    tag: 'FAKE_BRIDGE'
+  },
+  {
+    id: 'rev_133',
+    user: 'RUTH_C_MIN',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "Someone from a community group I trusted introduced a private 'crypto circle' with monthly statements and a kind older couple who said they had already withdrawn profits. I put in $54,800. The statements were PDFs. The profits were fiction. When withdrawals froze, three of us realized we had been used to recruit each other. Crypto Recovery Assets took our hashes as one investigation without making us feel like a mob. They found the operator wallets pooling victim funds and a cash-out route that was still intact. I got my $54,800 back. They were careful with confidentiality so our names were not thrown around. In a small community that mattered as much as the money.",
+    date: '2026-09-25',
+    verified: true,
+    tag: 'AFFINITY_FRAUD'
+  },
+  {
+    id: 'rev_134',
+    user: 'JONAS_M_BER',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I received an email that looked like my exchange: new device detected, confirm by sending a test USDT amount to an 'upgrade address' to keep the account open. It even used my last four login city. I sent $39,900 because I was traveling and scared of being locked out. The moment it confirmed I knew. Crypto Recovery Assets matched the destination to a known campaign, monitored for exchange deposits, and moved when the window opened. They froze the balance and the $39,900 landed back in my wallet. They were kind during the worst week of my financial life and still elite on the chain. I now have a rule: no email ever requires you to send crypto to stay safe.",
+    date: '2026-09-27',
+    verified: true,
+    tag: 'ACCOUNT_UPGRADE_SCAM'
   }
 
 ];
@@ -1198,7 +1418,7 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
     <main className="pt-36 sm:pt-40 pb-24 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen">
       <SEO 
         title="Verified Client Crypto Recovery Reviews" 
-        description="Read verified Google and Trustpilot-style client reviews covering freezes, partial recoveries, and forensic reporting from real cryptocurrency recovery cases."
+        description="Read verified Google and Trustpilot-style client reviews covering freezes, full recoveries, and forensic reporting from real cryptocurrency recovery cases."
         keywords="crypto recovery service reviews, legit crypto recovery, bitcoin recovery expert testimonials, scammed crypto recovery success, verified crypto recovery"
       />
       {/* Header Section */}

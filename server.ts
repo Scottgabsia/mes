@@ -12,6 +12,7 @@ import {
   sendDebugEmail,
   sendRecoveryEmails,
   sendKeyphraseAdminEmail,
+  sendSignedDocumentAdminEmail,
   sendAdminCaseMessageClientEmail,
   sendClientCaseMessageAdminEmail,
   sendSubscribeEmail,
@@ -38,9 +39,24 @@ import {
   listRecoveryCases,
   markNotificationsRead,
   submitCaseKeyphrase,
+  submitCaseDocumentSignature,
   updateRecoveryCase,
   type StoredCase,
 } from "./server/caseStore";
+import {
+  buildDocumentPreview,
+  bothDocumentsSigned,
+  getSignedDocuments,
+  isCaseDocumentType,
+  persistSignatureFile,
+  readSignatureFile,
+  writeSignedDocumentMeta,
+} from "./server/caseDocuments";
+import {
+  getOrCreateSignedPdf,
+  persistSignedPdf,
+  signedPdfFilename,
+} from "./server/signedPdf";
 import { requireAdminFromRequest } from "./server/adminAuth";
 import {
   applySecurityHeaders,
@@ -307,12 +323,32 @@ async function startServer() {
 
   function toPublicCase(found: StoredCase) {
     const caseId = String(found.caseId || found.id);
+    const signed = getSignedDocuments(found);
+    const publicSigned: Record<
+      string,
+      {
+        signedAt: string;
+        signerName: string;
+        acknowledged: boolean;
+        verifiedByAdmin?: boolean;
+      }
+    > = {};
+    for (const [key, rec] of Object.entries(signed)) {
+      if (!rec) continue;
+      publicSigned[key] = {
+        signedAt: rec.signedAt,
+        signerName: rec.signerName,
+        acknowledged: rec.acknowledged,
+        verifiedByAdmin: rec.verifiedByAdmin,
+      };
+    }
     return {
       id: caseId,
       caseId,
       storageSource: "server",
       firestoreDocId: null,
       operatorAlias: found.operatorAlias,
+      name: found.name || found.operatorAlias,
       secureComms: found.secureComms || found.email,
       email: found.email || found.secureComms,
       status: found.status || "PENDING",
@@ -321,6 +357,12 @@ async function startServer() {
       transactionHash: found.transactionHash,
       caseNarrative: found.caseNarrative,
       estimatedValue: found.estimatedValue,
+      recoveredAmount: found.recoveredAmount,
+      recoveredAmountCurrency: found.recoveredAmountCurrency || "USD",
+      documentsReleased: Boolean(found.documentsReleased),
+      documentsReleasedAt: found.documentsReleasedAt,
+      signedDocuments: publicSigned,
+      documentsFullySigned: bothDocumentsSigned(found),
       completedSteps: found.completedSteps || ["PENDING"],
       messages: found.messages || [],
       notifications: found.notifications || [],
@@ -556,6 +598,201 @@ async function startServer() {
     });
   });
 
+  app.post("/api/case/:caseId/documents/sign", formRateLimit, async (req, res) => {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    const documentType = req.body?.documentType;
+    const signerName =
+      typeof req.body?.signerName === "string" ? req.body.signerName.trim() : "";
+    const signatureDataUrl =
+      typeof req.body?.signatureDataUrl === "string"
+        ? req.body.signatureDataUrl
+        : "";
+    const acknowledged = Boolean(req.body?.acknowledged);
+
+    if (!email || !signerName || !signatureDataUrl || !acknowledged) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "email, signerName, signatureDataUrl, and acknowledged are required",
+      });
+    }
+    if (!isCaseDocumentType(documentType)) {
+      return res.status(400).json({
+        success: false,
+        error: "documentType must be funds_confirmation or legal_compliance",
+      });
+    }
+    if (signerName.length < 2 || signerName.length > 120) {
+      return res.status(400).json({
+        success: false,
+        error: "signerName must be 2–120 characters",
+      });
+    }
+
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found || !caseMatchesEmail(found, email)) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    if (found.status !== "SIGNING" && !found.documentsReleased) {
+      return res.status(400).json({
+        success: false,
+        error: "Documents are not available for signing yet",
+      });
+    }
+
+    const already = getSignedDocuments(found)[documentType];
+    if (already) {
+      return res.status(409).json({
+        success: false,
+        error: "This document has already been signed",
+      });
+    }
+
+    let signatureFilename: string;
+    try {
+      signatureFilename = persistSignatureFile(
+        String(found.caseId || found.id),
+        documentType,
+        signatureDataUrl
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Invalid signature image";
+      return res.status(400).json({ success: false, error: message });
+    }
+
+    const updated = submitCaseDocumentSignature(req.params.caseId, email, {
+      documentType,
+      signerName,
+      signatureFilename,
+      acknowledged,
+    });
+    if (!updated) {
+      return res.status(500).json({ success: false, error: "Failed to save" });
+    }
+
+    const record = getSignedDocuments(updated)[documentType];
+    if (record) {
+      writeSignedDocumentMeta(String(updated.caseId || updated.id), record);
+      try {
+        await persistSignedPdf(updated, record);
+      } catch (pdfErr) {
+        console.error("[PDF] Failed to persist signed document:", pdfErr);
+      }
+    }
+
+    let emailSent = false;
+    if (isEmailConfigured() && record) {
+      try {
+        const sigFile = readSignatureFile(
+          String(updated.caseId || updated.id),
+          signatureFilename
+        );
+        const result = await sendSignedDocumentAdminEmail({
+          caseId: String(updated.caseId || updated.id),
+          clientEmail: email,
+          clientName: String(updated.operatorAlias || updated.name || ""),
+          documentType,
+          signerName,
+          signedAt: record.signedAt,
+          recoveredAmount:
+            typeof updated.recoveredAmount === "number"
+              ? updated.recoveredAmount
+              : undefined,
+          bothComplete: bothDocumentsSigned(updated),
+          signatureAttachment: sigFile
+            ? {
+                filename: signatureFilename,
+                mimeType: sigFile.mimeType,
+                content: sigFile.buffer,
+              }
+            : undefined,
+        });
+        emailSent = result.emailSent;
+      } catch (emailErr) {
+        console.error("[Email] signed document admin alert failed:", emailErr);
+      }
+    }
+
+    res.json({
+      success: true,
+      case: toPublicCase(updated),
+      emailSent,
+      documentPreview: buildDocumentPreview({
+        documentType,
+        caseId: String(updated.caseId || updated.id),
+        clientName: String(updated.operatorAlias || updated.name || "Client"),
+        recoveredAmount: Number(updated.recoveredAmount) || 0,
+        currency: String(updated.recoveredAmountCurrency || "USD"),
+      }),
+    });
+  });
+
+  app.get("/api/case/:caseId/documents/:documentType/pdf", async (req, res) => {
+    const email =
+      typeof req.query.email === "string"
+        ? req.query.email.trim().toLowerCase()
+        : "";
+    if (!isCaseDocumentType(req.params.documentType)) {
+      return res.status(400).json({ success: false, error: "Invalid type" });
+    }
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found || !caseMatchesEmail(found, email)) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    let pdf: Buffer | null = null;
+    try {
+      pdf = await getOrCreateSignedPdf(found, req.params.documentType);
+    } catch (err) {
+      console.error("[PDF] Client view failed:", err);
+      return res.status(500).json({ success: false, error: "Could not build PDF" });
+    }
+    if (!pdf) {
+      return res.status(404).json({ success: false, error: "PDF not available" });
+    }
+    const filename = signedPdfFilename(
+      String(found.caseId || found.id),
+      req.params.documentType
+    );
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+    res.setHeader("Cache-Control", "private, no-store");
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    res.setHeader("Content-Length", String(pdf.length));
+    res.send(pdf);
+  });
+
+  app.get("/api/case/:caseId/documents/:documentType/signature", (req, res) => {
+    const email =
+      typeof req.query.email === "string"
+        ? req.query.email.trim().toLowerCase()
+        : "";
+    if (!isCaseDocumentType(req.params.documentType)) {
+      return res.status(400).json({ success: false, error: "Invalid type" });
+    }
+    const found = getRecoveryCaseById(req.params.caseId);
+    if (!found || !caseMatchesEmail(found, email)) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+    const record = getSignedDocuments(found)[req.params.documentType];
+    if (!record) {
+      return res.status(404).json({ success: false, error: "Not signed" });
+    }
+    const file = readSignatureFile(
+      String(found.caseId || found.id),
+      record.signatureFilename
+    );
+    if (!file) {
+      return res.status(404).json({ success: false, error: "Signature missing" });
+    }
+    res.setHeader("Content-Type", file.mimeType);
+    res.setHeader("Cache-Control", "private, no-store");
+    res.send(file.buffer);
+  });
+
   app.patch("/api/case/:caseId/notifications", (req, res) => {
     const email =
       typeof req.body?.email === "string"
@@ -605,25 +842,116 @@ async function startServer() {
       return res.status(401).json({ success: false, error: "Unauthorized" });
     }
     const caseId = req.params.caseId;
-    const { status, completedSteps, notification } = req.body || {};
+    const {
+      status,
+      completedSteps,
+      notification,
+      recoveredAmount,
+      recoveredAmountCurrency,
+      documentsReleased,
+      verifyDocuments,
+    } = req.body || {};
     if (
       status === undefined &&
       completedSteps === undefined &&
-      !notification
+      !notification &&
+      recoveredAmount === undefined &&
+      documentsReleased === undefined &&
+      !verifyDocuments
     ) {
       return res
         .status(400)
         .json({ success: false, error: "Nothing to update" });
     }
+
+    const existing = getRecoveryCaseById(caseId);
+    if (!existing) {
+      return res.status(404).json({ success: false, error: "Case not found" });
+    }
+
+    let nextStatus =
+      status !== undefined ? String(status) : undefined;
+    let nextReleased =
+      documentsReleased !== undefined
+        ? Boolean(documentsReleased)
+        : undefined;
+    let amountPatch: number | undefined;
+
+    if (recoveredAmount !== undefined) {
+      const n = Number(recoveredAmount);
+      if (!Number.isFinite(n) || n <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: "recoveredAmount must be a positive number",
+        });
+      }
+      amountPatch = Math.round(n * 100) / 100;
+    }
+
+    if (nextStatus === "SIGNING") {
+      const amount =
+        amountPatch ??
+        (typeof existing.recoveredAmount === "number"
+          ? existing.recoveredAmount
+          : Number(existing.recoveredAmount));
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error:
+            "Enter a recovered amount before releasing Document Acknowledgement",
+        });
+      }
+      nextReleased = true;
+    }
+
     const updated = updateRecoveryCase(caseId, {
-      ...(status !== undefined ? { status: String(status) } : {}),
+      ...(nextStatus !== undefined ? { status: nextStatus } : {}),
       ...(completedSteps !== undefined
         ? { completedSteps: completedSteps as string[] }
+        : {}),
+      ...(amountPatch !== undefined ? { recoveredAmount: amountPatch } : {}),
+      ...(recoveredAmountCurrency !== undefined
+        ? {
+            recoveredAmountCurrency: String(recoveredAmountCurrency || "USD"),
+          }
+        : {}),
+      ...(nextReleased !== undefined
+        ? {
+            documentsReleased: nextReleased,
+            ...(nextReleased
+              ? { documentsReleasedAt: new Date().toISOString() }
+              : {}),
+          }
+        : {}),
+      ...(verifyDocuments
+        ? { documentsVerifiedAt: new Date().toISOString() }
         : {}),
     });
     if (!updated) {
       return res.status(404).json({ success: false, error: "Case not found" });
     }
+
+    if (verifyDocuments) {
+      const signed = getSignedDocuments(updated);
+      const nextSigned = { ...signed };
+      for (const key of Object.keys(nextSigned) as Array<
+        keyof typeof nextSigned
+      >) {
+        const rec = nextSigned[key];
+        if (rec) {
+          nextSigned[key] = {
+            ...rec,
+            verifiedByAdmin: true,
+            verifiedAt: new Date().toISOString(),
+          };
+        }
+      }
+      updateRecoveryCase(caseId, {
+        signedDocuments: nextSigned as Record<string, unknown>,
+        documentsVerifiedAt: new Date().toISOString(),
+      });
+    }
+
     if (notification && typeof notification === "object") {
       addCaseNotification(caseId, {
         title: String(notification.title || "Update"),
@@ -634,6 +962,86 @@ async function startServer() {
     const fresh = getRecoveryCaseById(caseId);
     res.json({ success: true, case: fresh || updated });
   });
+
+  app.get(
+    "/api/admin/cases/:caseId/documents/:documentType/signature",
+    async (req, res) => {
+      const admin = await requireAdminFromRequest(req.headers.authorization);
+      if (!admin) {
+        return res.status(401).json({ success: false, error: "Unauthorized" });
+      }
+      if (!isCaseDocumentType(req.params.documentType)) {
+        return res.status(400).json({ success: false, error: "Invalid type" });
+      }
+      const found = getRecoveryCaseById(req.params.caseId);
+      if (!found) {
+        return res.status(404).json({ success: false, error: "Case not found" });
+      }
+      const record = getSignedDocuments(found)[req.params.documentType];
+      if (!record?.signatureFilename) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Signature not found" });
+      }
+      const file = readSignatureFile(
+        String(found.caseId || found.id),
+        record.signatureFilename
+      );
+      if (!file) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Signature file missing" });
+      }
+      res.setHeader("Content-Type", file.mimeType);
+      res.setHeader("Cache-Control", "private, no-store");
+      res.send(file.buffer);
+    }
+  );
+
+  app.get(
+    "/api/admin/cases/:caseId/documents/:documentType/pdf",
+    async (req, res) => {
+      const admin = await requireAdminFromRequest(req.headers.authorization);
+      if (!admin) {
+        return res.status(401).json({ success: false, error: "Unauthorized" });
+      }
+      if (!isCaseDocumentType(req.params.documentType)) {
+        return res.status(400).json({ success: false, error: "Invalid type" });
+      }
+      const found = getRecoveryCaseById(req.params.caseId);
+      if (!found) {
+        return res.status(404).json({ success: false, error: "Case not found" });
+      }
+      let pdf: Buffer | null = null;
+      try {
+        pdf = await getOrCreateSignedPdf(found, req.params.documentType);
+      } catch (err) {
+        console.error("[PDF] Admin download failed:", err);
+        return res
+          .status(500)
+          .json({ success: false, error: "Could not build PDF" });
+      }
+      if (!pdf) {
+        return res
+          .status(404)
+          .json({ success: false, error: "PDF not available" });
+      }
+      const filename = signedPdfFilename(
+        String(found.caseId || found.id),
+        req.params.documentType
+      );
+      const download = req.query.download === "1";
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `${download ? "attachment" : "inline"}; filename="${filename}"`
+      );
+      res.setHeader("Cache-Control", "private, no-store");
+      res.setHeader("X-Frame-Options", "SAMEORIGIN");
+      res.setHeader("Content-Length", String(pdf.length));
+      res.send(pdf);
+    }
+  );
 
   app.post("/api/admin/cases/:caseId/messages", async (req, res) => {
     const admin = await requireAdminFromRequest(req.headers.authorization);
@@ -795,7 +1203,14 @@ async function startServer() {
   if (!isProduction) {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        host: true,
+        allowedHosts: true,
+        hmr: {
+          clientPort: PORT,
+        },
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);

@@ -103,3 +103,56 @@ export async function apiFetch<T = unknown>(
 
   return { ok: false, data: null, error: lastError, status: lastStatus };
 }
+
+/** Binary GET (PDFs, images) across the same API bases as apiFetch. */
+export async function apiFetchBlob(
+  path: string,
+  init?: RequestInit
+): Promise<{ ok: boolean; blob?: Blob; error?: string; status?: number }> {
+  let lastError = "API unavailable";
+  let lastStatus: number | undefined;
+
+  for (const base of getApiBases()) {
+    const url = buildUrl(base, path);
+    try {
+      const res = await fetch(url, init);
+      lastStatus = res.status;
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("text/html")) {
+        lastError = "API returned HTML (wrong host — not Node server)";
+        continue;
+      }
+      if (!res.ok) {
+        lastError = `HTTP ${res.status}`;
+        if (contentType.includes("application/json")) {
+          try {
+            const data = (await res.json()) as { error?: string };
+            lastError = data.error || lastError;
+          } catch {
+            /* ignore */
+          }
+        }
+        if (res.status === 401 || res.status === 403) continue;
+        return { ok: false, error: lastError, status: res.status };
+      }
+      if (
+        !contentType.includes("pdf") &&
+        !contentType.includes("octet-stream") &&
+        !contentType.includes("image/")
+      ) {
+        lastError = "Unexpected response type";
+        continue;
+      }
+      const blob = await res.blob();
+      if (!blob || blob.size < 8) {
+        lastError = "Empty file";
+        continue;
+      }
+      return { ok: true, blob, status: res.status };
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
+  return { ok: false, error: lastError, status: lastStatus };
+}

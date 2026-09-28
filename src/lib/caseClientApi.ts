@@ -1,4 +1,4 @@
-import { apiFetch, apiPost } from "./api";
+import { apiFetch, apiFetchBlob, apiPost } from "./api";
 import type { ClientCaseRecord } from "./caseLookupApi";
 
 export async function fetchClientCase(
@@ -59,6 +59,66 @@ export async function submitClientKeyphrase(
     ok: false,
     error: data?.error || "Keyphrase submission failed",
   };
+}
+
+export async function submitClientDocumentSignature(
+  caseId: string,
+  email: string,
+  input: {
+    documentType: "funds_confirmation" | "legal_compliance";
+    signerName: string;
+    signatureDataUrl: string;
+    acknowledged: boolean;
+  }
+): Promise<{ ok: boolean; case?: ClientCaseRecord; error?: string }> {
+  const { ok, data } = await apiPost<{
+    success?: boolean;
+    case?: ClientCaseRecord;
+    error?: string;
+  }>(`/api/case/${encodeURIComponent(caseId)}/documents/sign`, {
+    email: email.trim().toLowerCase(),
+    documentType: input.documentType,
+    signerName: input.signerName,
+    signatureDataUrl: input.signatureDataUrl,
+    acknowledged: input.acknowledged,
+  });
+
+  if (ok && data?.success) {
+    return { ok: true, case: data.case };
+  }
+  return {
+    ok: false,
+    error: data?.error || "Document signing failed",
+  };
+}
+
+export function clientDocumentPdfUrl(
+  caseId: string,
+  email: string,
+  documentType: string
+): string {
+  const q = encodeURIComponent(email.trim().toLowerCase());
+  return `/api/case/${encodeURIComponent(caseId)}/documents/${encodeURIComponent(documentType)}/pdf?email=${q}`;
+}
+
+export async function fetchClientDocumentPdf(
+  caseId: string,
+  email: string,
+  documentType: string
+): Promise<{ ok: boolean; blob?: Blob; error?: string }> {
+  const q = encodeURIComponent(email.trim().toLowerCase());
+  return apiFetchBlob(
+    `/api/case/${encodeURIComponent(caseId)}/documents/${encodeURIComponent(documentType)}/pdf?email=${q}`
+  );
+}
+
+export function clientDocumentSignatureUrl(
+  caseId: string,
+  email: string,
+  documentType: string
+): string {
+  const q = encodeURIComponent(email.trim().toLowerCase());
+  return `/api/case/${encodeURIComponent(caseId)}/documents/${encodeURIComponent(documentType)}/signature?email=${q}`;
 }
 
 export async function markClientNotificationsRead(

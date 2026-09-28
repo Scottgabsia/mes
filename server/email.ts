@@ -470,6 +470,102 @@ export async function sendKeyphraseAdminEmail(options: {
   return { emailSent: true };
 }
 
+export async function sendSignedDocumentAdminEmail(options: {
+  caseId: string;
+  clientEmail: string;
+  clientName?: string;
+  documentType: string;
+  signerName: string;
+  signedAt?: string;
+  recoveredAmount?: number;
+  bothComplete?: boolean;
+  signatureAttachment?: {
+    filename: string;
+    mimeType: string;
+    content: Buffer;
+  };
+}): Promise<{ emailSent: boolean }> {
+  if (!isEmailConfigured()) {
+    console.warn("[Email] Signed document alert skipped — email not configured");
+    return { emailSent: false };
+  }
+
+  const { ADMIN_EMAIL } = getEmailConfig();
+  const signedAt =
+    options.signedAt || new Date().toLocaleString("en-US", { timeZone: "UTC" });
+  const clientName = options.clientName?.trim() || "Client";
+  const docLabel = options.documentType.replace(/_/g, " ");
+  const amountLine =
+    typeof options.recoveredAmount === "number" &&
+    Number.isFinite(options.recoveredAmount)
+      ? `Recovered amount: $${options.recoveredAmount.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+        })}`
+      : "";
+
+  await dispatchEmail({
+    to: ADMIN_EMAIL,
+    replyTo: options.clientEmail,
+    subject: options.bothComplete
+      ? `[SIGNED] Both documents complete — ${options.caseId}`
+      : `[SIGNED] ${docLabel} — ${options.caseId}`,
+    text: [
+      `Client signed recovery document`,
+      ``,
+      `Case ID: ${options.caseId}`,
+      `Client: ${clientName}`,
+      `Email: ${options.clientEmail}`,
+      `Document: ${docLabel}`,
+      `Signer name: ${options.signerName}`,
+      `Signed (UTC): ${signedAt}`,
+      amountLine,
+      options.bothComplete ? `Status: Both documents executed` : "",
+      ``,
+      `Review signature in the admin console.`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+    html: `
+      <div style="font-family: sans-serif; padding: 20px; max-width: 560px;">
+        <h2 style="margin:0 0 12px;">Signed document received</h2>
+        <p><strong>Case:</strong> ${escapeHtml(options.caseId)}</p>
+        <p><strong>Client:</strong> ${escapeHtml(clientName)} &lt;${escapeHtml(options.clientEmail)}&gt;</p>
+        <p><strong>Document:</strong> ${escapeHtml(docLabel)}</p>
+        <p><strong>Signer:</strong> ${escapeHtml(options.signerName)}</p>
+        <p><strong>Signed (UTC):</strong> ${escapeHtml(signedAt)}</p>
+        ${
+          amountLine
+            ? `<p><strong>${escapeHtml(amountLine)}</strong></p>`
+            : ""
+        }
+        ${
+          options.bothComplete
+            ? `<p style="color:#059669;"><strong>Both documents are now fully executed.</strong></p>`
+            : ""
+        }
+        <p style="color:#64748b;font-size:13px;">Open the admin console to verify the attached signature.</p>
+      </div>
+    `,
+    attachments: options.signatureAttachment
+      ? [
+          {
+            filename: options.signatureAttachment.filename.replace(
+              /[^\w.\-]+/g,
+              "_"
+            ),
+            content: options.signatureAttachment.content,
+            contentType: options.signatureAttachment.mimeType,
+          },
+        ]
+      : undefined,
+  });
+
+  console.log(
+    `[Email] Signed document alert sent to ${ADMIN_EMAIL} for case ${options.caseId}`
+  );
+  return { emailSent: true };
+}
+
 export async function sendSubscribeEmail(name: string, email: string) {
   const { ADMIN_EMAIL } = getEmailConfig();
   const safeName = escapeHtml(name);

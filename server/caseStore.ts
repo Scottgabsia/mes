@@ -139,6 +139,10 @@ export function getCaseStorePath(): string {
   return getCasesFile();
 }
 
+export function getCaseDataDir(): string {
+  return getDataDir();
+}
+
 function readStoreFile(filePath: string): { cases: StoredCase[] } | null {
   if (!fs.existsSync(filePath)) return null;
   try {
@@ -449,7 +453,16 @@ export function submitCaseKeyphrase(
 
 export function updateRecoveryCase(
   caseId: string,
-  patch: { status?: string; completedSteps?: string[] }
+  patch: {
+    status?: string;
+    completedSteps?: string[];
+    recoveredAmount?: number;
+    recoveredAmountCurrency?: string;
+    documentsReleased?: boolean;
+    documentsReleasedAt?: string;
+    signedDocuments?: Record<string, unknown>;
+    documentsVerifiedAt?: string;
+  }
 ): StoredCase | null {
   const store = ensureStore();
   const idx = findCaseIndex(store, caseId);
@@ -460,9 +473,119 @@ export function updateRecoveryCase(
     ...(patch.completedSteps !== undefined
       ? { completedSteps: patch.completedSteps }
       : {}),
+    ...(patch.recoveredAmount !== undefined
+      ? { recoveredAmount: patch.recoveredAmount }
+      : {}),
+    ...(patch.recoveredAmountCurrency !== undefined
+      ? { recoveredAmountCurrency: patch.recoveredAmountCurrency }
+      : {}),
+    ...(patch.documentsReleased !== undefined
+      ? { documentsReleased: patch.documentsReleased }
+      : {}),
+    ...(patch.documentsReleasedAt !== undefined
+      ? { documentsReleasedAt: patch.documentsReleasedAt }
+      : {}),
+    ...(patch.signedDocuments !== undefined
+      ? { signedDocuments: patch.signedDocuments }
+      : {}),
+    ...(patch.documentsVerifiedAt !== undefined
+      ? { documentsVerifiedAt: patch.documentsVerifiedAt }
+      : {}),
     updatedAt: new Date().toISOString(),
   };
   writeStore(store);
+  return store.cases[idx];
+}
+
+export function submitCaseDocumentSignature(
+  caseId: string,
+  email: string,
+  input: {
+    documentType: "funds_confirmation" | "legal_compliance";
+    signerName: string;
+    signatureFilename: string;
+    acknowledged: boolean;
+  }
+): StoredCase | null {
+  const store = ensureStore();
+  const idx = findCaseIndex(store, caseId);
+  if (idx === -1 || !caseMatchesEmail(store.cases[idx], email)) {
+    return null;
+  }
+
+  const row = store.cases[idx];
+  if (row.status !== "SIGNING" && !row.documentsReleased) {
+    return null;
+  }
+
+  const recoveredAmount = Number(row.recoveredAmount);
+  if (
+    input.documentType === "funds_confirmation" &&
+    (!Number.isFinite(recoveredAmount) || recoveredAmount <= 0)
+  ) {
+    return null;
+  }
+
+  const existing =
+    row.signedDocuments && typeof row.signedDocuments === "object"
+      ? { ...(row.signedDocuments as Record<string, unknown>) }
+      : {};
+
+  if (existing[input.documentType]) {
+    return null;
+  }
+
+  const record = {
+    documentType: input.documentType,
+    signedAt: new Date().toISOString(),
+    signerName: input.signerName.trim(),
+    signatureFilename: input.signatureFilename,
+    acknowledged: Boolean(input.acknowledged),
+    recoveredAmount: Number.isFinite(recoveredAmount)
+      ? recoveredAmount
+      : undefined,
+    recoveredAmountCurrency: String(row.recoveredAmountCurrency || "USD"),
+    caseId: String(row.caseId || row.id),
+    clientEmail: normalizeEmail(email),
+  };
+
+  existing[input.documentType] = record;
+
+  const steps = Array.isArray(row.completedSteps)
+    ? [...row.completedSteps]
+    : ["PENDING"];
+  if (!steps.includes("SIGNING")) steps.push("SIGNING");
+
+  const bothSigned =
+    Boolean(existing.funds_confirmation) && Boolean(existing.legal_compliance);
+
+  if (bothSigned && !steps.includes("COMPLETED")) {
+    steps.push("COMPLETED");
+  }
+
+  store.cases[idx] = {
+    ...row,
+    signedDocuments: existing,
+    completedSteps: steps,
+    status: bothSigned ? "COMPLETED" : "SIGNING",
+    updatedAt: new Date().toISOString(),
+  };
+
+  writeStore(store);
+
+  addCaseNotification(caseId, {
+    title: bothSigned
+      ? "Documents Fully Executed"
+      : "Signed Document Received",
+    message: bothSigned
+      ? "Client signed both documents. Case advanced to Restoration Ready. Review signatures in the admin console."
+      : `Client signed the ${input.documentType.replace(/_/g, " ")} document. Awaiting remaining acknowledgement.`,
+    type: "ACTION_REQUIRED",
+  });
+
+  console.log(
+    `[CaseStore] Document ${input.documentType} signed for case ${caseId}`
+  );
   return store.cases[idx];
 }
 
