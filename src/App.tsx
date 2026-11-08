@@ -486,6 +486,17 @@ export default function App() {
                   </div>
                 </Link>
                 <Link 
+                  to="/contact"
+                  onClick={() => handleNavClick('clientPortal')}
+                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
+                    currentView === 'clientPortal' ? 'text-blue-500' : 'text-slate-400'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck className="w-5 h-5" /> Contact Us
+                  </div>
+                </Link>
+                <Link 
                   to="/services"
                   onClick={() => handleNavClick('services')}
                   className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
@@ -527,17 +538,6 @@ export default function App() {
                 >
                   <div className="flex items-center gap-3">
                     <Star className="w-5 h-5" /> Reviews
-                  </div>
-                </Link>
-                <Link 
-                  to="/contact"
-                  onClick={() => handleNavClick('clientPortal')}
-                  className={`text-left font-manrope text-lg font-bold tracking-widest uppercase transition-colors no-underline ${
-                    currentView === 'clientPortal' ? 'text-blue-500' : 'text-slate-400'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="w-5 h-5" /> Contact Us
                   </div>
                 </Link>
                 <div className="pt-6 border-t border-white/5 space-y-4">

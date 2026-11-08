@@ -1,6 +1,11 @@
+import dns from "node:dns";
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Resend } from "resend";
+
+// Nodemailer 10 no longer accepts `family` on createTransport. Prefer IPv4
+// lookups so Hostinger SMTP still avoids IPv6 resolve warnings.
+dns.setDefaultResultOrder("ipv4first");
 import {
   buildAdminMessageClientEmailHtml,
   buildAdminMessageClientEmailText,
@@ -115,8 +120,6 @@ function getSmtpTransporter(): Transporter | null {
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
-    // Prefer IPv4 on shared hosts (Hostinger sometimes logs IPv6 resolve warnings)
-    family: 4,
     connectionTimeout: 20_000,
     greetingTimeout: 20_000,
     socketTimeout: 30_000,
