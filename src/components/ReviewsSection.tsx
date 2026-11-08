@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { BadgeCheck, ChevronRight } from 'lucide-react';
 import { HOME_CAROUSEL_REVIEWS } from '../data/homeReviews';
 
@@ -16,8 +15,7 @@ interface CarouselReview {
 const REVIEWS: CarouselReview[] = HOME_CAROUSEL_REVIEWS;
 const WINDOW = 3;
 const SLIDE_MS = 6000;
-
-const ease = [0.22, 1, 0.36, 1] as const;
+const FADE_MS = 280;
 
 interface ReviewsSectionProps {
   onSeeMore: () => void;
@@ -26,20 +24,29 @@ interface ReviewsSectionProps {
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => {
   const [activeReviewIndex, setActiveReviewIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
+  const [opaque, setOpaque] = React.useState(true);
   const maxIndex = Math.max(1, REVIEWS.length - WINDOW + 1);
 
   React.useEffect(() => {
     if (paused) return;
-    const timer = setInterval(() => {
-      setActiveReviewIndex((prev) => (prev + 1) % maxIndex);
+    let fadeIn: number | undefined;
+    const timer = window.setInterval(() => {
+      setOpaque(false);
+      fadeIn = window.setTimeout(() => {
+        setActiveReviewIndex((prev) => (prev + 1) % maxIndex);
+        setOpaque(true);
+      }, FADE_MS);
     }, SLIDE_MS);
-    return () => clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      if (fadeIn) window.clearTimeout(fadeIn);
+    };
   }, [paused, maxIndex]);
 
   const visible = REVIEWS.slice(activeReviewIndex, activeReviewIndex + WINDOW);
 
   return (
-    <section className="mb-stack-lg">
+    <section className="mb-stack-lg" style={{ overflowAnchor: 'none' }}>
       <div className="flex items-end justify-between mb-8">
         <div>
           <h3 className="text-xl sm:text-3xl font-bold text-white tracking-tight uppercase">Global Reputation & Sentiment</h3>
@@ -62,77 +69,70 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => 
       </div>
 
       <div
-        className="relative mb-8 overflow-hidden"
+        className="relative mb-8"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {/* Stack slides in one grid cell so height stays put while they crossfade. */}
-        <div className="grid">
-          <AnimatePresence initial={false}>
-            <motion.div
-              key={activeReviewIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.35, ease }}
-              className="col-start-1 row-start-1 grid grid-cols-1 md:grid-cols-3 gap-6 text-left"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          {visible.map((review, slot) => (
+            <div
+              key={slot}
+              className={`glass-panel p-6 rounded-sm border flex flex-col justify-between min-h-[240px] md:min-h-[260px] ${
+                review.platformType === 'GOOGLE'
+                  ? 'border-blue-500/10'
+                  : 'border-emerald-500/10'
+              }`}
             >
-              {visible.map((review) => (
-                <div
-                  key={review.id}
-                  className={`glass-panel p-6 rounded-sm border group flex flex-col justify-between min-h-[240px] md:min-h-[260px] ${
-                    review.platformType === 'GOOGLE'
-                      ? 'border-blue-500/10 hover:border-blue-500/30'
-                      : 'border-emerald-500/10 hover:border-emerald-500/30'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-8 h-8 rounded flex items-center justify-center text-white ${
-                            review.platformType === 'GOOGLE' ? 'bg-blue-600' : 'bg-emerald-500'
-                          }`}
-                        >
-                          <BadgeCheck className="w-5 h-5" />
-                        </div>
-                        <span className="text-[11px] font-bold text-white tracking-widest font-mono uppercase">
-                          {review.platform}
-                        </span>
+              <div
+                className="flex flex-col h-full justify-between transition-opacity duration-300 ease-out"
+                style={{ opacity: opaque ? 1 : 0 }}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-8 h-8 rounded flex items-center justify-center text-white ${
+                          review.platformType === 'GOOGLE' ? 'bg-blue-600' : 'bg-emerald-500'
+                        }`}
+                      >
+                        <BadgeCheck className="w-5 h-5" />
                       </div>
-                      <div className="flex gap-0.5">
-                        {[...Array(review.rating)].map((_, i) => (
-                          <div
-                            key={i}
-                            className={`w-2 h-2 ${
-                              review.platformType === 'GOOGLE'
-                                ? 'bg-blue-500 shadow-[0_0_5px_#3b82f6]'
-                                : 'bg-emerald-500'
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      <span className="text-[11px] font-bold text-white tracking-widest font-mono uppercase">
+                        {review.platform}
+                      </span>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium italic h-[7.125rem] line-clamp-5 overflow-hidden">
-                      "{review.content}"
-                    </p>
+                    <div className="flex gap-0.5">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-2 h-2 ${
+                            review.platformType === 'GOOGLE'
+                              ? 'bg-blue-500 shadow-[0_0_5px_#3b82f6]'
+                              : 'bg-emerald-500'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5 mt-auto">
-                    <span className="text-[10px] text-slate-500 font-fira uppercase truncate">
-                      USER_ID: {review.user}
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold tracking-tighter uppercase font-fira shrink-0 ${
-                        review.platformType === 'GOOGLE' ? 'text-blue-400' : 'text-emerald-400'
-                      }`}
-                    >
-                      {review.tag}
-                    </span>
-                  </div>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium italic h-[7.125rem] overflow-hidden">
+                    "{review.content}"
+                  </p>
                 </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5 mt-auto">
+                  <span className="text-[10px] text-slate-500 font-fira uppercase truncate">
+                    USER_ID: {review.user}
+                  </span>
+                  <span
+                    className={`text-[10px] font-bold tracking-tighter uppercase font-fira shrink-0 ${
+                      review.platformType === 'GOOGLE' ? 'text-blue-400' : 'text-emerald-400'
+                    }`}
+                  >
+                    {review.tag}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

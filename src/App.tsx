@@ -332,11 +332,15 @@ export default function App() {
   const hasTickerBar =
     currentView === 'services' || currentView === 'intelligence';
   const sidebarTop = headerHeight + (hasTickerBar ? TICKER_HEIGHT : 0);
+  const hideWhatsAppRail =
+    currentView === 'reviews' ||
+    currentView === 'submitReview' ||
+    currentView === 'clientPortal';
 
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
       <RouteSEO />
-      {showWhatsAppRail && (
+      {showWhatsAppRail && !hideWhatsAppRail && (
         <a
           href={WHATSAPP_URL}
           target="_blank"
