@@ -281,14 +281,14 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
             success: '94.8%'
           },
           {
-            title: "Scam & Fraud Assistance",
-            desc: "Victim support protocols for phishing, rug pulls, and social engineering. Immediate asset movement freeze and reporting.",
+            title: "Crypto Recovery & Fraud Assistance",
+            desc: "Crypto recovery for phishing, rug pulls, romance investment fraud, and social engineering. We trace stolen assets, pursue exchange freezes, and stay with you through reporting until funds can be returned.",
             icon: ShieldAlert,
             color: "text-error",
             bg: "bg-error/10",
             border: "border-error/20",
             stats: { 'Detection Rate': 'Real-time', 'Legal Nexus': 'Interpol API' },
-            points: ['Direct Node Intervention', 'Legal Nexus Support'],
+            points: ['Stolen Crypto Recovery', 'Direct Node Intervention', 'Legal Nexus Support'],
             action: 'BEGIN SHIELD',
             success: '< 8m Response'
           },

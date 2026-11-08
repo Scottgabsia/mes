@@ -412,7 +412,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     >
                       <option disabled value="">SELECT_SERVICE_...</option>
                       <option value="WALLET_RECOVERY">WALLET_RECOVERY</option>
-                      <option value="SCAM_FRAUD_ASSISTANCE">SCAM_FRAUD_ASSISTANCE</option>
+                      <option value="CRYPTO_RECOVERY_FRAUD_ASSISTANCE">Crypto Recovery & Fraud Assistance</option>
                       <option value="FORENSIC_TRACKING">FORENSIC_TRACKING</option>
                       <option value="EXCHANGE_RECOVERY">EXCHANGE_RECOVERY</option>
                       <option value="EXPERT_CONSULTATION">EXPERT_CONSULTATION</option>

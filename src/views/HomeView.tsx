@@ -109,7 +109,7 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
       operatorAlias: formData.name,
       secureComms: normalizedEmail,
       phone: formData.phone,
-      incidentVector: formData.service.toUpperCase().replace(/\s/g, '_'),
+      incidentVector: formData.service.replace(/&/g, '').replace(/\s+/g, ' ').trim().toUpperCase().replace(/\s/g, '_'),
       targetNetwork: resolvedNetwork,
       transactionHash: 'NOT_PROVIDED',
       caseNarrative: formData.caseNarrative.trim(),
@@ -131,7 +131,7 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
         phone: formData.phone,
         estimatedValue: numericBalance,
         targetNetwork: resolvedNetwork,
-        incidentVector: formData.service.toUpperCase().replace(/\s/g, '_'),
+        incidentVector: formData.service.replace(/&/g, '').replace(/\s+/g, ' ').trim().toUpperCase().replace(/\s/g, '_'),
         caseNarrative: formData.caseNarrative.trim(),
         createdAt: new Date().toISOString(),
       });
@@ -470,7 +470,7 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
                 >
                   <option disabled value="">SELECT_SERVICE...</option>
                   <option>Wallet Recovery</option>
-                  <option>Scam & Fraud Assistance</option>
+                  <option>Crypto Recovery & Fraud Assistance</option>
                   <option>Forensic Tracking</option>
                   <option>Exchange Recovery</option>
                   <option>Expert Consultation</option>
