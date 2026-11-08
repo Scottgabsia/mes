@@ -1,15 +1,26 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-N8JS53L2');</script>
-    <!-- End Google Tag Manager -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+      (function () {
+        function loadGtm() {
+          var f = document.getElementsByTagName('script')[0];
+          var j = document.createElement('script');
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-N8JS53L2';
+          f.parentNode.insertBefore(j, f);
+        }
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadGtm, { timeout: 2500 });
+        } else {
+          window.addEventListener('load', function () { setTimeout(loadGtm, 1); });
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
@@ -27,6 +38,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=11" />
     <link rel="manifest" href="/site.webmanifest?v=11" />
     <meta name="theme-color" content="#0a1020" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" />
+    <link rel="preconnect" href="https://lh3.googleusercontent.com" />
 
     <script type="application/ld+json">
       {
@@ -80,13 +95,24 @@
     <meta property="twitter:description" content="Professional forensic analysis, crypto asset recovery, and secure blockchain investigations." />
     <meta property="twitter:image" content="https://cryptorecoveryasset.com/og-image.png?v=1" />
 
-    <!-- Clarity tracking code for https://cryptorecoveryasset.com/ -->
+    <!-- Clarity — idle so it does not compete with first paint / ad landings -->
     <script>
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "wxg20z90xq");
+      (function () {
+        function loadClarity() {
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "wxg20z90xq");
+        }
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(loadClarity, { timeout: 4000 });
+        } else {
+          window.addEventListener("load", function () {
+            setTimeout(loadClarity, 1);
+          });
+        }
+      })();
     </script>
   </head>
   <body>

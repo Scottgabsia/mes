@@ -16,9 +16,9 @@ const BATCH_SIZE = 100; // stay well under the 10,000 URL limit
 
 function collectUrls(): string[] {
   const base = SITE_URL.replace(/\/$/, "");
-  const urls = SEO_ROUTES.map((route) =>
-    route.path === "/" ? `${base}/` : `${base}${route.path}`
-  );
+  const urls = SEO_ROUTES.filter(
+    (route) => !route.noindex && !route.path.startsWith("/admin")
+  ).map((route) => (route.path === "/" ? `${base}/` : `${base}${route.path}`));
   for (const slug of BLOG_SLUGS) {
     urls.push(`${base}/blog/${slug}`);
   }

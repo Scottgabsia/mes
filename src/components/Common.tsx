@@ -19,6 +19,10 @@ export const ForensicAgent = ({ name, role, tags, img }: { name: string; role: s
         src={img} 
         alt={name} 
         referrerPolicy="no-referrer"
+        loading="lazy"
+        decoding="async"
+        width={64}
+        height={64}
         className="w-full h-full rounded-sm object-cover filter grayscale group-hover:grayscale-0 transition-all" 
       />
       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full" />

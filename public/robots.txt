@@ -5,12 +5,16 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /portal
+Disallow: /intake-received
 Disallow: /reviews/submit
 
 User-agent: Googlebot
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /portal
+Disallow: /intake-received
 Disallow: /reviews/submit
 
 User-agent: Googlebot-Image
@@ -22,24 +26,32 @@ User-agent: Bingbot
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /portal
+Disallow: /intake-received
 Disallow: /reviews/submit
 
 User-agent: DuckDuckBot
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /portal
+Disallow: /intake-received
 Disallow: /reviews/submit
 
 User-agent: Slurp
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /portal
+Disallow: /intake-received
 Disallow: /reviews/submit
 
 User-agent: Yandex
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /portal
+Disallow: /intake-received
 Disallow: /reviews/submit
 
 User-agent: facebookexternalhit

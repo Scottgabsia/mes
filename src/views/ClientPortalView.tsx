@@ -22,7 +22,6 @@ import {
   Star,
   RefreshCw
 } from 'lucide-react';
-import { serverTimestamp } from 'firebase/firestore';
 import { submitRecoveryCase } from '../lib/submitRecoveryCase';
 import type { IntakeSession } from '../lib/intakeSession';
 import { CRYPTO_CURRENCIES } from '../constants';
@@ -189,7 +188,6 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
       transactionHash: 'NOT_PROVIDED',
       caseNarrative: formData.caseNarrative.trim(),
       estimatedValue: resolvedAssetValue,
-      createdAt: serverTimestamp(),
       status: 'PENDING',
       formSource: 'INTAKE_INITIALIZATION',
     };

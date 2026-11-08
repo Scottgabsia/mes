@@ -221,7 +221,7 @@ function injectSeo(
 }
 
 function writeShell(pathname: string, bodyHtml: string, noindex = false): void {
-  const seo = getSeoForPath(pathname);
+  const seo = getSeoForPath(pathname, getBlogPostBySlug);
   const html = injectSeo(baseTemplate, {
     title: seo.title,
     description: seo.description,

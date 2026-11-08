@@ -13,7 +13,6 @@ import { CRYPTO_CURRENCIES, getActiveTraceCount } from '../constants';
 import { ReviewsSection } from '../components/ReviewsSection';
 import { CertificationsPartnershipsSection } from '../components/CertificationsPartnershipsSection';
 import { SEO } from '../components/SEO';
-import { serverTimestamp } from 'firebase/firestore';
 import { submitRecoveryCase } from '../lib/submitRecoveryCase';
 import type { IntakeSession } from '../lib/intakeSession';
 
@@ -25,18 +24,6 @@ interface HomeViewProps {
 export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
   const [balance, setBalance] = React.useState<number | string>(50000);
   const traceCount = getActiveTraceCount();
-  const [secondsSinceLast, setSecondsSinceLast] = React.useState(12.4);
-
-  React.useEffect(() => {
-    const secInterval = setInterval(() => {
-      setSecondsSinceLast(prev => {
-        const next = prev + 0.1;
-        return next > 30 ? 0.1 : parseFloat(next.toFixed(1));
-      });
-    }, 100);
-
-    return () => clearInterval(secInterval);
-  }, []);
 
   const [network, setNetwork] = React.useState('Bitcoin (BTC)');
   const [customNetwork, setCustomNetwork] = React.useState('');
@@ -114,7 +101,6 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
       transactionHash: 'NOT_PROVIDED',
       caseNarrative: formData.caseNarrative.trim(),
       estimatedValue: numericBalance,
-      createdAt: serverTimestamp(),
       status: 'PENDING',
       formSource: 'Home_Triage_Form',
       name: formData.name,
@@ -234,6 +220,10 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
               className="w-full h-full object-cover opacity-60 mix-blend-screen"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs"
               referrerPolicy="no-referrer"
+              fetchPriority="high"
+              decoding="async"
+              width={1200}
+              height={800}
               animate={{ scale: [1.05, 1] }}
               transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
             />
@@ -681,7 +671,7 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
                 <span className="font-fira text-[40px] text-white">0{i + 1}</span>
               </div>
               <div className="flex items-center gap-4 mb-8">
-                <img src={dossier.img} alt={dossier.name} referrerPolicy="no-referrer" className={`w-14 h-14 rounded-sm object-cover border-2 ${dossier.color.replace('border-t-', 'border-')}/20`} />
+                <img src={dossier.img} alt={dossier.name} referrerPolicy="no-referrer" loading="lazy" decoding="async" width={56} height={56} className={`w-14 h-14 rounded-sm object-cover border-2 ${dossier.color.replace('border-t-', 'border-')}/20`} />
                 <div>
                   <p className="text-white font-bold text-sm tracking-tight">{dossier.name}</p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest font-fira">CASE #{dossier.caseId}</p>

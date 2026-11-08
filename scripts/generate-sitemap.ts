@@ -35,12 +35,16 @@ type UrlEntry = {
   priority: string;
 };
 
-const urls: UrlEntry[] = SEO_ROUTES.map((route) => ({
-  loc: route.path === "/" ? `${base}/` : `${base}${route.path}`,
-  lastmod: today,
-  changefreq: route.changefreq ?? "monthly",
-  priority: String(route.priority ?? 0.5),
-}));
+const urls: UrlEntry[] = SEO_ROUTES.filter(
+  (route) => !route.noindex && !route.path.startsWith("/admin")
+).map(
+  (route) => ({
+    loc: route.path === "/" ? `${base}/` : `${base}${route.path}`,
+    lastmod: today,
+    changefreq: route.changefreq ?? "monthly",
+    priority: String(route.priority ?? 0.5),
+  })
+);
 
 const blogBySlug = new Map(FEATURED_BLOG_POSTS.map((p) => [p.slug, p]));
 

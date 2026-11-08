@@ -1,10 +1,14 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "./firebase";
 import { apiPost } from "./api";
-import {
-  isEmailJsConfigured,
-  sendIntakeEmailViaEmailJs,
-} from "./emailjs";
+import { trackIntakeLead } from "./adsTracking";
+
+function isEmailJsConfigured(): boolean {
+  const env = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env;
+  return Boolean(
+    env?.VITE_EMAILJS_SERVICE_ID?.trim() &&
+      env?.VITE_EMAILJS_TEMPLATE_ID?.trim() &&
+      env?.VITE_EMAILJS_PUBLIC_KEY?.trim()
+  );
+}
 
 export type IntakeSubmission = Record<string, unknown> & {
   secureComms: string;
@@ -23,7 +27,7 @@ export async function submitRecoveryCase(
   serverSaved: boolean;
   emailSent: boolean;
 }> {
-  const { createdAt, ...apiData } = submissionData;
+  const { createdAt: _createdAt, ...apiData } = submissionData;
   const payload = {
     ...apiData,
     timestamp: new Date().toISOString(),
@@ -45,6 +49,7 @@ export async function submitRecoveryCase(
     emailSent = Boolean(data.emailSent);
   } else if (isEmailJsConfigured()) {
     try {
+      const { sendIntakeEmailViaEmailJs } = await import("./emailjs");
       await sendIntakeEmailViaEmailJs(payload);
       emailSent = true;
     } catch (err) {
@@ -57,13 +62,27 @@ export async function submitRecoveryCase(
   }
 
   try {
+    const [{ collection, addDoc, serverTimestamp }, { db }] = await Promise.all([
+      import("firebase/firestore"),
+      import("./firebase"),
+    ]);
     await addDoc(collection(db, "recovery_requests"), {
       ...submissionData,
       ...(caseId ? { caseId } : {}),
-      createdAt: createdAt ?? serverTimestamp(),
+      createdAt: submissionData.createdAt ?? serverTimestamp(),
     });
   } catch (fsError) {
     console.warn("Firestore intake save failed (server store is primary):", fsError);
+  }
+
+  if (serverSaved || emailSent) {
+    trackIntakeLead({
+      formId: String(submissionData.formSource || "intake"),
+      service: String(
+        submissionData.service || submissionData.incidentVector || ""
+      ),
+      value: Number(submissionData.estimatedValue) || 0,
+    });
   }
 
   return { caseId, serverSaved, emailSent };

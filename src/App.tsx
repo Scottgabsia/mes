@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ShieldCheck, 
@@ -22,30 +22,32 @@ import { CONTACT_EMAIL, LOGO_URL } from './constants';
 import { FooterSocialLinks } from './components/SocialIcons';
 import { RouteSEO } from './components/RouteSEO';
 import { HomeView } from './views/HomeView';
-import { ServicesView } from './views/ServicesView';
-import { IntelligenceView } from './views/IntelligenceView';
 import { ClientPortalView } from './views/ClientPortalView';
-import { RecoveryConfirmationView } from './views/RecoveryConfirmationView';
-import { ClientDashboardView } from './views/ClientDashboardView';
-import { ChainTraceabilityView } from './views/ChainTraceabilityView';
-import { ExchangeRecoveryView } from './views/ExchangeRecoveryView';
-import { LegalEnforcementView } from './views/LegalEnforcementView';
-import { RiskMonitoringView } from './views/RiskMonitoringView';
-import { ToolsView } from './views/ToolsView';
-import { ISO27001View } from './views/ISO27001View';
-import { SOC2View } from './views/SOC2View';
-import { GDPRView } from './views/GDPRView';
-import { AMLKYCView } from './views/AMLKYCView';
-import { CaseLookupView } from './views/CaseLookupView';
-import { AboutView } from './views/AboutView';
-import { BlogView } from './views/BlogView';
-import { PrivacyPolicyView } from './views/PrivacyPolicyView';
-import { TermsOfServiceView } from './views/TermsOfServiceView';
-import { ReviewsView } from './views/ReviewsView';
-import { SubmitReviewView } from './views/SubmitReviewView';
-import { AdminLoginView } from './views/AdminLoginView';
-import { FAQView } from './views/FAQView';
-import CaseManagerView from './views/AdminDashboardView';
+import {
+  ServicesView,
+  IntelligenceView,
+  RecoveryConfirmationView,
+  ClientDashboardView,
+  ChainTraceabilityView,
+  ExchangeRecoveryView,
+  LegalEnforcementView,
+  RiskMonitoringView,
+  ToolsView,
+  ISO27001View,
+  SOC2View,
+  GDPRView,
+  AMLKYCView,
+  CaseLookupView,
+  AboutView,
+  BlogView,
+  PrivacyPolicyView,
+  TermsOfServiceView,
+  ReviewsView,
+  SubmitReviewView,
+  AdminLoginView,
+  FAQView,
+  CaseManagerView,
+} from './views/lazyViews';
 import {
   intakeSessionToCase,
   loadIntakeSession,
@@ -295,11 +297,19 @@ export default function App() {
 
   // Dedicated Route handlers for Admin
   if (location.pathname === '/admin/login' || location.pathname === '/admin/login/') {
-    return <AdminLoginView />;
+    return (
+      <Suspense fallback={null}>
+        <AdminLoginView />
+      </Suspense>
+    );
   }
 
   if (location.pathname === '/admin/dashboard' || location.pathname === '/admin/dashboard/') {
-    return <CaseManagerView />;
+    return (
+      <Suspense fallback={null}>
+        <CaseManagerView />
+      </Suspense>
+    );
   }
 
   const hasTickerBar =
@@ -321,6 +331,8 @@ export default function App() {
                   alt="Crypto Recovery Assets Agency Logo"
                   width={40}
                   height={40}
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-8 h-8 sm:w-10 sm:h-10 object-contain relative z-10" 
                 />
               </div>
@@ -661,6 +673,7 @@ export default function App() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
+            <Suspense fallback={<div className="min-h-[40vh]" aria-hidden="true" />}>
             {currentView === 'home' && (
               <HomeView
                 onNavigate={(view) => handleNavClick(view)}
@@ -719,6 +732,7 @@ export default function App() {
             {currentView === 'reviews' && <ReviewsView onNavigate={(view) => handleNavClick(view as any)} />}
             {currentView === 'submitReview' && <SubmitReviewView onBack={() => handleNavClick('reviews')} />}
             {currentView === 'faq' && <FAQView onNavigate={handleNavClick} />}
+            </Suspense>
           </motion.div>
         </AnimatePresence>
 

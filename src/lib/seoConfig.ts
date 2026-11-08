@@ -1,6 +1,11 @@
 import { SITE_URL } from "../constants";
 import { FAQ_ITEMS } from "../data/faq";
-import { getBlogPostBySlug } from "../data/blogPosts";
+
+export type BlogSeoSource = {
+  title: string;
+  excerpt: string;
+  keywords?: string[];
+};
 
 export type SeoRouteConfig = {
   path: string;
@@ -219,24 +224,37 @@ export function normalizePath(pathname: string): string {
   return trimmed;
 }
 
-export function getSeoForPath(pathname: string): SeoRouteConfig & { canonical: string; noindex: boolean } {
+export function getSeoForPath(
+  pathname: string,
+  getBlogPost?: (slug: string) => BlogSeoSource | undefined
+): SeoRouteConfig & { canonical: string; noindex: boolean } {
   const path = normalizePath(pathname);
 
   const blogMatch = path.match(/^\/blog\/([^/]+)$/);
   if (blogMatch) {
-    const post = getBlogPostBySlug(blogMatch[1]);
+    const post = getBlogPost?.(blogMatch[1]);
     if (post) {
       return {
         path,
         title: post.title,
         description: post.excerpt,
-        keywords: post.keywords.join(", "),
+        keywords: post.keywords?.join(", "),
         changefreq: "monthly",
         priority: 0.72,
         canonical: `${SITE_URL}${path}`,
         noindex: false,
       };
     }
+    return {
+      path,
+      title: "Crypto Recovery Insights",
+      description:
+        "Guides on stolen crypto, scam recovery, wallet tracing, and blockchain forensics from Crypto Recovery Assets.",
+      changefreq: "monthly",
+      priority: 0.72,
+      canonical: `${SITE_URL}${path}`,
+      noindex: false,
+    };
   }
 
   // Aliases → contact
@@ -335,7 +353,10 @@ export function buildProfessionalServiceSchema() {
   };
 }
 
-export function buildBreadcrumbForPath(pathname: string): Record<string, unknown> | null {
+export function buildBreadcrumbForPath(
+  pathname: string,
+  getBlogPost?: (slug: string) => BlogSeoSource | undefined
+): Record<string, unknown> | null {
   const path = normalizePath(pathname);
   if (path === "/") return null;
 
@@ -346,7 +367,7 @@ export function buildBreadcrumbForPath(pathname: string): Record<string, unknown
   const blogMatch = path.match(/^\/blog\/([^/]+)$/);
   if (blogMatch) {
     crumbs.push({ name: "Blog", path: "/blog" });
-    const post = getBlogPostBySlug(blogMatch[1]!);
+    const post = getBlogPost?.(blogMatch[1]!);
     crumbs.push({ name: post?.title ?? "Article", path });
   } else {
     const route = SEO_ROUTES.find((r) => r.path === path);

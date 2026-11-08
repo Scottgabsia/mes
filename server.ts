@@ -1269,7 +1269,14 @@ async function startServer() {
         fallthrough: true,
         setHeaders(res, filePath) {
           res.setHeader("X-Content-Type-Options", "nosniff");
-          if (/\.txt$/i.test(filePath)) {
+          const isHashedAsset =
+            filePath.includes(`${path.sep}assets${path.sep}`) &&
+            /\.(?:js|css|mjs)$/i.test(filePath);
+          if (isHashedAsset) {
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          } else if (/\.(?:png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath)) {
+            res.setHeader("Cache-Control", "public, max-age=86400");
+          } else if (/\.txt$/i.test(filePath)) {
             res.setHeader("Content-Type", "text/plain; charset=utf-8");
             res.setHeader("Cache-Control", "public, max-age=3600");
           }

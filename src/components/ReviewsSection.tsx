@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BadgeCheck, ChevronRight } from 'lucide-react';
-import { REVIEWS_DATA } from '../views/ReviewsView';
+import { HOME_CAROUSEL_REVIEWS } from '../data/homeReviews';
 
 interface CarouselReview {
   id: string;
@@ -13,20 +13,7 @@ interface CarouselReview {
   platformType: 'GOOGLE' | 'TRUSTPILOT';
 }
 
-/** Newest reviews first for homepage carousel */
-const REVIEWS: CarouselReview[] = [...REVIEWS_DATA]
-  .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
-  .slice(0, 5)
-  .map((rev) => ({
-    id: rev.id,
-    user: rev.user,
-    platform: rev.platform === 'GOOGLE' ? 'GOOGLE_REV' : 'TRUSTPILOT',
-    rating: rev.rating,
-    content:
-      rev.content.length > 220 ? `${rev.content.slice(0, 217).trimEnd()}…` : rev.content,
-    tag: rev.tag,
-    platformType: rev.platform,
-  }));
+const REVIEWS: CarouselReview[] = HOME_CAROUSEL_REVIEWS;
 
 interface ReviewsSectionProps {
   onSeeMore: () => void;
