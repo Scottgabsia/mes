@@ -16,9 +16,10 @@ import {
   ChevronLeft,
   Terminal,
   Star,
+  MessageCircle,
 } from 'lucide-react';
 import { Routes, Route, useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
-import { CONTACT_EMAIL, LOGO_URL } from './constants';
+import { CONTACT_EMAIL, LOGO_URL, WHATSAPP_URL } from './constants';
 import { FooterSocialLinks } from './components/SocialIcons';
 import { RouteSEO } from './components/RouteSEO';
 import { HomeView } from './views/HomeView';
@@ -189,6 +190,7 @@ export default function App() {
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [showWhatsAppRail, setShowWhatsAppRail] = React.useState(false);
   const headerRef = React.useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = React.useState(96);
   const TICKER_HEIGHT = 40;
@@ -211,6 +213,11 @@ export default function App() {
       window.removeEventListener('resize', update);
     };
   }, [isMobileMenuOpen, currentView]);
+
+  React.useEffect(() => {
+    const t = window.setTimeout(() => setShowWhatsAppRail(true), 2000);
+    return () => window.clearTimeout(t);
+  }, []);
 
   React.useEffect(() => {
     const warm = () => {
@@ -329,6 +336,20 @@ export default function App() {
   return (
     <div className={`min-h-screen ${currentView !== 'home' ? 'cyber-bg' : ''}`}>
       <RouteSEO />
+      {showWhatsAppRail && (
+        <a
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat on WhatsApp"
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 bg-emerald-600/20 hover:bg-emerald-600/30 border border-r-0 border-emerald-500/30 rounded-l-xl flex flex-col items-center justify-center text-emerald-400 hover:text-white transition-all cursor-pointer group backdrop-blur-md"
+        >
+          <div className="flex flex-col items-center gap-4">
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] [writing-mode:vertical-rl]">WHATSAPP</span>
+            <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          </div>
+        </a>
+      )}
       {/* TopAppBar */}
       <header ref={headerRef} className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/10">
         <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 sm:py-4 max-w-[1600px] mx-auto w-full">
@@ -842,7 +863,9 @@ export default function App() {
               <div className="flex gap-4">
                 <Phone className="text-blue-500 w-5 h-5 flex-shrink-0" />
                 <a
-                  href="tel:+14016844683"
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-fira font-bold text-slate-300 hover:text-blue-400 transition-colors"
                 >
                   +1 (401) 684-4683
