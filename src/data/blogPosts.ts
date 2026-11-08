@@ -3,6 +3,7 @@ import { EUROPE_BLOG_POSTS } from "./blogPostsEurope";
 import { BATCH_50_BLOG_POSTS } from "./blogPostsBatch50";
 import { ITALY_BLOG_POSTS } from "./blogPostsItaly";
 import { IBERIA_BLOG_POSTS } from "./blogPostsIberia";
+import { SOCIAL_BING_BLOG_POSTS } from "./blogPostsSocialBing";
 
 export type BlogPost = {
   id: number;
@@ -23,6 +24,16 @@ const U = SITE_URL.replace(/\/$/, "");
 
 /** Keyword → on-site destination for in-article links */
 export const BLOG_KEYWORD_LINKS: Record<string, string> = {
+  "instagram crypto investment scam": "/blog/instagram-crypto-investment-scam-recovery-2026",
+  "facebook marketplace crypto scam": "/blog/facebook-marketplace-crypto-escrow-scam-recovery",
+  "whatsapp CEO crypto scam": "/blog/whatsapp-ceo-crypto-payment-scam-business-recovery",
+  "QR code crypto scam": "/blog/qr-code-wallet-connect-drainer-scam-what-to-do",
+  "wallet drainer scam": "/blog/wallet-drainer-scam-stop-approvals-then-recover",
+  "pig butchering red flags": "/blog/pig-butchering-red-flags-before-you-send-crypto",
+  "you are not alone crypto scam": "/blog/you-are-not-alone-after-crypto-scam-recovery-guide",
+  "stolen USDT TRC20 recovery": "/blog/stolen-usdt-trc20-recovery-beginner-guide-2026",
+  "legit crypto recovery company bing": "/blog/how-to-find-legit-crypto-recovery-company-on-bing",
+  "what to do after stolen crypto": "/blog/first-24-hours-after-stolen-crypto-shareable-checklist",
   "crypto recovery services Spain": "/blog/crypto-recovery-services-spain-guide-2026",
   "crypto recovery Spain": "/blog/crypto-recovery-services-spain-guide-2026",
   "crypto recovery Madrid": "/blog/crypto-recovery-madrid-central-spain-cities",
@@ -4302,6 +4313,7 @@ Many Monaco residents maintain ties to **crypto recovery London**, Manchester, o
 
 /** Newest posts first */
 export const FEATURED_BLOG_POSTS: BlogPost[] = [
+  ...(SOCIAL_BING_BLOG_POSTS as BlogPost[]),
   ...(IBERIA_BLOG_POSTS as BlogPost[]),
   ...(ITALY_BLOG_POSTS as BlogPost[]),
   ...(BATCH_50_BLOG_POSTS as BlogPost[]),
