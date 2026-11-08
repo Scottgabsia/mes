@@ -61,19 +61,21 @@ export async function submitRecoveryCase(
     console.warn("Intake API:", error);
   }
 
-  try {
-    const [{ collection, addDoc, serverTimestamp }, { db }] = await Promise.all([
-      import("firebase/firestore"),
-      import("./firebase"),
-    ]);
-    await addDoc(collection(db, "recovery_requests"), {
-      ...submissionData,
-      ...(caseId ? { caseId } : {}),
-      createdAt: submissionData.createdAt ?? serverTimestamp(),
-    });
-  } catch (fsError) {
-    console.warn("Firestore intake save failed (server store is primary):", fsError);
-  }
+  const persistFirestore = () =>
+    Promise.all([import("firebase/firestore"), import("./firebase")])
+      .then(([{ collection, addDoc, serverTimestamp }, { db }]) =>
+        addDoc(collection(db, "recovery_requests"), {
+          ...submissionData,
+          ...(caseId ? { caseId } : {}),
+          createdAt: submissionData.createdAt ?? serverTimestamp(),
+        })
+      )
+      .catch((fsError) => {
+        console.warn(
+          "Firestore intake save failed (server store is primary):",
+          fsError
+        );
+      });
 
   if (serverSaved || emailSent) {
     trackIntakeLead({
@@ -83,7 +85,10 @@ export async function submitRecoveryCase(
       ),
       value: Number(submissionData.estimatedValue) || 0,
     });
+    void persistFirestore();
+    return { caseId, serverSaved, emailSent };
   }
 
+  await persistFirestore();
   return { caseId, serverSaved, emailSent };
 }

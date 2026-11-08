@@ -2,9 +2,7 @@ import React from 'react';
 import { 
   Shield, 
   Globe, 
-  Users, 
   Zap, 
-  Award, 
   Lock,
   Cpu,
   Target,
@@ -23,32 +21,90 @@ export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
     <div className="pt-32 sm:pt-48 pb-32 px-4 sm:px-6 md:px-12 max-w-[1600px] mx-auto">
       <SEO 
         title="About Crypto Recovery Assets Investigators" 
-        description="Meet the blockchain forensics team behind Crypto Recovery Assets. Learn how licensed investigators, analysts, and counsel partners handle global recovery cases."
+        description="Founded in 2019, Crypto Recovery Assets is a blockchain forensics team that traces stolen crypto, builds exchange freeze packages, and never asks for seed phrases."
         keywords="bitcoin recovery expert, hire crypto recovery specialist, crypto recovery agency, blockchain investigation experts, professional crypto recovery"
       />
       {/* Hero Section */}
-      <div className="mb-12 sm:mb-24">
+      <div className="mb-10 sm:mb-16">
         <h2 className="text-slate-500 font-fira text-[10px] sm:text-xs font-bold tracking-[0.4em] mb-4 uppercase">
-          // THE ORGANIZATION
+          // THE ORGANIZATION · EST. 2019
         </h2>
         <h1 className="text-3xl sm:text-5xl md:text-7xl font-sans font-bold tracking-tight text-white mb-6 sm:mb-8 border-l-4 border-primary pl-4 sm:pl-8">
           DIGITAL ASSETS FORENSICS <br/>
           <span className="text-primary italic text-2xl sm:text-4xl md:text-5xl">CRYPTO RECOVERY SPECIALISTS</span>
         </h1>
         <p className="text-slate-400 text-base sm:text-xl max-w-3xl leading-relaxed font-light">
-          When you <span className="text-white font-semibold">hire a crypto recovery specialist</span> from our team, you gain access to a global network of <span className="text-white">bitcoin recovery experts</span>, blockchain engineers, and legal veterans dedicated to your restitution.
+          Crypto Recovery Assets was founded in <span className="text-white font-semibold">2019</span> as a chain-analysis desk for theft, scam, and inaccessible-wallet cases. When you hire us, you get investigators who read hops, clusters, and VASP off-ramps — not a call center that asks for your seed phrase.
         </p>
       </div>
 
-      {/* Philosophy Grid */}
+      {/* Team photo */}
+      <figure className="mb-12 sm:mb-20 glass-panel overflow-hidden border border-white/10">
+        <div className="bg-slate-950 flex justify-center">
+          <img
+            src="/about-team.jpg"
+            alt="Crypto Recovery Assets investigators and partners at a recovery operations briefing"
+            width={1024}
+            height={1024}
+            decoding="async"
+            className="w-full max-w-[1024px] h-auto object-contain"
+          />
+        </div>
+        <figcaption className="px-4 sm:px-8 py-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <span className="text-slate-300 text-sm font-medium">The recovery desk — analysts, investigators, and counsel partners.</span>
+          <span className="font-fira text-[10px] text-blue-400 uppercase tracking-[0.2em]">Secure · Recover · Rebuild</span>
+        </figcaption>
+      </figure>
+
+      {/* Origin + Mission */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-20 sm:mb-32">
+        <div className="glass-panel p-8 sm:p-12 border-primary/20">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 sm:mb-8">
+            <Cpu className="w-8 h-8 sm:w-10 sm:h-10" />
+          </div>
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">How We Started — 2019</h3>
+          <div className="text-slate-400 leading-relaxed text-base sm:text-lg space-y-4">
+            <p>
+              In 2019, stolen Bitcoin and USDT were still treated as gone the moment they left a wallet. Victims were told the chain was anonymous. It is not. Every spend is a graph: peel chains, change outputs, mixer entries, bridge burns, and the first KYC deposit that an exchange can actually freeze.
+            </p>
+            <p>
+              Our founding analysts had already spent years mapping those graphs for incident response. They built Crypto Recovery Assets as a working forensic desk — ingest TxIDs, reconstruct the cluster, identify the regulated off-ramp, and package evidence a compliance team will act on. That protocol is still the core of every case we open.
+            </p>
+          </div>
+        </div>
+        <div className="glass-panel p-8 sm:p-12 border-secondary-fixed/20">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-secondary-fixed/10 flex items-center justify-center text-secondary-fixed mb-6 sm:mb-8">
+            <Target className="w-8 h-8 sm:w-10 sm:h-10" />
+          </div>
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">Our Mission</h3>
+          <p className="text-slate-300 leading-relaxed text-base sm:text-lg italic mb-6">
+            “Give every victim of crypto theft or loss a professional forensic path back to their assets — lawful, technical, and never dependent on a seed phrase.”
+          </p>
+          <ul className="space-y-4 text-slate-400 text-sm sm:text-base leading-relaxed">
+            <li className="flex gap-3">
+              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+              <span>Recovery and Trace stolen or inaccessible digital assets across Bitcoin, Ethereum, Tron, Solana, and major L2s until we find a freezeable hop.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+              <span>Build exchange-ready evidence packs so compliance can hold funds instead of watching them mix.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+              <span>Restore: a written case file, a secure portal, and a way to keep the next wallet from being drained.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-20 sm:mb-32">
         <div className="glass-panel p-8 sm:p-12 border-primary/20">
           <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 sm:mb-8">
             <Shield className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">Our Mission</h3>
-          <p className="text-slate-400 leading-relaxed text-base sm:text-lg italic">
-            "To restore confidence in decentralized finance by providing the most advanced recovery infrastructure and investigative expertise available to private and institutional entities."
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">What We Actually Do</h3>
+          <p className="text-slate-400 leading-relaxed text-base sm:text-lg">
+            Cluster analysis, cross-chain hop maps, mixer and bridge unwrapping, and freeze packages for exchange compliance. Investigators, analysts, and counsel partners work the same case file so the on-chain story matches the legal ask.
           </p>
         </div>
         <div className="glass-panel p-8 sm:p-12 border-secondary-fixed/20">

@@ -81,3 +81,16 @@ export const FAQView = lazy(() =>
   import("./FAQView").then((m) => ({ default: m.FAQView }))
 );
 export const CaseManagerView = lazy(() => import("./AdminDashboardView"));
+
+/** Warm common page chunks after first paint so nav is instant. */
+export function prefetchPrimaryViews(): void {
+  void import("./AboutView");
+  void import("./ServicesView");
+  void import("./FAQView");
+  void import("./ReviewsView");
+  void import("./CaseLookupView");
+  void import("./RecoveryConfirmationView");
+  void import("./IntelligenceView");
+  void import("./PrivacyPolicyView");
+  void import("./TermsOfServiceView");
+}

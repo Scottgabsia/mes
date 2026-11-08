@@ -51,7 +51,7 @@ export const SEO_ROUTES: SeoRouteConfig[] = [
     path: "/about",
     title: "About Crypto Recovery Assets Investigators",
     description:
-      "Meet the blockchain forensics team behind Crypto Recovery Assets. Learn how licensed investigators, analysts, and counsel partners handle global recovery cases.",
+      "Founded in 2019, Crypto Recovery Assets is a blockchain forensics team that traces stolen crypto, builds exchange freeze packages, and never asks for seed phrases.",
     keywords: "crypto recovery company, blockchain investigation firm, about crypto recovery assets",
     changefreq: "monthly",
     priority: 0.8,

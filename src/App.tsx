@@ -47,6 +47,7 @@ import {
   AdminLoginView,
   FAQView,
   CaseManagerView,
+  prefetchPrimaryViews,
 } from './views/lazyViews';
 import {
   intakeSessionToCase,
@@ -119,6 +120,43 @@ const VIEW_PATHS: Record<string, string> = {
   amlkyc: '/amlkyc',
 };
 
+const PATH_TO_VIEW: Record<string, View> = {
+  '/': 'home',
+  '/about': 'about',
+  '/blog': 'blog',
+  '/services': 'services',
+  '/intelligence': 'intelligence',
+  '/contact': 'clientPortal',
+  '/client-portal': 'clientPortal',
+  '/btc': 'clientPortal',
+  '/intake-received': 'recoveryConfirmation',
+  '/portal': 'clientDashboard',
+  '/admin/login': 'admin',
+  '/admin/dashboard': 'admin',
+  '/case-lookup': 'caseLookup',
+  '/privacy': 'privacyPolicy',
+  '/terms': 'termsOfService',
+  '/reviews': 'reviews',
+  '/reviews/submit': 'submitReview',
+  '/faq': 'faq',
+  '/traceability': 'chainTraceability',
+  '/recovery': 'exchangeRecovery',
+  '/legal': 'legalEnforcement',
+  '/risk': 'riskMonitoring',
+  '/tools': 'tools',
+  '/iso27001': 'iso27001',
+  '/soc2': 'soc2',
+  '/gdpr': 'gdpr',
+  '/amlkyc': 'amlkyc',
+};
+
+function viewFromPathname(pathname: string): View {
+  let path = pathname;
+  if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+  if (path.startsWith('/blog/')) return 'blog';
+  return PATH_TO_VIEW[path] ?? 'home';
+}
+
 const NavLink = ({ 
   children, 
   active = false, 
@@ -142,7 +180,9 @@ const NavLink = ({
 );
 
 export default function App() {
-  const [currentView, setCurrentView] = React.useState<View>('home');
+  const [currentView, setCurrentView] = React.useState<View>(() =>
+    viewFromPathname(typeof window !== 'undefined' ? window.location.pathname : '/')
+  );
   const [selectedCase, setSelectedCase] = React.useState<any>(() => {
     const session = loadIntakeSession();
     return session ? intakeSessionToCase(session) : null;
@@ -171,6 +211,19 @@ export default function App() {
       window.removeEventListener('resize', update);
     };
   }, [isMobileMenuOpen, currentView]);
+
+  React.useEffect(() => {
+    const warm = () => {
+      prefetchPrimaryViews();
+      void import('./lib/firebase');
+    };
+    if (typeof requestIdleCallback === 'function') {
+      const id = requestIdleCallback(warm, { timeout: 1800 });
+      return () => cancelIdleCallback(id);
+    }
+    const t = window.setTimeout(warm, 400);
+    return () => window.clearTimeout(t);
+  }, []);
 
   // Handle initial route
   React.useEffect(() => {
@@ -216,50 +269,7 @@ export default function App() {
 
   // Sync currentView with location for direct URL access
   React.useEffect(() => {
-    let path = location.pathname;
-    // Normalize path: remove trailing slash except for root
-    if (path.length > 1 && path.endsWith('/')) {
-      path = path.slice(0, -1);
-    }
-
-    const pathMapRev: Record<string, View> = {
-      '/': 'home',
-      '/about': 'about',
-      '/blog': 'blog',
-      '/services': 'services',
-      '/intelligence': 'intelligence',
-      '/contact': 'clientPortal',
-      '/client-portal': 'clientPortal',
-      '/btc': 'clientPortal',
-      '/intake-received': 'recoveryConfirmation',
-      '/portal': 'clientDashboard',
-      '/admin/login': 'admin',
-      '/admin/dashboard': 'admin',
-      '/case-lookup': 'caseLookup',
-      '/privacy': 'privacyPolicy',
-      '/terms': 'termsOfService',
-      '/reviews': 'reviews',
-      '/reviews/submit': 'submitReview',
-      '/faq': 'faq',
-      '/traceability': 'chainTraceability',
-      '/recovery': 'exchangeRecovery',
-      '/legal': 'legalEnforcement',
-      '/risk': 'riskMonitoring',
-      '/tools': 'tools',
-      '/iso27001': 'iso27001',
-      '/soc2': 'soc2',
-      '/gdpr': 'gdpr',
-      '/amlkyc': 'amlkyc'
-    };
-
-    if (pathMapRev[path]) {
-      setCurrentView(pathMapRev[path]);
-    } else if (path.startsWith("/blog/")) {
-      setCurrentView("blog");
-    } else {
-      // Fallback to home for unknown paths
-      setCurrentView('home');
-    }
+    setCurrentView(viewFromPathname(location.pathname));
   }, [location.pathname]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -671,7 +681,7 @@ export default function App() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.15 }}
           >
             <Suspense fallback={<div className="min-h-[40vh]" aria-hidden="true" />}>
             {currentView === 'home' && (

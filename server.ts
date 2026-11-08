@@ -302,24 +302,21 @@ async function startServer() {
       });
     }
 
-    let emailSent = false;
-    if (isEmailConfigured()) {
-      try {
-        await sendRecoveryEmails(safeData, caseId);
-        emailSent = true;
-      } catch (error) {
-        console.error("[Email] submit-recovery notify failed:", error);
-      }
-    }
-
+    const willEmail = isEmailConfigured();
     res.status(200).json({
       success: true,
-      message: emailSent
+      message: willEmail
         ? "Data securely processed."
         : "Case saved. Email notification was not sent.",
       caseId,
-      emailSent,
+      emailSent: willEmail,
     });
+
+    if (willEmail) {
+      sendRecoveryEmails(safeData, caseId).catch((error) => {
+        console.error("[Email] submit-recovery notify failed:", error);
+      });
+    }
   });
 
   function toPublicCase(found: StoredCase) {
@@ -1207,19 +1204,13 @@ async function startServer() {
     }
     console.log("NEW BLOG SUBSCRIPTION:", name, email);
 
-    try {
-      if (isEmailConfigured()) {
-        await sendSubscribeEmail(name, email);
-      }
-      res.status(200).json({
-        success: true,
-        message: "Successfully subscribed to the intelligence stream.",
-      });
-    } catch (error) {
-      console.error("[Email] subscribe failed:", error);
-      res.status(200).json({
-        success: true,
-        message: "Subscribed (notification email failed).",
+    res.status(200).json({
+      success: true,
+      message: "Successfully subscribed to the intelligence stream.",
+    });
+    if (isEmailConfigured()) {
+      sendSubscribeEmail(name, email).catch((error) => {
+        console.error("[Email] subscribe failed:", error);
       });
     }
   });
