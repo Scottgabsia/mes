@@ -282,7 +282,7 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
           },
           {
             title: "Crypto Recovery & Fraud Assistance",
-            desc: "Crypto recovery for phishing, rug pulls, romance investment fraud, and social engineering. We trace stolen assets, pursue exchange freezes, and stay with you through reporting until funds can be returned.",
+            desc: "Crypto recovery for every fraud case such as phishing, rug pulls, romance scam, investment scam, social engineering, wallet drainer scam and others. We trace stolen assets, pursue exchange freezes, and stay with you through reporting until funds can be returned.",
             icon: ShieldAlert,
             color: "text-error",
             bg: "bg-error/10",

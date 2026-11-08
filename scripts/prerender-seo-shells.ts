@@ -54,8 +54,7 @@ function buildJsonLd(pathname: string): Record<string, unknown>[] {
       email: "info@cryptorecoveryasset.com",
       sameAs: [
         "https://www.facebook.com/share/1D9wkP3Hoz/",
-        "https://www.quora.com/profile/Crypto-Recovery-Asset",
-        "https://www.tiktok.com/@crypto_recovery_asset",
+        "https://www.instagram.com/crypto_recovery_forensic_asset/",
       ],
     });
   }

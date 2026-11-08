@@ -56,14 +56,9 @@ export const SOCIAL_LINKS = [
     href: "https://www.facebook.com/share/1D9wkP3Hoz/?mibextid=wwXIfr",
   },
   {
-    id: "quora",
-    label: "Quora",
-    href: "https://www.quora.com/profile/Crypto-Recovery-Asset?ch=17&oid=3197810077&share=b07007ed&srid=5DlkEm&target_type=user",
-  },
-  {
-    id: "tiktok",
-    label: "TikTok",
-    href: "https://www.tiktok.com/@crypto_recovery_asset?_r=1&_t=ZT-96hRxLCgTdN",
+    id: "instagram",
+    label: "Instagram",
+    href: "https://www.instagram.com/crypto_recovery_forensic_asset?mdxt=dzkyMHBzc3VoZjV5",
   },
 ] as const;
 

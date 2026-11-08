@@ -1557,6 +1557,226 @@ export const REVIEWS_DATA: Review[] = [
     date: '2026-10-14',
     verified: true,
     tag: 'GRIEF_ROMANCE_SCAM'
+  },
+  {
+    id: 'rev_150',
+    user: 'HANNAH_J_OKC',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "After the storm hit our county, a charity page asked for USDT so tents and medicine could move faster than a bank wire. The photos were from our own streets. I sent $22,400 from the small emergency fund I keep for my clinic. Two days later the page was gone and the hospital still had no shipment. I felt like I had stolen from patients. Crypto Recovery Assets treated it as a disaster-charity clone, which they had already seen in other zip codes. They mapped the donations, found the cash-out cluster, and got an exchange hold in place. My $22,400 came back. They never once implied I was naive for wanting to help. If you gave during a crisis and the money vanished, you are not greedy and you are not alone. This team knows how to follow kindness that was weaponized.",
+    date: '2026-10-16',
+    verified: true,
+    tag: 'DISASTER_CHARITY_CLONE'
+  },
+  {
+    id: 'rev_151',
+    user: 'MATEO_R_ELP',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I scanned a parking QR on a downtown garage ticket. It looked official. It opened a page that asked me to connect a wallet to 'verify payment.' I thought it was a new city system. A drainer took $14,850 in USDC. I sat in the car with the meter still running and called my wife crying. Crypto Recovery Assets had me revoke leftover approvals first so nothing else could leave, then traced the steal through a swap into an exchange deposit that was still warm. The $14,850 is back. They wrote a short note I now keep in the glove box: never connect a wallet to a QR you did not create. I tell every driver I know. You can be careful in every other part of your life and still get hit in a parking garage. These people made me feel like a case, not a punchline.",
+    date: '2026-10-17',
+    verified: true,
+    tag: 'QR_DRAINER'
+  },
+  {
+    id: 'rev_152',
+    user: 'RUTH_A_RIC',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "A video call showed my son's face and his voice asking me to send 0.61 BTC to 'hold it safe' because he had been in an accident overseas and could not access his bank. I am his mother. Of course I sent it. An hour later my real son texted from work. I dropped the phone. Crypto Recovery Assets did not make me explain the love. They asked for the time, the txid, and a screenshot of the call. They traced the coins, matched the pattern to other deepfake family calls, and reached an exchange before a mixer finished the job. My 0.61 Bitcoin is home. The investigator said, 'They steal the voice of the person you would never refuse.' That sentence let me forgive myself. If a child or a parent calls in panic and wants crypto in the next ten minutes, hang up and call them on a number you already have. Then call this firm if you already sent it. Recovery is possible. I am living proof.",
+    date: '2026-10-18',
+    verified: true,
+    tag: 'DEEPFAKE_FAMILY'
+  },
+  {
+    id: 'rev_153',
+    user: 'SAMUEL_K_MEM',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I am a veteran. A lump from back pay sat in USDT because I did not trust another round of bank fees. A man in a veterans' Facebook group offered a 'disabled-vet yield pool' with screenshots of other soldiers. I put in $61,700. The group went dark on a Sunday. I did not want my unit to know. Crypto Recovery Assets took the case without a speech about pride. They reconstructed every transfer, showed reuse of the pool address against other veteran-targeted pages, and pushed an exchange packet that named the harm clearly. The $61,700 returned. They were careful with my name. I can look at my kids again. If you served and someone used that to empty you, you are not the first and you will not be the last they help. I needed a forensic team that understood dignity. I got one.",
+    date: '2026-10-19',
+    verified: true,
+    tag: 'VETERAN_YIELD_SCAM'
+  },
+  {
+    id: 'rev_154',
+    user: 'INES_M_LIS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "We were six months from the wedding. The dress, the hall, the tickets for family flying in—that money was in a wallet because a 'wedding planner' said vendors abroad wanted USDT. She had a real Instagram and a Pinterest board of our colors. I sent $33,600. She vanished the week the florist needed a deposit. I told my fiancé in a parking lot. Crypto Recovery Assets treated a wedding fund like it mattered, because it did. They traced the planner's addresses, found a cash-out still sitting, and kept us updated twice a week so we could decide whether to postpone. We did not postpone. The $33,600 came back in time. If someone is holding your celebration hostage through a wallet, you are not shallow for caring. This team got our day back. I still have their last email printed in the gift box.",
+    date: '2026-10-20',
+    verified: true,
+    tag: 'WEDDING_FUND_FRAUD'
+  },
+  {
+    id: 'rev_155',
+    user: 'DREW_P_BOI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I downloaded what I thought was the real exchange app from an ad at the top of search. The icon was right. The login worked. I completed a 'security selfie' and overnight 2.05 ETH left the actual account on the real site. I had handed them the keys to impersonate me. Crypto Recovery Assets separated the clone-app trail from the exchange takeover, got the security desk a timeline that made sense, and traced the withdrawn ETH to a deposit that could still be frozen. My 2.05 ETH is back. They walked me through app-store links versus ads, hardware keys, and withdrawal allowlists so I sleep. The shame of 'I installed the fake one' is loud. Their voice was louder: this is a factory, not your personal failure. I am telling every person I mine with. Call them the same night.",
+    date: '2026-10-21',
+    verified: true,
+    tag: 'FAKE_EXCHANGE_APP'
+  },
+  {
+    id: 'rev_156',
+    user: 'KEISHA_T_BWI',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I work nights in a hospital. A man on a shift-work dating app never asked for money until month five. Then there was a 'license' for a medical-device import and a window that would close. I sent $47,900 because I believed we were building a clinic together in his country. When the account died I sat in the break room with my badge still on. A coworker found Crypto Recovery Assets. They let me talk between twelve-hour shifts. They mapped the USDT, tied it to other romance-import files, and did not leak my workplace. The $47,900 is in my account. I still take care of patients. I am not the joke of the floor. If you are exhausted and someone offered you a future, you were targeted for that exhaustion. This firm recovers money and they recover the story you tell yourself at 3 a.m.",
+    date: '2026-10-22',
+    verified: true,
+    tag: 'NIGHT_SHIFT_ROMANCE'
+  },
+  {
+    id: 'rev_157',
+    user: 'LUKAS_V_VIE',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "A Telegram channel sold tokenized shares in a 'Lisbon riverside building' with floor plans and a notary PDF. I sent $92,400 because I wanted a real asset after years of coins. The building exists. The shares did not. The notary number belonged to a retired clerk. Crypto Recovery Assets pulled the PDFs apart, matched the deposit wallets to other property-token scams, and found an exchange corridor still open. Every euro of that $92,400 equivalent came back. They were bilingual with my counsel without making me feel like a tourist in my own case. If a beautiful building is being sold to you in a chat, pause. If you already paid, these investigators know the costume. They got me out without lecturing me about greed. I was trying to be conservative. They understood that.",
+    date: '2026-10-23',
+    verified: true,
+    tag: 'TOKENIZED_PROPERTY'
+  },
+  {
+    id: 'rev_158',
+    user: 'MAY_L_HNL',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I am a church treasurer. The offering wallet was drained after I approved a 'bookkeeper integration' from an email that used our pastor's exact wording. $38,200 of congregational money. I offered to resign the same afternoon. Crypto Recovery Assets opened a file that treated the church as the victim, not me as the suspect. They traced the approval, the drain, and the peel chain, then wrote a report the board could read without a glossary. The $38,200 returned. I kept the role because the board read their letter. If you hold other people's money and a polished email just emptied it, do not disappear. Get a forensic team that can speak to a board. This one did. They also showed us how to require two people for any new spender. I sleep.",
+    date: '2026-10-24',
+    verified: true,
+    tag: 'CHURCH_TREASURY'
+  },
+  {
+    id: 'rev_159',
+    user: 'OMAR_H_DET',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I freelance on a platform that allowed crypto milestones. A 'client' funded an escrow that looked native, then asked me to 'top up gas' to release $19,200 I thought I had already earned. I sent the gas. Both amounts left. I had rent and a child's inhaler on that invoice. Crypto Recovery Assets reconstructed the fake escrow domain, the gas address, and the client sockpuppets. They caught a cash-out. I have the $19,200 plus the gas. They never asked me why I work in crypto invoices. They asked for hashes. If you are a freelancer and an escrow suddenly needs you to pay to get paid, stop. Then write this team. They treated a small invoice like it was a life, because for me it was.",
+    date: '2026-10-25',
+    verified: true,
+    tag: 'FREELANCER_ESCROW'
+  },
+  {
+    id: 'rev_160',
+    user: 'CLARA_N_BRU',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "A lawyer on a video call said my late aunt had left BTC in a European estate and I needed to pay a 'cross-border release tax' of $27,500 in USDT to receive 4.2 coins. He had letterhead. He had her middle name. I paid because I missed her and I wanted the story to be true. There was no estate. Crypto Recovery Assets started the hour I forwarded the PDF. They flagged the tax address against other inheritance-release wallets, monitored the hops, and froze what they could still reach. My $27,500 came back. They said gently that grief is a door scammers know how to knock on. I did not feel stupid. I felt accompanied through the ugliest week since the funeral. If a stranger is holding a dead relative's coins behind a crypto fee, it is a script. This firm already has the script in a folder.",
+    date: '2026-10-26',
+    verified: true,
+    tag: 'FAKE_INHERITANCE'
+  },
+  {
+    id: 'rev_161',
+    user: 'TYRELL_B_CLT',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "A Discord 'allowlist' for an NFT mint asked me to verify a wallet. I was excited. I approved a spender I did not read. In four minutes my ETH and two NFTs I actually cared about were gone—about $54,100. I work in a warehouse. Those NFTs were the first thing I had ever owned that felt like art. Crypto Recovery Assets told me how to kill remaining approvals, then chased the ETH and the marketplace listings in parallel. Weeks later the $54,100 was in my account. They even helped flag the mint site so fewer people from my server would walk in. Nobody on that team laughed at NFTs. They treated my loss like value. If a mint wants a signature before you understand the popup, walk away. If you already signed, these people can still run.",
+    date: '2026-10-27',
+    verified: true,
+    tag: 'NFT_MINT_DRAIN'
+  },
+  {
+    id: 'rev_162',
+    user: 'SONIA_G_MAD',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "My father has Parkinson's. A 'bank security officer' stayed on the phone while he moved $72,800 in USDC to a 'safe wallet' they spelled out letter by letter. I found him at the table with the phone still in his hand. Crypto Recovery Assets spoke to both of us on one call so he would not have to repeat the shame. They traced while he rested. They coordinated with the exchange and with our local report so the file matched. The $72,800 came home. They sent a one-page 'no one from a bank will ever ask you to send crypto' sheet in large type. I taped it by his chair. If you are a child watching a parent get walked through a transfer, you are not too late. Call them while the hops are still warm. They were kind to him. That is why I am writing this long.",
+    date: '2026-10-28',
+    verified: true,
+    tag: 'ELDER_BANK_IMPERSONATION'
+  },
+  {
+    id: 'rev_163',
+    user: 'NATE_S_SLC',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I sold a motorcycle on a marketplace. The buyer wanted to pay 0.52 BTC through a 'secure buyer vault' with a countdown and a lock icon. I have sold bikes for years. This looked like the new version of escrow. I sent the title photos. He sent nothing that stayed. The 0.52 BTC I had moved into the vault to 'match' was gone. Crypto Recovery Assets rebuilt the clone, matched the infrastructure to earlier vehicle-escrow fakes, and caught an offramp. I have the 0.52 Bitcoin. I also have my Saturday mornings back. They did not mock a grown man for trusting a padlock gif. They asked for the HTML and the tx. If you sell anything expensive and the buyer wants you to park coins in a vault you do not control, do not. If you already did, this is the firm that knows that vault is a set piece.",
+    date: '2026-10-29',
+    verified: true,
+    tag: 'VEHICLE_ESCROW_CLONE'
+  },
+  {
+    id: 'rev_164',
+    user: 'AMIRA_Z_DOH',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "A scholarship portal told international students to lock a seat with a USDT 'commitment fee.' I sent $16,400 because the university name was real and the deadline was midnight. The portal was a clone. I was already packing. Crypto Recovery Assets moved the same night I emailed from a hostel. They mapped the fee address to other education-lock scams, pushed an exchange notice, and wrote in a tone my parents could read without panic. The $16,400 returned. I still enrolled—just not through a wallet. They told me deadlines are a pressure tool. I needed someone to say that out loud. If you are a student far from home and a site wants crypto to keep a seat, it is not the registrar. Write this team. They treated my small number like it was a family's entire plan, because it was.",
+    date: '2026-10-30',
+    verified: true,
+    tag: 'SCHOLARSHIP_FEE_SCAM'
+  },
+  {
+    id: 'rev_165',
+    user: 'COLIN_W_GLA',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I run a rescue for street dogs. Donations sat in a public wallet so people could see inflows. A cloned site cloned our donate button. Some donors paid the clone. Then a drainer hit our real wallet after I signed a 'transparency plugin.' $29,750 of food and vet money left. I posted an apology I can still barely read. Crypto Recovery Assets ran two threads: the clone donations and the drain. They recovered the $29,750 from the drain and helped us message the clone victims with hashes so those people could open files too. I have never had a vendor care about the animals in the next sentence after the txids. If you run a small charity wallet, you can still get help that does not eat what you raise. They did the work. The dogs ate that week. I am not exaggerating.",
+    date: '2026-11-01',
+    verified: true,
+    tag: 'RESCUE_CHARITY_DRAIN'
+  },
+  {
+    id: 'rev_166',
+    user: 'PATRICIA_O_TPA',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I am sixty-four and newly retired. A radio guest 'advisor' sold a private REIT that settled in USDC. I put in $108,500 of a lifetime of overtime. Statements arrived on schedule. Then withdrawals required a 'SEC window fee.' I almost paid it. My daughter found Crypto Recovery Assets instead. They showed me the statements were templates. They showed me the deposit wallets were a pig-butchering stack with a radio costume. They got an exchange to hold what was still there. Every dollar of the $108,500 is back. I cried in my kitchen with the radio off. If you are retired and someone sounds like the station you trust, you can still be hunted. These investigators did not make me feel old. They made me feel recovered. I tell my walking group now: no yield that needs a second payment to come home is a yield.",
+    date: '2026-11-02',
+    verified: true,
+    tag: 'RETIREMENT_RADIO_PITCH'
+  },
+  {
+    id: 'rev_167',
+    user: 'YUSUF_A_KHI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "A cousin in another city asked me on WhatsApp to send $24,800 USDT for a hospital admission, then went silent. It was his number—until I learned the SIM had been swapped that morning. I had sent family money to a thief. I could not call my aunt. Crypto Recovery Assets treated a family transfer like a forensic event, not a domestic spat. They traced the USDT, found the cash-out, and helped me explain the SIM swap in a letter I could show the family without sounding like I was accusing my cousin. The $24,800 returned. The cousin was a victim too. The firm was careful with that distinction. If your relative's chat suddenly needs crypto for an emergency, call them on another line first. If you already sent it, these people know how to chase a swapped number's wallet. They gave me my money and they gave me a way to keep my family.",
+    date: '2026-11-03',
+    verified: true,
+    tag: 'FAMILY_SIMSWAP_CHAT'
+  },
+  {
+    id: 'rev_168',
+    user: 'GAIL_E_BUF',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I keep a seed phrase in a photo album in iCloud because I did not want a paper copy in the house. A phishing page that looked like Apple asked me to 'restore iCloud crypto backup.' I entered the words. 1.18 BTC left while I was still on the page. I am a librarian. I teach people not to click. I clicked. Crypto Recovery Assets did not enjoy the irony. They traced, they froze, they returned my 1.18 Bitcoin. They helped me move to a hardware wallet with a written ritual I can follow when I am tired. The investigator said teachers and librarians get hit because we trust systems that look official. That was the first kind sentence I had heard in two days. If your backup lives in a screenshot, please hear me: screenshots get phished. This team can still pull the coins back if you move fast and you tell the truth about what you typed.",
+    date: '2026-11-05',
+    verified: true,
+    tag: 'ICLOUD_SEED_PHISH'
+  },
+  {
+    id: 'rev_169',
+    user: 'RAFAEL_C_MDE',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I thought I was buying a small truck for my delivery route through a 'crypto auto broker' with warehouse photos and a VIN. I sent $41,000 USDT. The VIN belonged to a truck in another country. The warehouse was a stock image. I had already given notice at my old job. Crypto Recovery Assets pulled the listing, the VIN, and the payment hashes into one narrative an exchange could act on. They found the broker's cluster and a still-held balance. My $41,000 came back. I kept the new job. I bought a truck the slow way. They told me hope plus a deadline is how this particular fraud is sold. I was not reckless. I was trying to work. If you are changing your life and someone wants the purchase in a wallet this week, pause. If you already paid, write them. They treated my route, my rent, and my name like they belonged to a person. I got to stay a person.",
+    date: '2026-11-07',
+    verified: true,
+    tag: 'FAKE_VEHICLE_BROKER'
   }
 
 ];
