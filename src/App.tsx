@@ -342,7 +342,7 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Chat on WhatsApp"
-          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 bg-emerald-600/20 hover:bg-emerald-600/30 border border-r-0 border-emerald-500/30 rounded-l-xl flex flex-col items-center justify-center text-emerald-400 hover:text-white transition-all cursor-pointer group backdrop-blur-md"
+          className="whatsapp-rail fixed right-0 top-1/2 z-40 w-8 h-32 bg-emerald-600/20 hover:bg-emerald-600/30 border border-r-0 border-emerald-500/30 rounded-l-xl flex flex-col items-center justify-center text-emerald-400 hover:text-white cursor-pointer group backdrop-blur-md"
         >
           <div className="flex flex-col items-center gap-4">
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] [writing-mode:vertical-rl]">WHATSAPP</span>
@@ -680,7 +680,7 @@ export default function App() {
               onClick={toggleSidebar}
               type="button"
               aria-label="Expand navigation sidebar"
-              className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 bg-blue-600/20 hover:bg-blue-600/30 border border-l-0 border-blue-500/30 rounded-r-xl flex flex-col items-center justify-center text-blue-400 hover:text-white transition-all cursor-pointer group backdrop-blur-md"
+              className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 bg-blue-600/20 hover:bg-blue-600/30 border border-l-0 border-blue-500/30 rounded-r-xl flex-col items-center justify-center text-blue-400 hover:text-white transition-all cursor-pointer group backdrop-blur-md"
             >
               <div className="flex flex-col items-center gap-4">
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em] [writing-mode:vertical-lr] rotate-180">EXPLORE</span>

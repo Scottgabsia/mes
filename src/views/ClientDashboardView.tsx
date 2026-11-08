@@ -1046,7 +1046,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                             ? 'bg-blue-600 text-white rounded-tr-none' 
                             : 'bg-slate-900 border border-white/10 text-slate-300 rounded-tl-none'
                         }`}>
-                          <p className="text-sm leading-relaxed">{msg.text}</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words text-left">{msg.text}</p>
                         </div>
                         <p className="text-[9px] font-mono text-slate-600 mt-2 uppercase">
                           {msg.senderId === 'client' ? 'Me' : msg.sender} // {msg.createdAt?.toDate?.()?.toLocaleTimeString() || 'TRANSMITTING...'}
@@ -1060,17 +1060,17 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
               {/* Input Area */}
               <form onSubmit={handleSendMessage} className="p-6 bg-slate-950/40 border-t border-white/10">
                 <div className="relative">
-                  <input 
-                    type="text"
+                  <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="ENTER SECURE TRANSMISSION..."
-                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white pl-6 pr-16 py-4 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all"
+                    placeholder="ENTER SECURE TRANSMISSION... (line breaks are kept)"
+                    rows={3}
+                    className="w-full bg-[#0a0e16]/60 border border-white/10 text-white pl-6 pr-16 py-4 rounded-xl font-mono text-sm focus:border-blue-500/50 outline-none transition-all resize-none min-h-[96px]"
                   />
                   <button 
                     type="submit"
                     disabled={sendingMessage || !message.trim()}
-                    className="absolute right-2 top-2 bottom-2 px-4 bg-blue-600 text-white rounded-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                    className="absolute right-3 bottom-3 p-2.5 bg-blue-600 text-white rounded-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Send size={16} />
                   </button>

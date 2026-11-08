@@ -14,6 +14,10 @@ interface CarouselReview {
 }
 
 const REVIEWS: CarouselReview[] = HOME_CAROUSEL_REVIEWS;
+const WINDOW = 3;
+const SLIDE_MS = 6000;
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 interface ReviewsSectionProps {
   onSeeMore: () => void;
@@ -21,14 +25,18 @@ interface ReviewsSectionProps {
 
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => {
   const [activeReviewIndex, setActiveReviewIndex] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
+  const maxIndex = Math.max(1, REVIEWS.length - WINDOW + 1);
 
-  // Rotate reviews every 5 seconds
   React.useEffect(() => {
+    if (paused) return;
     const timer = setInterval(() => {
-      setActiveReviewIndex((prev) => (prev + 1) % Math.max(1, REVIEWS.length - 2));
-    }, 5000);
+      setActiveReviewIndex((prev) => (prev + 1) % maxIndex);
+    }, SLIDE_MS);
     return () => clearInterval(timer);
-  }, []);
+  }, [paused, maxIndex]);
+
+  const visible = REVIEWS.slice(activeReviewIndex, activeReviewIndex + WINDOW);
 
   return (
     <section className="mb-stack-lg">
@@ -53,33 +61,53 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => 
         </div>
       </div>
 
-      <div className="relative mb-8 min-h-[300px]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {REVIEWS.slice(activeReviewIndex, activeReviewIndex + 3).map((review, idx) => (
-              <motion.div 
+      <div
+        className="relative mb-8 min-h-[280px] md:min-h-[320px]"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={activeReviewIndex}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.4, ease }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left"
+          >
+            {visible.map((review) => (
+              <div
                 key={review.id}
-                initial={{ opacity: 0, scale: 0.92, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: -10, position: 'absolute' }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className={`glass-panel p-6 rounded-sm border transition-all group flex flex-col justify-between h-full ${
-                  review.platformType === 'GOOGLE' ? 'border-blue-500/10 hover:border-blue-500/30' : 'border-emerald-500/10 hover:border-emerald-500/30'
+                className={`glass-panel p-6 rounded-sm border group flex flex-col justify-between h-full ${
+                  review.platformType === 'GOOGLE'
+                    ? 'border-blue-500/10 hover:border-blue-500/30'
+                    : 'border-emerald-500/10 hover:border-emerald-500/30'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded flex items-center justify-center text-white ${
-                        review.platformType === 'GOOGLE' ? 'bg-blue-600' : 'bg-emerald-500'
-                      }`}>
+                      <div
+                        className={`w-8 h-8 rounded flex items-center justify-center text-white ${
+                          review.platformType === 'GOOGLE' ? 'bg-blue-600' : 'bg-emerald-500'
+                        }`}
+                      >
                         <BadgeCheck className="w-5 h-5" />
                       </div>
-                      <span className="text-[11px] font-bold text-white tracking-widest font-mono uppercase">{review.platform}</span>
+                      <span className="text-[11px] font-bold text-white tracking-widest font-mono uppercase">
+                        {review.platform}
+                      </span>
                     </div>
                     <div className="flex gap-0.5">
                       {[...Array(review.rating)].map((_, i) => (
-                        <div key={i} className={`w-2 h-2 ${review.platformType === 'GOOGLE' ? 'bg-blue-500 shadow-[0_0_5px_#3b82f6]' : 'bg-emerald-500'}`} />
+                        <div
+                          key={i}
+                          className={`w-2 h-2 ${
+                            review.platformType === 'GOOGLE'
+                              ? 'bg-blue-500 shadow-[0_0_5px_#3b82f6]'
+                              : 'bg-emerald-500'
+                          }`}
+                        />
                       ))}
                     </div>
                   </div>
@@ -88,19 +116,25 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => 
                   </p>
                 </div>
                 <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                  <span className="text-[10px] text-slate-500 font-fira uppercase">USER_ID: {review.user}</span>
-                  <span className={`text-[10px] font-bold tracking-tighter uppercase font-fira ${
-                    review.platformType === 'GOOGLE' ? 'text-blue-400' : 'text-emerald-400'
-                  }`}>{review.tag}</span>
+                  <span className="text-[10px] text-slate-500 font-fira uppercase">
+                    USER_ID: {review.user}
+                  </span>
+                  <span
+                    className={`text-[10px] font-bold tracking-tighter uppercase font-fira ${
+                      review.platformType === 'GOOGLE' ? 'text-blue-400' : 'text-emerald-400'
+                    }`}
+                  >
+                    {review.tag}
+                  </span>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <div className="flex justify-center">
-        <button 
+        <button
           onClick={onSeeMore}
           className="px-10 py-4 glass-panel border border-blue-500/30 hover:border-blue-500 bg-blue-500/5 text-blue-400 font-bold text-[10px] uppercase tracking-[0.2em] transition-all hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group cursor-pointer"
         >

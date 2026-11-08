@@ -139,7 +139,7 @@ export function sanitizeRecoveryPayload(
 }
 
 export function sanitizeMessageText(text: string): string {
-  const trimmed = sanitizePlainText(text, 4000);
+  const trimmed = sanitizePlainText(text, 4000).replace(/\r\n/g, "\n");
   const err = rejectIfUnsafeText(trimmed, "message");
   if (err) throw new Error(err);
   return trimmed;

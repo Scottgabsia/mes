@@ -1533,7 +1533,7 @@ const CaseMessages = ({
           className={`flex flex-col ${msg.senderId === 'admin' ? 'items-end' : 'items-start'}`}
         >
           <div
-            className={`max-w-[90%] p-3 rounded-xl border ${
+            className={`max-w-[90%] p-3 rounded-xl border whitespace-pre-wrap break-words text-left text-xs leading-relaxed ${
               msg.senderId === 'admin'
                 ? 'bg-blue-600/10 border-blue-500/30 text-blue-100 rounded-tr-none'
                 : 'bg-white/5 border-white/10 text-white rounded-tl-none'
