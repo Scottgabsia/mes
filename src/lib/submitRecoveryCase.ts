@@ -1,5 +1,4 @@
 import { apiPost } from "./api";
-import { trackIntakeLead } from "./adsTracking";
 
 function isEmailJsConfigured(): boolean {
   const env = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env;
@@ -78,13 +77,6 @@ export async function submitRecoveryCase(
       });
 
   if (serverSaved || emailSent) {
-    trackIntakeLead({
-      formId: String(submissionData.formSource || "intake"),
-      service: String(
-        submissionData.service || submissionData.incidentVector || ""
-      ),
-      value: Number(submissionData.estimatedValue) || 0,
-    });
     void persistFirestore();
     return { caseId, serverSaved, emailSent };
   }

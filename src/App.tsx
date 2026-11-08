@@ -14,11 +14,10 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
-  Terminal,
   Star,
   MessageCircle,
 } from 'lucide-react';
-import { Routes, Route, useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { CONTACT_EMAIL, LOGO_URL, WHATSAPP_URL } from './constants';
 import { FooterSocialLinks } from './components/SocialIcons';
 import { RouteSEO } from './components/RouteSEO';
@@ -571,10 +570,20 @@ export default function App() {
           className="fixed w-full z-40 bg-slate-950/60 border-b border-white/5 backdrop-blur-md overflow-hidden h-10 flex items-center"
           style={{ top: headerHeight }}
         >
-          <div className="flex items-center gap-4 px-6 border-r border-white/5 bg-slate-950/90 h-full">
-            <span className={`w-2 h-2 rounded-full animate-pulse ${currentView === 'intelligence' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`}></span>
-            <span className={`text-[9px] font-fira uppercase tracking-[0.2em] whitespace-nowrap ${currentView === 'intelligence' ? 'text-red-400' : 'text-primary'}`}>
-              {currentView === 'intelligence' ? 'Network Threats: Critical' : 'Core Network: Online'}
+          <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-6 border-r border-white/5 bg-slate-950/90 h-full shrink-0 max-w-[55%] sm:max-w-none">
+            <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${currentView === 'intelligence' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`}></span>
+            <span className={`text-[9px] font-fira uppercase tracking-widest sm:tracking-[0.2em] whitespace-nowrap truncate ${currentView === 'intelligence' ? 'text-red-400' : 'text-primary'}`}>
+              {currentView === 'intelligence' ? (
+                <>
+                  <span className="sm:hidden">THREATS</span>
+                  <span className="hidden sm:inline">Network Threats: Critical</span>
+                </>
+              ) : (
+                <>
+                  <span className="sm:hidden">ONLINE</span>
+                  <span className="hidden sm:inline">Core Network: Online</span>
+                </>
+              )}
             </span>
           </div>
           <div className="flex-1 flex whitespace-nowrap overflow-hidden items-center">
@@ -731,6 +740,8 @@ export default function App() {
                 caseId={selectedCase?.caseId || selectedCase?.id}
                 email={selectedCase?.secureComms || selectedCase?.email}
                 operatorAlias={selectedCase?.operatorAlias || selectedCase?.name}
+                estimatedValue={Number(selectedCase?.estimatedValue) || undefined}
+                service={String(selectedCase?.incidentVector || selectedCase?.service || '')}
               />
             )}
             {currentView === 'caseLookup' && (

@@ -10,12 +10,15 @@ import {
 import { CONTACT_EMAIL } from '../constants';
 import { motion } from 'motion/react';
 import { WhatsAppSupportPanel } from '../components/WhatsAppSupportPanel';
+import { trackIntakeLeadConversion } from '../lib/adsTracking';
 
 interface RecoveryConfirmationViewProps {
   onBackToDashboard: () => void;
   caseId?: string;
   email?: string;
   operatorAlias?: string;
+  estimatedValue?: number;
+  service?: string;
 }
 
 export const RecoveryConfirmationView = ({
@@ -23,10 +26,22 @@ export const RecoveryConfirmationView = ({
   caseId,
   email,
   operatorAlias,
+  estimatedValue,
+  service,
 }: RecoveryConfirmationViewProps) => {
   const displayCaseId = caseId?.trim() && !caseId.includes('@') ? caseId.trim() : null;
   const displayEmail = email?.trim() || null;
   const displayName = operatorAlias?.trim() || null;
+
+  React.useEffect(() => {
+    trackIntakeLeadConversion({
+      formId: 'intake-received',
+      caseId: displayCaseId || undefined,
+      value: estimatedValue,
+      service,
+    });
+  }, [displayCaseId, estimatedValue, service]);
+
   return (
     <main className="pt-40 pb-32 px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen relative z-10 flex flex-col items-center text-center">
       {/* Success Icon */}

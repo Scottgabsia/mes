@@ -1,20 +1,13 @@
 import React from 'react';
 import { SeoEnrichment } from '../components/SeoEnrichment';
-import { 
-  ShieldCheck, 
-  Network, 
-  Info, 
-  AlertTriangle, 
-  TrendingUp,
+import {
+  Network,
+  Info,
   Activity,
   ChevronLeft,
   ChevronRight,
   ArrowRight,
   Upload,
-  LayoutDashboard,
-  Layers,
-  Search,
-  Users
 } from 'lucide-react';
 
 const INTELLIGENCE_MAILTO = (() => {
@@ -70,19 +63,19 @@ export const IntelligenceView = () => {
   };
 
   return (
-    <main className="pt-40 sm:pt-52 pb-32 px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative overflow-hidden">
+    <main className="pt-40 sm:pt-52 pb-32 pl-4 pr-11 sm:px-6 lg:px-12 max-w-[1600px] mx-auto min-h-screen relative overflow-x-hidden">
       {/* Background Grid Overlay */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
       
       {/* Header Section */}
       <div className="mb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-8 relative z-10">
         <div>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
             <span className="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[9px] font-mono text-blue-400 uppercase tracking-widest">System Status: Nominal</span>
-            <span className="text-slate-600">/</span>
+            <span className="hidden sm:inline text-slate-600">/</span>
             <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Session: #D822-04</span>
           </div>
-          <h1 className="text-4xl lg:text-5xl text-white mb-3 tracking-tighter font-manrope font-extrabold uppercase">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white mb-3 tracking-tighter font-manrope font-extrabold uppercase break-words">
             INTELLIGENCE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">COMMAND</span>
           </h1>
           <p className="text-slate-400 max-w-2xl font-manrope text-base leading-relaxed">
@@ -110,17 +103,17 @@ export const IntelligenceView = () => {
 
       <div className="grid grid-cols-12 gap-6 relative z-10">
         {/* 1. Global Threat Level */}
-        <section className="col-span-12 lg:col-span-4 glass-panel p-6 flex flex-col items-center group relative overflow-hidden rounded-xl border border-white/5">
+        <section className="col-span-12 lg:col-span-4 glass-panel p-4 sm:p-6 flex flex-col items-center group relative overflow-hidden rounded-xl border border-white/5">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent animate-scan"></div>
           
-          <div className="w-full flex justify-between items-center mb-8">
-            <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">CRYPTO NETWORK RISK</h3>
-            <Info className="text-slate-700 w-4 h-4" />
+          <div className="w-full flex justify-between items-center gap-3 mb-8">
+            <h3 className="text-[10px] font-bold text-slate-500 tracking-widest sm:tracking-[0.2em] uppercase min-w-0">CRYPTO NETWORK RISK</h3>
+            <Info className="text-slate-700 w-4 h-4 shrink-0" />
           </div>
 
-          <div className="relative w-64 h-64 flex items-center justify-center mb-8">
+          <div className="relative w-full max-w-[14rem] sm:max-w-[16rem] aspect-square mx-auto flex items-center justify-center mb-8">
             {/* SVG Gauge */}
-            <svg className="w-full h-full -rotate-90">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 256 256">
               <circle cx="128" cy="128" fill="transparent" r="118" stroke="rgba(255,255,255,0.02)" strokeWidth="2"></circle>
               <circle cx="128" cy="128" fill="transparent" r="105" stroke="rgba(255,255,255,0.05)" strokeWidth="15"></circle>
               <circle 
@@ -137,25 +130,25 @@ export const IntelligenceView = () => {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
               <span className="text-[10px] font-mono text-slate-500 mb-1 uppercase tracking-widest">RISK INDEX</span>
-              <span className="text-5xl text-white mb-1 font-bold">{riskIndex.toFixed(1)}<span className="text-xl opacity-50">%</span></span>
+              <span className="text-4xl sm:text-5xl text-white mb-1 font-bold">{riskIndex.toFixed(1)}<span className="text-xl opacity-50">%</span></span>
               <div className="px-3 py-1 bg-red-400/20 border border-red-400/40 rounded-full">
-                <span className="font-mono text-[10px] text-red-400 font-bold uppercase tracking-widest">CRITICAL STATE</span>
+                <span className="font-mono text-[9px] sm:text-[10px] text-red-400 font-bold uppercase tracking-widest">CRITICAL STATE</span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 w-full border-t border-white/5 pt-8 bg-gradient-to-b from-transparent to-red-400/5 -mx-6 px-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full border-t border-white/5 pt-8 bg-gradient-to-b from-transparent to-red-400/5 -mx-4 sm:-mx-6 px-4 sm:px-6">
             <div className="flex flex-col gap-1">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">EXPLOIT VECTORS</p>
               <div className="flex items-end gap-2">
-                <p className="font-mono text-2xl text-white leading-none">{exploitVectors.toLocaleString()}</p>
+                <p className="font-mono text-xl sm:text-2xl text-white leading-none">{exploitVectors.toLocaleString()}</p>
                 <span className="text-[10px] text-red-400 font-mono mb-0.5">+12.4%</span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">THREAT ACTORS</p>
               <div className="flex items-end gap-2">
-                <p className="font-mono text-2xl text-white leading-none">{threatActors.toLocaleString()}</p>
+                <p className="font-mono text-xl sm:text-2xl text-white leading-none">{threatActors.toLocaleString()}</p>
                 <span className="text-[10px] text-red-400 font-mono mb-0.5">+241</span>
               </div>
             </div>
@@ -197,13 +190,13 @@ export const IntelligenceView = () => {
         </section>
 
         {/* 2. Live Threat Feed */}
-        <section className="col-span-12 lg:col-span-8 glass-panel p-6 flex flex-col h-[520px] rounded-xl border border-white/5 relative">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex flex-col">
-              <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase mb-1">LIVE THREAT FEED</h3>
-              <p className="text-[9px] text-slate-600 font-mono uppercase">STREAMING_REALTIME_FORENSICS.LOG</p>
+        <section className="col-span-12 lg:col-span-8 glass-panel p-4 sm:p-6 flex flex-col min-h-[320px] sm:h-[520px] rounded-xl border border-white/5 relative">
+          <div className="flex items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8">
+            <div className="flex flex-col min-w-0">
+              <h3 className="text-[10px] font-bold text-slate-500 tracking-widest sm:tracking-[0.2em] uppercase mb-1">LIVE THREAT FEED</h3>
+              <p className="text-[9px] text-slate-600 font-mono uppercase break-all sm:break-normal">STREAMING_REALTIME_FORENSICS.LOG</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
               <div className="flex gap-1">
                 <div className="h-1 w-8 bg-blue-500/50 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 w-2/3 animate-pulse"></div>
@@ -213,27 +206,25 @@ export const IntelligenceView = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-white/10">
-            {/* Threat Entry High */}
+          <div className="flex-1 overflow-y-auto space-y-3 pr-1 sm:pr-2 scrollbar-thin scrollbar-thumb-white/10">
             {threats.map((threat, i) => (
-              <div key={i} className={`group relative bg-white/[0.02] hover:bg-white/[0.05] p-5 border border-white/5 border-l-4 ${threat.color} rounded-r-xl transition-all duration-300 overflow-hidden`}>
-                <div className="flex items-start justify-between gap-4 relative z-10">
-                  <div className="flex gap-5">
-                    <div className="mt-1 flex flex-col items-center gap-1">
+              <div key={i} className={`group relative bg-white/[0.02] hover:bg-white/[0.05] p-4 sm:p-5 border border-white/5 border-l-4 ${threat.color} rounded-r-xl transition-all duration-300 overflow-hidden`}>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 relative z-10">
+                  <div className="flex gap-3 sm:gap-5 min-w-0">
+                    <div className="mt-1 flex flex-col items-center gap-1 shrink-0">
                       <span className={`font-mono ${threat.textColor} text-[10px] ${threat.bg} px-1.5 py-0.5 rounded`}>{threat.id}</span>
-                      <div className={`w-[1px] h-full bg-gradient-to-b from-${threat.textColor}/50 to-transparent`}></div>
                     </div>
-                    <div>
-                      <h4 className="font-manrope text-sm text-white font-semibold mb-1 group-hover:text-blue-400 transition-colors uppercase tracking-tight">{threat.title}</h4>
-                      <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+                    <div className="min-w-0">
+                      <h4 className="font-manrope text-sm text-white font-semibold mb-1 group-hover:text-blue-400 transition-colors uppercase tracking-tight break-words">{threat.title}</h4>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
                         <span className="flex items-center gap-1.5"><span className={`w-1 h-1 rounded-full ${threat.bg.replace('bg-', 'bg-opacity-50 ')}`}></span> DETECTED: {formatAgo(threat.secondsAgo)}</span>
-                        <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-slate-700"></span> SOURCE: {threat.detail}</span>
+                        <span className="flex items-center gap-1.5 break-all"><span className="w-1 h-1 rounded-full bg-slate-700"></span> SOURCE: {threat.detail}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end">
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 shrink-0">
                     <span className={`px-3 py-1 ${threat.bg} ${threat.textColor} text-[9px] font-bold tracking-widest border border-white/10 rounded-full`}>{threat.status}</span>
-                    <span className="text-[8px] font-mono text-slate-600 mt-2 uppercase tracking-tighter">{threat.priority}</span>
+                    <span className="text-[8px] font-mono text-slate-600 uppercase tracking-tighter">{threat.priority}</span>
                   </div>
                 </div>
               </div>
@@ -242,21 +233,49 @@ export const IntelligenceView = () => {
         </section>
 
         {/* 3. Malicious Entity Tracker */}
-        <section className="col-span-12 lg:col-span-6 glass-panel p-6 rounded-xl border border-white/5 overflow-hidden">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">MALICIOUS ENTITY TRACKER</h3>
-            <div className="flex flex-col items-end mr-4">
-              <span className="text-[7px] font-mono text-slate-600 uppercase tracking-widest mb-1">24H SEIZURE VELOCITY</span>
-              <svg className="w-16 h-4 opacity-70" viewBox="0 0 100 20">
-                <polyline fill="none" points="0,18 10,15 20,17 30,12 40,14 50,8 60,10 70,3 80,6 90,2 100,5" stroke="#ffb4ab" strokeWidth="1.5"></polyline>
-              </svg>
-            </div>
-            <div className="px-2 py-1 bg-white/5 rounded flex gap-1 items-center">
-              <span className="w-1 h-1 rounded-full bg-red-500"></span>
-              <span className="text-[8px] font-mono text-slate-400">SYNCING_DB</span>
+        <section className="col-span-12 lg:col-span-6 glass-panel p-4 sm:p-6 rounded-xl border border-white/5 overflow-hidden">
+          <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+            <h3 className="text-[10px] font-bold text-slate-500 tracking-widest sm:tracking-[0.2em] uppercase min-w-0">MALICIOUS ENTITY TRACKER</h3>
+            <div className="flex items-center gap-3 ml-auto">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-[7px] font-mono text-slate-600 uppercase tracking-widest mb-1">24H SEIZURE VELOCITY</span>
+                <svg className="w-16 h-4 opacity-70" viewBox="0 0 100 20">
+                  <polyline fill="none" points="0,18 10,15 20,17 30,12 40,14 50,8 60,10 70,3 80,6 90,2 100,5" stroke="#ffb4ab" strokeWidth="1.5"></polyline>
+                </svg>
+              </div>
+              <div className="px-2 py-1 bg-white/5 rounded flex gap-1 items-center shrink-0">
+                <span className="w-1 h-1 rounded-full bg-red-500"></span>
+                <span className="text-[8px] font-mono text-slate-400">SYNCING_DB</span>
+              </div>
             </div>
           </div>
-          <div className="overflow-x-auto">
+          <div className="space-y-3 md:hidden">
+            {[
+              { addr: '0xde0b...9a12', level: 98, node: 'Node-Alpha', color: 'text-red-400', bg: 'bg-red-400' },
+              { addr: 'eth-mixer.onion', level: 72, node: 'Node-Gamma', color: 'text-yellow-400', bg: 'bg-yellow-400' },
+              { addr: '0x5511...ff22', level: 94, node: 'Sentinel-V', color: 'text-red-400', bg: 'bg-red-400' }
+            ].map((row, i) => (
+              <div key={i} className="flex items-center justify-between gap-3 border-b border-white/5 pb-3 font-mono">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative shrink-0">
+                    <div className={`w-2 h-2 rounded-full ${row.bg}`}></div>
+                    <div className={`absolute inset-0 ${row.bg} animate-ping opacity-40`}></div>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-white font-bold uppercase text-xs truncate">{row.addr}</p>
+                    <p className="text-[9px] text-slate-500 uppercase">{row.node}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`${row.color} font-black text-xs`}>{row.level}</span>
+                  <div className="w-10 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className={`h-full ${row.bg}`} style={{ width: `${row.level}%` }}></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left font-mono">
               <thead>
                 <tr className="text-[9px] text-slate-600 border-b border-white/10 uppercase tracking-widest">
@@ -296,28 +315,28 @@ export const IntelligenceView = () => {
             </table>
           </div>
           <div className="mt-6 flex justify-center">
-            <button className="text-[9px] font-mono text-blue-500/70 hover:text-blue-400 transition-colors uppercase tracking-[0.3em] cursor-pointer">
+            <button className="text-[9px] font-mono text-blue-500/70 hover:text-blue-400 transition-colors uppercase tracking-widest sm:tracking-[0.3em] cursor-pointer text-center">
               -- EXPAND FORENSIC DATABASE --
             </button>
           </div>
         </section>
 
         {/* 5. Interrogation Nodes */}
-        <section className="col-span-12 lg:col-span-6 glass-panel p-6 flex flex-col rounded-xl border border-white/5 relative">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">INTERROGATION NODES</h3>
-            <span className="font-mono text-[9px] text-blue-500 flex items-center gap-2 uppercase">
+        <section className="col-span-12 lg:col-span-6 glass-panel p-4 sm:p-6 flex flex-col rounded-xl border border-white/5 relative">
+          <div className="flex flex-wrap justify-between items-center gap-2 mb-6">
+            <h3 className="text-[10px] font-bold text-slate-500 tracking-widest sm:tracking-[0.2em] uppercase min-w-0">INTERROGATION NODES</h3>
+            <span className="font-mono text-[9px] text-blue-500 flex items-center gap-2 uppercase shrink-0">
               <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span> SCANNING ACTIVE
             </span>
           </div>
-          <div className="flex-1 grid grid-cols-4 gap-3 bg-black/40 rounded-xl p-4 border border-white/5 relative overflow-hidden">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 bg-black/40 rounded-xl p-3 sm:p-4 border border-white/5 relative overflow-hidden">
             {/* Grid background pattern */}
             <div className="absolute inset-0 opacity-[0.15] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0062ff 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
             
             {[
               { id: 'BTC-01', status: 'UP', perf: '99.9%', color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
               { id: 'ETH-Main', status: 'UP', perf: '99.9%', color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
-              { id: 'SOL-Threat', status: 'VULN', perf: 'VULN_DETECT', color: 'text-red-400', bg: 'bg-red-400/5', border: 'border-red-400/40', alert: true },
+              { id: 'SOL-Threat', status: 'VULN', perf: 'VULN', color: 'text-red-400', bg: 'bg-red-400/5', border: 'border-red-400/40', alert: true },
               { id: 'ARB-Scan', status: 'UP', perf: '99.9%', color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
               { id: 'BSC-09', status: 'UP', perf: '99.9%', color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
               { id: 'AVAX-W', status: 'UP', perf: '99.9%', color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
@@ -335,15 +354,15 @@ export const IntelligenceView = () => {
             ))}
           </div>
           
-          <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex gap-0.5">
+          <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex gap-0.5 shrink-0">
                 <div className="w-1 h-3 bg-blue-500/40 rounded-full"></div>
                 <div className="w-1 h-3 bg-blue-500/40 rounded-full"></div>
                 <div className="w-1 h-3 bg-blue-500/40 rounded-full"></div>
                 <div className="w-1 h-3 bg-blue-500 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-[0.2em]">Global Forensic Uptime</span>
+              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest sm:tracking-[0.2em] truncate">Global Forensic Uptime</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black text-emerald-500 font-mono">99.9%</span>
@@ -354,12 +373,12 @@ export const IntelligenceView = () => {
 
         {/* 4. Deep Dive Reports */}
         <section className="col-span-12 mt-8">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">FORENSIC INTELLIGENCE REPORTS</h3>
-              <div className="h-px w-24 bg-white/5"></div>
+          <div className="flex items-center justify-between gap-3 mb-8">
+            <div className="flex items-center gap-4 min-w-0">
+              <h3 className="text-[10px] font-bold text-slate-500 tracking-widest sm:tracking-[0.2em] uppercase leading-relaxed">FORENSIC INTELLIGENCE REPORTS</h3>
+              <div className="h-px w-24 bg-white/5 hidden sm:block"></div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <button className="w-10 h-10 glass-panel rounded-xl flex items-center justify-center hover:bg-white/10 text-slate-400 transition-all hover:text-white group border border-white/10">
                 <ChevronLeft className="group-hover:-translate-x-1 transition-transform" />
               </button>
@@ -431,24 +450,24 @@ export const IntelligenceView = () => {
       {/* Bottom CTA Section */}
       <div className="mt-24 py-20 relative overflow-hidden rounded-3xl">
         <div className="absolute inset-0 bg-blue-600/5 backdrop-blur-3xl border border-white/5 rounded-3xl"></div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
-        <div className="relative z-10 flex flex-col items-center text-center px-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-px w-8 bg-blue-500/30"></div>
-            <span className="text-blue-400 font-mono text-[10px] uppercase tracking-[0.4em]">Secure Communication Channel</span>
-            <div className="h-px w-8 bg-blue-500/30"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(800px,100%)] h-[300px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6">
+          <div className="flex items-center gap-3 mb-6 max-w-full">
+            <div className="h-px w-8 bg-blue-500/30 hidden sm:block"></div>
+            <span className="text-blue-400 font-mono text-[10px] uppercase tracking-widest sm:tracking-[0.4em] text-center">Secure Communication Channel</span>
+            <div className="h-px w-8 bg-blue-500/30 hidden sm:block"></div>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-extrabold font-manrope text-white mb-8 max-w-2xl uppercase tracking-tighter">SECURE YOUR ASSETS WITH ADVANCED INTERROGATION</h2>
-          <div className="flex justify-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-manrope text-white mb-8 max-w-2xl uppercase tracking-tighter break-words">SECURE YOUR ASSETS WITH ADVANCED INTERROGATION</h2>
+          <div className="flex justify-center w-full">
             <a
               href={INTELLIGENCE_MAILTO}
-              className="bg-blue-600 text-white px-12 py-5 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center gap-4 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group no-underline"
+              className="bg-blue-600 text-white w-full max-w-sm sm:w-auto px-6 sm:px-12 py-5 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center justify-center gap-3 sm:gap-4 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group no-underline"
             >
               <Upload className="group-hover:rotate-12 transition-transform" size={20} />
               Submit Intelligence
             </a>
           </div>
-          <p className="mt-10 text-slate-500 font-mono text-[10px] uppercase tracking-widest">ESTABLISHED SECURE P2P CONNECTION: 256-BIT ENCRYPTION ACTIVE</p>
+          <p className="mt-10 text-slate-500 font-mono text-[10px] uppercase tracking-widest max-w-full break-words px-2">ESTABLISHED SECURE P2P CONNECTION: 256-BIT ENCRYPTION ACTIVE</p>
         </div>
       </div>
     
