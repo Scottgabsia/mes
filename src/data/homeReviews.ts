@@ -1,53 +1,53 @@
 /** Five newest reviews for the homepage carousel — keep this file small so home JS does not pull ReviewsView. */
 export const HOME_CAROUSEL_REVIEWS = [
   {
-    id: "rev_169",
-    user: "RAFAEL_C_MDE",
+    id: "rev_181",
+    user: "MICHAEL_J_ORF",
     platform: "TRUSTPILOT",
     rating: 5,
     content:
-      "I thought I was buying a small truck for my delivery route through a crypto auto broker. I sent $41,000 USDT. Crypto Recovery Assets pulled the listing, the VIN, and the payment hashes into one narrative. My $41,000 came back.",
-    tag: "FAKE_VEHICLE_BROKER",
+      "A fake label advance took $26,400 USDT I needed for a van and studio time. Crypto Recovery Assets matched the wallets to other musician-advance fakes and recovered every dollar.",
+    tag: "FAKE_LABEL_ADVANCE",
     platformType: "TRUSTPILOT" as const,
   },
   {
-    id: "rev_168",
-    user: "GAIL_E_BUF",
+    id: "rev_180",
+    user: "NOOR_H_AMM",
     platform: "GOOGLE_REV",
     rating: 5,
     content:
-      "I keep a seed phrase in a photo album in iCloud. A phishing page that looked like Apple asked me to restore iCloud crypto backup. 1.18 BTC left. Crypto Recovery Assets traced, froze, and returned my 1.18 Bitcoin.",
-    tag: "ICLOUD_SEED_PHISH",
+      "A Zoom 'pension advisor' took $81,300 of my father's teaching savings. Crypto Recovery Assets put us on one call, traced the USDC, and every dollar came home.",
+    tag: "PENSION_ANNUITY_ZOOM",
     platformType: "GOOGLE" as const,
   },
   {
-    id: "rev_167",
-    user: "YUSUF_A_KHI",
+    id: "rev_179",
+    user: "KEVIN_A_PHX",
     platform: "TRUSTPILOT",
     rating: 5,
     content:
-      "A cousin on WhatsApp asked me to send $24,800 USDT for a hospital admission. It was a SIM swap. Crypto Recovery Assets traced the USDT, found the cash-out, and the $24,800 returned.",
-    tag: "FAMILY_SIMSWAP_CHAT",
+      "A lookalike produce invoice drained $18,650 from my taco shop. Crypto Recovery Assets treated it like wire fraud, froze the cash-out, and we opened Saturday.",
+    tag: "SUPPLIER_INVOICE_CLONE",
     platformType: "TRUSTPILOT" as const,
   },
   {
-    id: "rev_166",
-    user: "PATRICIA_O_TPA",
+    id: "rev_178",
+    user: "ANNA_B_KRK",
     platform: "GOOGLE_REV",
     rating: 5,
     content:
-      "A radio guest advisor sold a private REIT that settled in USDC. I put in $108,500. Crypto Recovery Assets showed me the statements were templates and got an exchange to hold what was still there. Every dollar is back.",
-    tag: "RETIREMENT_RADIO_PITCH",
+      "A fake rental hold took 2.04 ETH I had saved for a studio. Crypto Recovery Assets traced the listing kit and my Ethereum came back. I still teach in that room.",
+    tag: "RENTAL_HOLD_CRYPTO",
     platformType: "GOOGLE" as const,
   },
   {
-    id: "rev_165",
-    user: "COLIN_W_GLA",
+    id: "rev_177",
+    user: "JAMES_T_OKC",
     platform: "TRUSTPILOT",
     rating: 5,
     content:
-      "I run a rescue for street dogs. A drainer hit our public donation wallet after I signed a transparency plugin. $29,750 left. Crypto Recovery Assets recovered the drain and helped us message clone victims.",
-    tag: "RESCUE_CHARITY_DRAIN",
+      "A fake court portal emptied $94,000 USDC from my divorce award. Crypto Recovery Assets showed it was a third party, recovered the funds, and kept the file discreet.",
+    tag: "DIVORCE_DISBURSEMENT_PORTAL",
     platformType: "TRUSTPILOT" as const,
   },
 ];

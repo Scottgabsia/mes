@@ -1777,6 +1777,138 @@ export const REVIEWS_DATA: Review[] = [
     date: '2026-11-07',
     verified: true,
     tag: 'FAKE_VEHICLE_BROKER'
+  },
+  {
+    id: 'rev_170',
+    user: 'HELEN_M_DAY',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "My husband died in March. I am fifty-eight. I found a notebook with a wallet password and a note that said 'for Helen if I go first.' I had never opened an exchange. A man on Facebook who said he was from the same church offered to 'unlock the inheritance wallet' if I sent a small USDT fee to release the freeze. I sent $8,200, then $19,600 more when he said the bank was holding it. I was grieving. I was stupid in the way grief makes you stupid. I sat on the kitchen floor with his mug still in the sink. A neighbor found Crypto Recovery Assets. They never asked me for the seed. They asked for dates, screenshots, and the two hashes. They traced both payments into a cluster already tied to bereavement-unlock scams. An exchange held what was still there. $27,800 came back. They also sat on a call while I wrote down, in my own handwriting, that no one legitimate will ever charge a widow a crypto fee to open her husband's wallet. I keep that paper in the notebook. If you just lost someone and a kind stranger appears with a wallet problem, hang up. If you already paid, write this team. They treated me like a wife, not a mark. I got the money. I got to keep his note without it becoming the last thing I was ashamed of.",
+    date: '2026-11-08',
+    verified: true,
+    tag: 'BEREAVEMENT_UNLOCK_FEE'
+  },
+  {
+    id: 'rev_171',
+    user: 'MARCUS_D_MEM',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I pastor a storefront church. We saved $61,400 for a down payment on a building we had already walked through with the kids. A 'Christian escrow' site took crypto so the seller would not have to wait on a wire. The listing photos were our photos. The pastor-to-pastor chat used language I trusted. I sent the $61,400 on a Tuesday. Wednesday the domain was down. I had to tell twelve families we might have given the building away. I could not sleep. Crypto Recovery Assets took the intake at 11 p.m. They rebuilt the clone, matched the wallet to other faith-escrow fakes, and got a compliance desk to freeze an offramp. Six weeks later the $61,400 was in our account. They never mocked the cross in my email signature. They asked whether we wanted the report written in a tone the board could read without panic. We did. We still do not have the building. We have the money and we have a congregation that did not splinter. If your ministry is being asked to settle a property in USDT this week, it is not closing. It is hunting. If you already sent it, these people know how to chase a stolen tithe without turning it into gossip. I am not a crypto person. I am a pastor who got his people home.",
+    date: '2026-11-08',
+    verified: true,
+    tag: 'CHURCH_ESCROW_CLONE'
+  },
+  {
+    id: 'rev_172',
+    user: 'LINA_P_QRO',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "My sister's chemo crowdfund lived in a public USDT address because people overseas could not use our bank. Someone cloned the page. Then a 'platform upgrade' message asked me to approve a new contract so donations would show in real time. I signed it at the hospital. $38,900 left while she was in the chair. I had to tell her the community money was gone. She said she was sorry for being expensive. I will not forget that sentence. Crypto Recovery Assets started the same night. They split the file: the drain, and a notice to donors whose payments had hit the clone. They recovered the $38,900 from the drain. They never asked me to 'stay positive.' They asked for txids and the time on the hospital clock. If you are raising medical money in a public wallet, you can still be hit. If you already were, this firm will treat the number like a life, because it is. My sister finished treatment. The money came back before the next round. I am writing this in the parking garage because I finally have a breath. Thank you is too small, but it is what I have.",
+    date: '2026-11-09',
+    verified: true,
+    tag: 'MEDICAL_CROWDFUND_DRAIN'
+  },
+  {
+    id: 'rev_173',
+    user: 'OWEN_K_BOI',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I farm. I needed a used harvester before harvest. A dealer wanted a $47,200 USDT deposit to hold the machine because 'banks are slow in harvest season.' The serial number checked out on a public listing. The warehouse video had a radio playing a station from my county. I sent it. The dealer vanished. I was going to lose a crop I had already borrowed against. I called my lender in tears. Crypto Recovery Assets asked for the listing, the serial, and the hash—not for a lecture about farmers and the internet. They tied the video to a reused set from other equipment holds. They found a still-liquid balance on an exchange. The $47,200 returned. I rented a machine. I harvested. I did not lose the land. They wrote one paragraph I could show the lender so the story was a crime, not a character flaw. If you are buying iron and someone needs crypto this week to hold it, walk the lot in person. If you already paid, write them while the hops are fresh. They did not make me feel like a rube. They made me feel like a client. That is the difference between panic and a case.",
+    date: '2026-11-09',
+    verified: true,
+    tag: 'FARM_EQUIPMENT_HOLD'
+  },
+  {
+    id: 'rev_174',
+    user: 'PRIYA_S_YVR',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I send money home. A 'faster remittance' desk promised my mother USDT in her local wallet in twenty minutes instead of three days. I sent $22,150 from my first year in Canada. The desk was a Telegram handle and a PDF with a maple leaf. Nothing arrived. My mother thought I had stopped loving her. I sat on a bus with my face in my coat. Crypto Recovery Assets took a remittance fraud as seriously as a whale hack. They traced the USDT, matched the desk to other diaspora-speed scams, and got a freeze. The $22,150 came back. They helped me write a message in the language my mother actually reads so she would know I had not abandoned her. If you are new in a country and someone sells you speed plus family guilt, that is the product. If you already sent it, these investigators will chase a small number like it is a household. It was. I got to call her and tell the truth without shame eating the call. I am still sending money home. I am sending it the slow way. I am still her daughter.",
+    date: '2026-11-10',
+    verified: true,
+    tag: 'REMITTANCE_SPEED_DESK'
+  },
+  {
+    id: 'rev_175',
+    user: 'DANIEL_R_ELP',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I am a veteran. I received a disability back-pay lump that I converted to 0.91 BTC because I was afraid of banks after a bad year. A 'VA benefits concierge' on a video call walked me into a 'protected veterans wallet' with a seal that looked official. I typed what they told me to type. The 0.91 BTC left. I have had worse days, but not many. I did not want to tell my wife I had lost the back pay. Crypto Recovery Assets asked for the call time, the address, and nothing that sounded like a password. They traced. They froze. They returned the 0.91 Bitcoin. They never saluted me like a prop. They never asked me to be grateful I was alive so the money shouldn't matter. The money mattered. The marriage mattered. If someone uses your service, your unit, or your benefits office as a costume, hang up and call the real number. If you already moved the coins, call this desk. They treated a veteran's lump sum like wages, because that is what it was. I told my wife the truth after the coins were home. I should have told her first. I am telling you now so you might.",
+    date: '2026-11-10',
+    verified: true,
+    tag: 'VETERAN_BENEFITS_CONCIERGE'
+  },
+  {
+    id: 'rev_176',
+    user: 'SOFIA_L_LIS',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "The week before my wedding I moved $33,700 of gift money into a 'vendor escrow' so the venue, florist, and photographer could draw in USDT. The dashboard looked like a wedding app. I was exhausted and happy. Both make you easy. The escrow emptied on a Thursday. I had to call my mother and say the wedding might be a living room. Crypto Recovery Assets started before I had finished crying on the intake. They mapped the app to a reused vendor-escrow kit, pushed the hashes, and recovered the $33,700. We got married. The photos exist. The investigator said joy is a pressure window. I needed that named. They did not make a joke about brides and Bitcoin. They asked for the invoices and the tx. If you are paying a life event in a wallet you do not control, stop. If you already did, write them. They gave me my wedding back. I know how that sounds. It is still true.",
+    date: '2026-11-11',
+    verified: true,
+    tag: 'WEDDING_VENDOR_ESCROW'
+  },
+  {
+    id: 'rev_177',
+    user: 'JAMES_T_OKC',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "My divorce decree awarded me $94,000 in USDC that had been sitting in a joint account. A man who said he was coordinating with 'court crypto disbursement' sent me a portal to claim it. I had a case number. I had a PDF on letterhead. I signed a permit so the funds could 'split cleanly.' $94,000 left my side. I thought my ex had found a new way to hurt me. I thought I would have to go back to court as the fool. Crypto Recovery Assets separated the theft from the family. They showed, with addresses, that the portal was a third party wearing the case number. They recovered the $94,000. They wrote the narrative so my lawyer could file without turning the hearing into a spectacle. If you are in a divorce and anyone new wants a signature to 'unlock your half,' it is not the clerk. If you already signed, this team can still run. They were discreet. They were fast. They let me keep my dignity in a year that had already taken enough of it. I am not friends with my ex. I am solvent. That is the review.",
+    date: '2026-11-11',
+    verified: true,
+    tag: 'DIVORCE_DISBURSEMENT_PORTAL'
+  },
+  {
+    id: 'rev_178',
+    user: 'ANNA_B_KRK',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "I teach piano. A year of recital fees and a small grant sat in 2.04 ETH for a studio deposit. A listing agent sent a 'crypto hold' for an apartment I had already visited. The building was real. The agent was not. I sent the 2.04 ETH because I was afraid someone else would take the room. I teach children. I do not gamble. I still lost it. I canceled lessons for two days because I could not look at the kids. Crypto Recovery Assets traced the hold address, matched it to other rental-hold kits in the same city pattern, and caught an exchange deposit. My 2.04 ETH came back. They helped me write a message to the real building so I would not be blacklisted as a no-show. I still live there. I still teach. If a rental needs crypto this afternoon to be fair, it is not a rental. If you already paid, tell this firm the address of the building and the hash. They treated a teacher's deposit like a home, because that is what it was. I played again on Thursday. That is not a small thing.",
+    date: '2026-11-11',
+    verified: true,
+    tag: 'RENTAL_HOLD_CRYPTO'
+  },
+  {
+    id: 'rev_179',
+    user: 'KEVIN_A_PHX',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I run a two-window taco shop. A produce supplier I had used for months started invoicing in USDT 'to skip card fees.' The email was one letter off. I paid $18,650 for a week of food. The truck never came. Friday I had to close early. I told my sister, who works the register, that I might have ended us. Crypto Recovery Assets treated a restaurant invoice like a wire fraud, which it was. They pulled the lookalike domain, the old real invoices, and the new hash into one pack. An exchange held the cash-out. The $18,650 returned. They told me to call vendors on the number on last month's paper, not the number in the new PDF. I laminated that. If you pay suppliers and the payment rail suddenly becomes a wallet, call them on a known line. If you already paid the clone, write this team the same day. They did not talk down to a small kitchen. They got the food money back. We opened Saturday. My sister cried in the walk-in. So did I. Then we cooked.",
+    date: '2026-11-12',
+    verified: true,
+    tag: 'SUPPLIER_INVOICE_CLONE'
+  },
+  {
+    id: 'rev_180',
+    user: 'NOOR_H_AMM',
+    platform: 'GOOGLE',
+    rating: 5,
+    content:
+      "My father is seventy-one. A 'pension advisor' on Zoom sold him a crypto annuity that would 'beat inflation for the grandchildren.' He sent $81,300 USDC from a lifetime of teaching. I found out when he asked me how to open the dashboard. There was no dashboard. There was a man who wanted a second payment to 'unlock the coupon.' I flew home. I was angry at him and I was angry at myself. Crypto Recovery Assets put us on one call so he would not have to confess twice. They traced. They documented. They got a freeze. Every dollar of the $81,300 came back. They never used the word greedy. They used the word hunted. My father is proud. Pride is how this sale works. If your parent is being walked into a second crypto payment to release the first, you are not too late. Call these people. They were gentle with him and ruthless with the chain. I got my dad back as a person I was not furious at. That is worth as much as the USDC. I am putting both in this review because both are true.",
+    date: '2026-11-12',
+    verified: true,
+    tag: 'PENSION_ANNUITY_ZOOM'
+  },
+  {
+    id: 'rev_181',
+    user: 'MICHAEL_J_ORF',
+    platform: 'TRUSTPILOT',
+    rating: 5,
+    content:
+      "I play guitar in bars. A 'label advance' in USDT was going to pay for a van and a week of studio time. The A&R account had photos from a real showcase I had actually played. I sent $26,400 because I have been waiting for someone to say yes since I was twenty. I am thirty-four. The yes was a kit. The van listing I had already messaged went cold. I sat in a parking lot and hated every song I had written. Crypto Recovery Assets did not ask me to be a brand. They asked for the chat, the tx, and the showcase flyer. They matched the 'label' wallets to other musician-advance fakes. They recovered the $26,400. I did not get a label. I got my money and a sentence from the analyst I still have in my notes: hunger is not stupidity. If you make things and someone wants crypto to open a door this week, it is not a door. If you already paid, write them. They treated a working musician's advance like rent, because that is what it was going to be. I played Friday. I played for me. That is the first time in a month that did not feel like a funeral for a career I never had.",
+    date: '2026-11-12',
+    verified: true,
+    tag: 'FAKE_LABEL_ADVANCE'
   }
 
 ];
