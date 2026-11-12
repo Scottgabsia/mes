@@ -31,9 +31,14 @@ import {
 } from '../lib/caseClientApi';
 import { lookupCaseByEmail } from '../lib/caseLookupApi';
 import { intakeSessionToCase, loadIntakeSession } from '../lib/intakeSession';
-import { ClientDocumentSigning } from '../components/ClientDocumentSigning';
 import { CLIENT_TIMELINE_STAGES, formatRecoveredAmount } from '../lib/caseStages';
 import { doc, updateDoc, serverTimestamp, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
+
+const ClientDocumentSigning = React.lazy(() =>
+  import('../components/ClientDocumentSigning').then((m) => ({
+    default: m.ClientDocumentSigning,
+  }))
+);
 
 interface ClientDashboardViewProps {
   caseData?: any;
@@ -46,12 +51,14 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
   })();
   const [activeTab, setActiveTab] = React.useState<'overview' | 'messages'>('overview');
   const [message, setMessage] = React.useState('');
-  const [messages, setMessages] = React.useState<any[]>([]);
+  const [messages, setMessages] = React.useState<any[]>(() => resolvedCase?.messages || []);
   const [liveCaseData, setLiveCaseData] = React.useState<any>(resolvedCase);
   const [sendingMessage, setSendingMessage] = React.useState(false);
-  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [notifications, setNotifications] = React.useState<any[]>(() => resolvedCase?.notifications || []);
   const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
-  const [unreadCount, setUnreadCount] = React.useState(0);
+  const [unreadCount, setUnreadCount] = React.useState(
+    () => (resolvedCase?.notifications || []).filter((n: any) => !n.read).length
+  );
   const [lookupError, setLookupError] = React.useState<string | null>(null);
   
   const [hopCount, setHopCount] = React.useState(12);
@@ -65,17 +72,27 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
     return () => clearInterval(interval);
   }, []);
 
+  const applyPublicCase = React.useCallback((next: any) => {
+    if (!next) return;
+    setLiveCaseData((prev: any) => ({ ...prev, ...next }));
+    if (Array.isArray(next.messages)) setMessages(next.messages);
+    if (Array.isArray(next.notifications)) {
+      setNotifications(next.notifications);
+      setUnreadCount(next.notifications.filter((n: any) => !n.read).length);
+    }
+  }, []);
+
   React.useEffect(() => {
     if (caseData) {
-      setLiveCaseData(caseData);
+      applyPublicCase(caseData);
       return;
     }
     const session = loadIntakeSession();
     if (session) setLiveCaseData(intakeSessionToCase(session));
-  }, [caseData]);
+  }, [caseData, applyPublicCase]);
 
   React.useEffect(() => {
-    const source = liveCaseData || caseData;
+    const source = caseData || liveCaseData;
     const email = String(source?.secureComms || source?.email || '').trim();
     const caseId = String(source?.caseId || source?.id || '').trim();
     if (!email && !caseId) return;
@@ -102,20 +119,19 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
           }
         }
         if (result.ok && result.case) {
-          setLiveCaseData((prev: any) => ({ ...prev, ...result.case }));
-          setMessages(result.case.messages || []);
-          setNotifications(result.case.notifications || []);
-          setUnreadCount(
-            (result.case.notifications || []).filter((n: any) => !n.read).length
-          );
+          applyPublicCase(result.case);
           setLookupError(null);
         } else if (!source?.operatorAlias && !source?.estimatedValue) {
           setLookupError('Could not load your case yet. Use Check Status with the same email if this persists.');
         }
       };
 
-      refresh();
-      const interval = window.setInterval(refresh, 5000);
+      const alreadyPainted =
+        Array.isArray(source?.messages) || Array.isArray(source?.notifications);
+      if (!alreadyPainted) {
+        void refresh();
+      }
+      const interval = window.setInterval(() => void refresh(), 5000);
       return () => window.clearInterval(interval);
     }
 
@@ -487,6 +503,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         <div className="flex items-center gap-4">
           <div className="relative">
             <button 
+              type="button"
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
               className={`p-3 rounded-xl border transition-all relative group ${
                 unreadCount > 0 ? 'bg-blue-600/10 border-blue-500 text-blue-400' : 'bg-white/5 border-white/10 text-slate-500 hover:text-white'
@@ -522,6 +539,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                       </h3>
                       {unreadCount > 0 && (
                         <button 
+                          type="button"
                           onClick={handleMarkAllRead}
                           className="text-[9px] font-mono text-blue-400 hover:text-white uppercase tracking-tighter"
                         >
@@ -582,12 +600,14 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
 
           <div className="hidden sm:flex items-center gap-2 sm:gap-4 bg-slate-950/60 p-1.5 sm:p-2 rounded-xl border border-white/5 backdrop-blur-md overflow-x-auto scrollbar-hide shrink-0">
           <button 
+            type="button"
             onClick={() => setActiveTab('overview')}
             className={`px-4 sm:px-6 py-2 rounded-lg font-mono text-[10px] sm:text-xs font-bold transition-all uppercase tracking-widest whitespace-nowrap ${activeTab === 'overview' ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(0,98,255,0.4)]' : 'text-slate-500 hover:text-white'}`}
           >
             Overview
           </button>
           <button 
+            type="button"
             onClick={() => setActiveTab('messages')}
             className={`px-4 sm:px-6 py-2 rounded-lg font-mono text-[10px] sm:text-xs font-bold transition-all uppercase tracking-widest whitespace-nowrap ${activeTab === 'messages' ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(0,98,255,0.4)]' : 'text-slate-500 hover:text-white'}`}
           >
@@ -624,9 +644,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         {activeTab === 'overview' && (
           <motion.div 
             key="overview"
-            initial={{ opacity: 0, y: 10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0 }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-8"
           >
             {/* Left Col: Case Tracking */}
@@ -834,18 +854,13 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                 </motion.div>
               )}
 
-              {showDocumentSigning && liveCaseData && (
-                <ClientDocumentSigning
-                  caseData={liveCaseData}
-                  onCaseUpdate={(next) => setLiveCaseData(next)}
-                />
-              )}
-
-              {bothDocumentsSigned && !showDocumentSigning && (
-                <ClientDocumentSigning
-                  caseData={liveCaseData}
-                  onCaseUpdate={(next) => setLiveCaseData(next)}
-                />
+              {(showDocumentSigning || bothDocumentsSigned) && liveCaseData && (
+                <React.Suspense fallback={null}>
+                  <ClientDocumentSigning
+                    caseData={liveCaseData}
+                    onCaseUpdate={applyPublicCase}
+                  />
+                </React.Suspense>
               )}
 
               {(submissionSuccess || (displayStatus !== 'ANALYSIS' && hasSubmittedKeyphrase)) &&
@@ -988,6 +1003,7 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
                   </div>
                 </div>
                 <button 
+                  type="button"
                   onClick={() => setActiveTab('messages')}
                   className="w-full py-4 bg-blue-600 text-white rounded-xl font-manrope font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-[0_0_20px_#0062ff33] cursor-pointer"
                 >
@@ -1003,9 +1019,9 @@ export const ClientDashboardView = ({ caseData }: ClientDashboardViewProps) => {
         {activeTab === 'messages' && (
           <motion.div 
             key="messages"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
+            initial={false}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[600px]"
           >
             {/* Message Center */}

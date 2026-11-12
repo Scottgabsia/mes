@@ -65,7 +65,7 @@ export const SOC2View = () => {
         <p className="text-slate-400 mb-10 leading-relaxed max-w-3xl">
           Unlike Type I which only looks at a point in time, our Type II report covers our operational effectiveness over a continuous 12-month period. This report is available to our enterprise partners upon signing a non-disclosure agreement.
         </p>
-        <button className="px-8 py-4 bg-emerald-600 text-white font-manrope font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-emerald-500 transition-all shadow-[0_0_20px_#10b98144] active:scale-95 cursor-pointer">
+        <button type="button" className="px-8 py-4 bg-emerald-600 text-white font-manrope font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-emerald-500 transition-all shadow-[0_0_20px_#10b98144] active:scale-95 cursor-pointer">
           Request SOC 2 Report
         </button>
       </div>

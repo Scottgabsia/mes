@@ -128,7 +128,7 @@ export const IntelligenceView = () => {
               ></circle>
               <circle cx="128" cy="128" fill="transparent" r="85" stroke="rgba(255,180,171,0.1)" strokeDasharray="4 8" strokeWidth="1"></circle>
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
               <span className="text-[10px] font-mono text-slate-500 mb-1 uppercase tracking-widest">RISK INDEX</span>
               <span className="text-4xl sm:text-5xl text-white mb-1 font-bold">{riskIndex.toFixed(1)}<span className="text-xl opacity-50">%</span></span>
               <div className="px-3 py-1 bg-red-400/20 border border-red-400/40 rounded-full">
@@ -315,7 +315,7 @@ export const IntelligenceView = () => {
             </table>
           </div>
           <div className="mt-6 flex justify-center">
-            <button className="text-[9px] font-mono text-blue-500/70 hover:text-blue-400 transition-colors uppercase tracking-widest sm:tracking-[0.3em] cursor-pointer text-center">
+            <button type="button" className="text-[9px] font-mono text-blue-500/70 hover:text-blue-400 transition-colors uppercase tracking-widest sm:tracking-[0.3em] cursor-pointer text-center">
               -- EXPAND FORENSIC DATABASE --
             </button>
           </div>
@@ -379,10 +379,10 @@ export const IntelligenceView = () => {
               <div className="h-px w-24 bg-white/5 hidden sm:block"></div>
             </div>
             <div className="flex gap-2 shrink-0">
-              <button className="w-10 h-10 glass-panel rounded-xl flex items-center justify-center hover:bg-white/10 text-slate-400 transition-all hover:text-white group border border-white/10">
+              <button type="button" className="w-10 h-10 glass-panel rounded-xl flex items-center justify-center hover:bg-white/10 text-slate-400 transition-all hover:text-white group border border-white/10">
                 <ChevronLeft className="group-hover:-translate-x-1 transition-transform" />
               </button>
-              <button className="w-10 h-10 glass-panel rounded-xl flex items-center justify-center hover:bg-white/10 text-slate-400 transition-all hover:text-white group border border-white/10">
+              <button type="button" className="w-10 h-10 glass-panel rounded-xl flex items-center justify-center hover:bg-white/10 text-slate-400 transition-all hover:text-white group border border-white/10">
                 <ChevronRight className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

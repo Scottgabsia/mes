@@ -23,10 +23,11 @@ import { FooterSocialLinks } from './components/SocialIcons';
 import { RouteSEO } from './components/RouteSEO';
 import { HomeView } from './views/HomeView';
 import { ClientPortalView } from './views/ClientPortalView';
+import { RecoveryConfirmationView } from './views/RecoveryConfirmationView';
+import { CaseLookupView } from './views/CaseLookupView';
 import {
   ServicesView,
   IntelligenceView,
-  RecoveryConfirmationView,
   ClientDashboardView,
   ChainTraceabilityView,
   ExchangeRecoveryView,
@@ -37,7 +38,6 @@ import {
   SOC2View,
   GDPRView,
   AMLKYCView,
-  CaseLookupView,
   AboutView,
   BlogView,
   PrivacyPolicyView,
@@ -48,6 +48,7 @@ import {
   FAQView,
   CaseManagerView,
   prefetchPrimaryViews,
+  prefetchClientWorkspace,
 } from './views/lazyViews';
 import {
   intakeSessionToCase,
@@ -223,11 +224,7 @@ export default function App() {
       prefetchPrimaryViews();
       void import('./lib/firebase');
     };
-    if (typeof requestIdleCallback === 'function') {
-      const id = requestIdleCallback(warm, { timeout: 1800 });
-      return () => cancelIdleCallback(id);
-    }
-    const t = window.setTimeout(warm, 400);
+    const t = window.setTimeout(warm, 120);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -284,6 +281,14 @@ export default function App() {
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 
   const handleNavClick = (view: View) => {
+    if (
+      view === 'caseLookup' ||
+      view === 'clientDashboard' ||
+      view === 'recoveryConfirmation' ||
+      view === 'clientPortal'
+    ) {
+      prefetchClientWorkspace();
+    }
     setCurrentView(view);
     closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -294,12 +299,14 @@ export default function App() {
   };
 
   const handleIntakeComplete = (session: IntakeSession) => {
+    prefetchClientWorkspace();
     saveIntakeSession(session);
     setSelectedCase(intakeSessionToCase(session));
     handleNavClick('recoveryConfirmation');
   };
 
   const openClientDashboard = (caseRecord?: any) => {
+    prefetchClientWorkspace();
     const next =
       caseRecord ||
       selectedCase ||
@@ -412,6 +419,7 @@ export default function App() {
               <span className="font-fira text-xs text-emerald-400">99.998% SECURE</span>
             </div>
             <button 
+              type="button"
               className="flex w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-blue-500/30 items-center justify-center active:scale-95 transition-transform ring-4 ring-blue-600/5 bg-blue-600/10 text-blue-500 hover:bg-blue-600/20 hover:text-white cursor-pointer flex-shrink-0" 
               onClick={() => handleNavClick('clientPortal')}
               title="Contact Support"
@@ -420,6 +428,7 @@ export default function App() {
             </button>
             {/* Mobile Menu Toggle */}
             <button 
+              type="button"
               onClick={toggleMobileMenu}
               className="lg:hidden p-1.5 xs:p-2 text-slate-400 hover:text-blue-500 transition-colors flex-shrink-0"
             >
@@ -440,6 +449,7 @@ export default function App() {
               <nav className="flex flex-col p-6 gap-6">
                 <div className="flex border-b border-white/5 pb-6">
                    <button 
+                    type="button"
                     onClick={() => handleNavClick('caseLookup')}
                     className="w-full py-4 bg-blue-600/10 border border-blue-500/30 rounded-xl text-blue-400 font-manrope text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3"
                   >
@@ -630,6 +640,7 @@ export default function App() {
             </div>
             <nav className="flex flex-col flex-1 px-4 gap-1 min-w-[288px]">
               <button 
+                type="button"
                 onClick={() => handleNavClick('home')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
                   currentView === 'home' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
@@ -638,6 +649,7 @@ export default function App() {
                 <LayoutDashboard className="w-4 h-4" /> Home
               </button>
               <button 
+                type="button"
                 onClick={() => handleNavClick('services')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
                   currentView === 'services' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
@@ -646,6 +658,7 @@ export default function App() {
                 <Layers className="w-4 h-4" /> Services
               </button>
               <button 
+                type="button"
                 onClick={() => handleNavClick('intelligence')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
                   currentView === 'intelligence' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
@@ -654,6 +667,7 @@ export default function App() {
                 <Users className="w-4 h-4" /> Intelligence
               </button>
               <button 
+                type="button"
                 onClick={() => handleNavClick('clientPortal')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
                   (currentView === 'clientPortal' || currentView === 'recoveryConfirmation' || currentView === 'clientDashboard') ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
@@ -662,6 +676,7 @@ export default function App() {
                 <ShieldCheck className="w-4 h-4" /> Client Portal
               </button>
               <button 
+                type="button"
                 onClick={() => handleNavClick('caseLookup')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
                   currentView === 'caseLookup' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
@@ -670,6 +685,7 @@ export default function App() {
                 <FileText className="w-4 h-4" /> Check Status
               </button>
               <button 
+                type="button"
                 onClick={() => handleNavClick('reviews')}
                 className={`px-4 py-3 flex items-center gap-4 rounded-lg transition-all duration-200 font-manrope text-xs font-bold uppercase tracking-widest text-left cursor-pointer ${
                   currentView === 'reviews' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-primary/10 hover:text-primary'
@@ -680,6 +696,7 @@ export default function App() {
             </nav>
             {/* Collapse Trigger (internal when open) */}
             <button 
+              type="button"
               onClick={toggleSidebar}
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-8 h-12 bg-slate-900 border border-white/10 rounded-r-lg flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer group"
             >
@@ -704,20 +721,73 @@ export default function App() {
         </>
       )}
 
-      <div className={`transition-all duration-500 ease-in-out ${
+      <div className={`${
+        currentView === 'recoveryConfirmation' ||
+        currentView === 'clientDashboard' ||
+        currentView === 'caseLookup'
+          ? ''
+          : 'transition-all duration-500 ease-in-out'
+      } ${
         !VIEWS_WITHOUT_SIDEBAR.includes(currentView) && !isSidebarCollapsed ? 'md:ml-72 md:pl-8' : ''
       } ${
         !VIEWS_WITHOUT_SIDEBAR.includes(currentView) && isSidebarCollapsed ? 'md:pl-12' : ''
+      } ${
+        showWhatsAppRail && !hideWhatsAppRail ? 'pr-10' : ''
       }`}>
-        <AnimatePresence mode="wait">
+        <AnimatePresence
+          mode={
+            currentView === 'recoveryConfirmation' ||
+            currentView === 'clientDashboard' ||
+            currentView === 'caseLookup'
+              ? 'sync'
+              : 'wait'
+          }
+          initial={false}
+        >
           <motion.div
             key={currentView}
-            initial={{ opacity: 0, y: 10 }}
+            initial={
+              currentView === 'recoveryConfirmation' ||
+              currentView === 'clientDashboard' ||
+              currentView === 'caseLookup'
+                ? false
+                : { opacity: 0, y: 8 }
+            }
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
+            exit={
+              currentView === 'recoveryConfirmation' ||
+              currentView === 'clientDashboard' ||
+              currentView === 'caseLookup'
+                ? undefined
+                : { opacity: 0 }
+            }
+            transition={{
+              duration:
+                currentView === 'recoveryConfirmation' ||
+                currentView === 'clientDashboard' ||
+                currentView === 'caseLookup'
+                  ? 0
+                  : 0.1,
+            }}
           >
-            <Suspense fallback={<div className="min-h-[40vh]" aria-hidden="true" />}>
+            <Suspense
+              fallback={
+                currentView === 'clientDashboard' ||
+                currentView === 'recoveryConfirmation' ||
+                currentView === 'caseLookup' ? (
+                  <div className="min-h-screen pt-32 sm:pt-40 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto" aria-busy="true">
+                    <div className="h-8 w-48 bg-white/5 rounded-lg mb-6 animate-pulse" />
+                    <div className="h-40 rounded-2xl bg-white/5 border border-white/5 animate-pulse" />
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="h-32 rounded-2xl bg-white/5 animate-pulse" />
+                      <div className="h-32 rounded-2xl bg-white/5 animate-pulse" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="min-h-[40vh]" aria-hidden="true" />
+                )
+              }
+            >
             {currentView === 'home' && (
               <HomeView
                 onNavigate={(view) => handleNavClick(view)}
@@ -783,7 +853,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Footer */}
-        <footer className="bg-slate-950/90 border-t border-white/10 pt-24 pb-12 px-6 relative z-50">
+        <footer className="bg-slate-950/90 border-t border-white/10 pt-24 pb-12 px-6 relative z-10">
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-stack-lg mb-12 sm:mb-20 relative z-10">
           <div className="space-y-8">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => handleNavClick('home')}>
@@ -808,6 +878,7 @@ export default function App() {
               <button 
                 onClick={() => handleNavClick('clientPortal')}
                 className="w-10 h-10 rounded-sm glass-panel flex items-center justify-center hover:bg-blue-600 transition-colors group cursor-pointer border-none"
+                type="button"
                 title="Open Case Portal"
               >
                 <FileText className="text-slate-300 w-5 h-5 group-hover:text-white" />

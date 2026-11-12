@@ -13,7 +13,7 @@ import { ReviewsSection } from '../components/ReviewsSection';
 
 interface AboutViewProps {
   onContactClick: () => void;
-  onNavigate?: (view: string) => void;
+  onNavigate?: (view: 'reviews') => void;
 }
 
 export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
@@ -297,7 +297,7 @@ export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
           </ul>
         </div>
         <div className="relative aspect-video glass-panel rounded-2xl border-white/10 flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
           <div className="text-center z-20">
             <div className="flex justify-center mb-4">
               <div className="flex gap-2">
@@ -324,6 +324,7 @@ export const AboutView = ({ onContactClick, onNavigate }: AboutViewProps) => {
           Whether you are an institution requiring a full security audit or an individual seeking asset recovery, our agents are standing by.
         </p>
         <button 
+          type="button"
           onClick={onContactClick}
           className="bg-primary text-white w-full sm:w-auto px-12 py-5 rounded-sm font-bold text-sm uppercase tracking-[0.2em] hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-primary/20 cursor-pointer"
         >

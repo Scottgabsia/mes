@@ -68,7 +68,7 @@ export const AdminLoginView: React.FC = () => {
             <div className="space-y-2">
               <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest pl-1">USERNAME OR EMAIL</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 pointer-events-none" />
                 <input 
                   type="text"
                   required

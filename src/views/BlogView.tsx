@@ -497,6 +497,7 @@ export const BlogView = () => {
           {categories.map((cat) => (
             <button 
               key={cat}
+              type="button"
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-lg font-mono text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
                 activeCategory === cat 
@@ -638,8 +639,7 @@ export const BlogView = () => {
           <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8">
             {submitted ? (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={false}
                 className="text-center py-8"
               >
                 <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-500">
@@ -667,6 +667,7 @@ export const BlogView = () => {
                   className="w-full bg-slate-950/40 border border-white/10 rounded-2xl px-6 py-4 text-xs font-mono text-white placeholder:text-slate-600 focus:outline-none focus:border-white/50 transition-all"
                 />
                 <button 
+                  type="submit"
                   disabled={submitting}
                   className="w-full bg-white text-slate-950 hover:bg-blue-50 px-8 py-4 rounded-2xl font-mono text-xs font-black uppercase tracking-[0.2em] transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >

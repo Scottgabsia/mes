@@ -96,6 +96,7 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
                 </p>
               </div>
               <button 
+                type="button"
                 onClick={onServiceClick}
                 className="w-full bg-error text-white h-12 sm:h-14 rounded font-bold text-[10px] sm:text-xs flex items-center justify-center gap-3 hover:bg-error/90 active:scale-[0.98] transition-all tracking-[0.1em] shadow-lg shadow-error/10 cursor-pointer"
               >
@@ -343,8 +344,7 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
         ].map((s, i) => (
           <div 
             key={i} 
-            onClick={onServiceClick}
-            className="glass-card p-6 flex flex-col group rounded-xl transition-all duration-500 hover:bg-slate-900/60 cursor-pointer border border-white/5 hover:border-primary/30"
+            className="glass-card p-6 flex flex-col group rounded-xl transition-all duration-500 hover:bg-slate-900/60 border border-white/5 hover:border-primary/30"
           >
             <div className="flex items-start justify-between mb-8">
               <div className={`w-14 h-14 rounded-xl ${s.bg} border ${s.border} flex items-center justify-center ${s.color} group-hover:scale-110 transition-all duration-300`}>
@@ -379,10 +379,8 @@ export const ServicesView = ({ onServiceClick }: ServicesViewProps) => {
                 <p className={`${s.color} font-fira text-lg font-bold`}>{s.success}</p>
               </div>
               <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onServiceClick();
-                }}
+                type="button"
+                onClick={onServiceClick}
                 className="bg-primary text-white h-12 px-6 rounded-lg font-bold text-[10px] flex items-center gap-2 hover:brightness-125 active:scale-95 transition-all cursor-pointer"
               >
                 {s.action}

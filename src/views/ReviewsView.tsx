@@ -1987,6 +1987,7 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
           ].map((btn) => (
             <button
               key={btn.id}
+              type="button"
               onClick={() => setFilter(btn.id as any)}
               className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 rounded-lg font-mono text-[9px] sm:text-[10px] font-bold tracking-widest transition-all uppercase cursor-pointer whitespace-nowrap ${
                 filter === btn.id 
@@ -2080,6 +2081,7 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
           <h3 className="text-white font-manrope font-bold text-xl uppercase tracking-tighter mb-2">No Matches Detected</h3>
           <p className="text-slate-500 font-fira text-sm uppercase tracking-widest">CLEAR_FILTERS_TO_SEE_MORE_INSTANCES</p>
           <button 
+            type="button"
             onClick={() => {setFilter('ALL'); setSearchQuery('');}}
             className="mt-8 px-8 py-3 bg-blue-600/10 border border-blue-500/30 text-blue-400 font-mono text-xs font-bold uppercase tracking-[0.2em] rounded-lg hover:bg-blue-600 hover:text-white transition-all"
           >
@@ -2097,6 +2099,7 @@ export const ReviewsView: React.FC<ReviewsViewProps> = ({ onNavigate }) => {
           </p>
         </div>
         <button 
+          type="button"
           onClick={() => onNavigate('submitReview')}
           className="px-10 py-4 bg-blue-600 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:brightness-110 active:scale-95 transition-all w-full md:w-auto"
         >

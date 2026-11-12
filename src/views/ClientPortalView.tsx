@@ -51,6 +51,8 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
   const [buffer, setBuffer] = React.useState(72);
 
   React.useEffect(() => {
+    void import('./RecoveryConfirmationView');
+    void import('./ClientDashboardView');
     const interval = setInterval(() => {
       setBuffer(prev => {
         const next = prev + (Math.random() > 0.5 ? 0.5 : -0.5);
@@ -193,6 +195,8 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
     };
 
     try {
+      void import('./ClientDashboardView');
+      void import('./RecoveryConfirmationView');
       const result = await submitRecoveryCase(submissionData);
       if (!result.serverSaved && !result.emailSent) {
         console.warn(
@@ -337,7 +341,7 @@ export const ClientPortalView = ({ onInitiateRecovery, onNavigate }: ClientPorta
                     <span className="w-1 h-3 bg-blue-500/50"></span> FULL_NAME
                   </label>
                   <div className="relative">
-                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                     <input 
                       required
                       name="operatorAlias"

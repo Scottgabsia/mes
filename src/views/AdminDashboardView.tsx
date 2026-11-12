@@ -1152,7 +1152,7 @@ const SMTPDiagnosticsPanel: React.FC = () => {
               
               <div className="flex gap-3">
                 <div className="relative flex-grow">
-                  <MailIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+                  <MailIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={14} />
                   <input 
                     type="email"
                     required

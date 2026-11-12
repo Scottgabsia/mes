@@ -41,8 +41,7 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({ onBack }) =>
     return (
       <main className="pt-32 sm:pt-40 pb-24 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={false}
           className="glass-panel p-6 sm:p-12 rounded-2xl border border-emerald-500/30 text-center relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none"></div>

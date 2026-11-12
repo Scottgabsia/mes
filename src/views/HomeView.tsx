@@ -22,6 +22,11 @@ interface HomeViewProps {
 }
 
 export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
+  React.useEffect(() => {
+    void import('./RecoveryConfirmationView');
+    void import('./ClientDashboardView');
+  }, []);
+
   const [balance, setBalance] = React.useState<number | string>(50000);
   const traceCount = getActiveTraceCount();
 
@@ -109,6 +114,8 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
     };
 
     try {
+      void import('./RecoveryConfirmationView');
+      void import('./ClientDashboardView');
       const result = await submitRecoveryCase(submissionData);
       onIntakeComplete({
         caseId: result.caseId,
@@ -164,6 +171,7 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
 
           <div className="flex flex-wrap items-center gap-6 pt-6">
             <button 
+              type="button"
               onClick={() => onNavigate('clientPortal')}
               className="bg-primary-container text-on-primary-container px-10 py-5 rounded-sm font-bold text-sm uppercase tracking-[0.2em] hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(0,98,255,0.4)] cursor-pointer"
             >
@@ -554,8 +562,7 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
         ].map((service, idx) => (
           <div 
             key={idx} 
-            onClick={() => onNavigate('clientPortal')}
-            className="glass-panel p-card-padding rounded-sm group hover:border-blue-500/40 transition-all duration-500 relative overflow-hidden cursor-pointer"
+            className="glass-panel p-card-padding rounded-sm group hover:border-blue-500/40 transition-all duration-500 relative overflow-hidden"
           >
             <div className="w-14 h-14 mb-8 rounded-sm bg-blue-600/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
               <service.icon className="w-10 h-10" />
@@ -575,6 +582,13 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
                 </div>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('clientPortal')}
+              className="mt-6 text-[10px] font-fira font-bold uppercase tracking-widest text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+            >
+              Open a case →
+            </button>
           </div>
         ))}
       </section>
@@ -598,8 +612,8 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
         </div>
         
         <div className="glass-panel h-[350px] sm:h-[500px] rounded-sm border border-white/5 overflow-hidden relative group">
-          <div className="absolute inset-0 bg-[url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs')] bg-cover bg-center opacity-40 grayscale contrast-125 group-hover:scale-105 transition-transform duration-[20s]" />
-          <div className="absolute inset-0 bg-blue-900/10 mix-blend-color" />
+          <div className="absolute inset-0 bg-[url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxz_T8aUidvRQbs3A_e-gViEpOyshtgn8rz5RagHcGzm9oZ0KHl_dlJsBS4Z0sByAk5HGYA3JfT-HyQkAIUQecOJ7_1ndRSnslqmeXjUahQo6Orec5X6hjchIFdxpER7lx4HGRJf9qd8nfahsNEyI-obzUfLPscPLspGCvNHUMNPrCQC4lGh5K7p83DbrhDiaF-c9tZk6F1gYsOzOoVyBSYDcg8A1HW2jlvHLLCs-7CYv1P0Chxj0Cooh_QIU7Db1nvPLpGIEIOEs')] bg-cover bg-center opacity-40 grayscale contrast-125 group-hover:scale-105 transition-transform duration-[20s] pointer-events-none" />
+          <div className="absolute inset-0 bg-blue-900/10 mix-blend-color pointer-events-none" />
           
           <div className="absolute top-1/4 left-1/3 w-4 h-4 rounded-full bg-blue-500/60 animate-ping" />
           <div className="absolute top-1/2 left-2/3 w-3 h-3 rounded-full bg-blue-500/60 animate-ping delay-700" />
@@ -627,10 +641,10 @@ export const HomeView = ({ onNavigate, onIntakeComplete }: HomeViewProps) => {
         <div className="flex items-center justify-between mb-10">
           <h3 className="text-3xl font-bold text-white">Case Resolution Dossiers</h3>
           <div className="flex gap-4">
-            <button className="w-12 h-12 rounded-sm glass-panel flex items-center justify-center hover:bg-white/10 transition-all border-white/10">
+            <button type="button" className="w-12 h-12 rounded-sm glass-panel flex items-center justify-center hover:bg-white/10 transition-all border-white/10">
               <ChevronLeft className="text-slate-300 w-5 h-5" />
             </button>
-            <button className="w-12 h-12 rounded-sm glass-panel flex items-center justify-center hover:bg-white/10 transition-all border-white/10">
+            <button type="button" className="w-12 h-12 rounded-sm glass-panel flex items-center justify-center hover:bg-white/10 transition-all border-white/10">
               <ChevronRight className="text-slate-300 w-5 h-5" />
             </button>
           </div>

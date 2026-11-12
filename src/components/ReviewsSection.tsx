@@ -138,6 +138,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onSeeMore }) => 
 
       <div className="flex justify-center">
         <button
+          type="button"
           onClick={onSeeMore}
           className="px-10 py-4 glass-panel border border-blue-500/30 hover:border-blue-500 bg-blue-500/5 text-blue-400 font-bold text-[10px] uppercase tracking-[0.2em] transition-all hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group cursor-pointer"
         >

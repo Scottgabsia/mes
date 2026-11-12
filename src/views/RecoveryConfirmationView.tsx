@@ -8,9 +8,9 @@ import {
   ListOrdered,
 } from 'lucide-react';
 import { CONTACT_EMAIL } from '../constants';
-import { motion } from 'motion/react';
 import { WhatsAppSupportPanel } from '../components/WhatsAppSupportPanel';
 import { trackIntakeLeadConversion } from '../lib/adsTracking';
+import { prefetchClientWorkspace } from './lazyViews';
 
 interface RecoveryConfirmationViewProps {
   onBackToDashboard: () => void;
@@ -34,6 +34,10 @@ export const RecoveryConfirmationView = ({
   const displayName = operatorAlias?.trim() || null;
 
   React.useEffect(() => {
+    prefetchClientWorkspace();
+  }, []);
+
+  React.useEffect(() => {
     trackIntakeLeadConversion({
       formId: 'intake-received',
       caseId: displayCaseId || undefined,
@@ -43,39 +47,30 @@ export const RecoveryConfirmationView = ({
   }, [displayCaseId, estimatedValue, service]);
 
   return (
-    <main className="pt-40 pb-32 px-6 lg:px-12 max-w-[800px] mx-auto min-h-screen relative z-10 flex flex-col items-center text-center">
+    <main className="pt-24 xs:pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-12 max-w-[800px] mx-auto min-h-[70vh] relative z-10 flex flex-col items-center text-center">
       {/* Success Icon */}
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        className="w-24 h-24 rounded-full bg-blue-500/20 border-2 border-blue-500 flex items-center justify-center mb-10 shadow-[0_0_30px_rgba(59,130,246,0.4)]"
-      >
-        <CheckCircle2 className="text-blue-400 w-12 h-12" />
-      </motion.div>
+      <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-blue-500/20 border-2 border-blue-500 flex items-center justify-center mb-6 sm:mb-10 shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+        <CheckCircle2 className="text-blue-400 w-8 h-8 sm:w-12 sm:h-12" />
+      </div>
 
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
+      <div className="w-full">
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="h-px w-8 bg-blue-500/30"></div>
           <span className="text-blue-400 font-mono text-[10px] uppercase tracking-[0.4em]">Submission Received</span>
           <div className="h-px w-8 bg-blue-500/30"></div>
         </div>
 
-        <h1 className="text-4xl lg:text-5xl font-manrope font-extrabold text-white mb-8 uppercase tracking-tighter">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-manrope font-extrabold text-white mb-6 sm:mb-8 uppercase tracking-tighter">
           INTAKE <span className="text-blue-500">RECEIVED</span>
         </h1>
 
-        <div className="glass-panel p-8 rounded-2xl border border-white/5 mb-12 relative overflow-hidden">
+        <div className="glass-panel p-4 sm:p-8 rounded-2xl border border-white/5 mb-8 sm:mb-12 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent animate-scan"></div>
           
-          <div className="flex flex-col items-stretch gap-8 text-left">
+          <div className="flex flex-col items-stretch gap-5 sm:gap-8 text-left">
             <div className="flex items-start gap-4 text-slate-300">
               <Mail className="text-blue-500 w-6 h-6 flex-shrink-0 mt-0.5" />
-              <p className="text-lg font-manrope leading-relaxed">
+              <p className="text-base sm:text-lg font-manrope leading-relaxed">
                 Thank you. Your forensic request has been{' '}
                 <span className="text-white font-bold">successfully transmitted</span>. Our intake
                 department has been notified and your details are in our secure monitoring system.
@@ -142,18 +137,19 @@ export const RecoveryConfirmationView = ({
           </div>
         </div>
 
-        <WhatsAppSupportPanel className="mb-12 w-full text-left" />
+        <WhatsAppSupportPanel className="mb-8 sm:mb-12 w-full text-left" />
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 sm:gap-6">
           <button 
+            type="button"
             onClick={onBackToDashboard}
-            className="bg-blue-600 text-white px-10 py-4 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center gap-3 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group cursor-pointer"
+            className="w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-10 py-4 rounded-lg font-manrope font-extrabold uppercase tracking-widest flex items-center justify-center gap-3 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_#0062ff44] group cursor-pointer"
           >
             <LayoutDashboard size={18} />
             Click to access your dashboard
           </button>
           
-          <div className="flex flex-col items-start gap-1 px-6 py-4 rounded-lg border border-white/5 bg-white/5 text-left min-w-[220px]">
+          <div className="flex flex-col items-start gap-1 px-6 py-4 rounded-lg border border-white/5 bg-white/5 text-left w-full sm:w-auto sm:min-w-[220px]">
             <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
               Case ID: {displayCaseId ? `#${displayCaseId}` : 'Assigning…'}
             </span>
@@ -169,7 +165,7 @@ export const RecoveryConfirmationView = ({
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Grid background effect */}
       <div className="fixed inset-0 pointer-events-none z-[-1] opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>

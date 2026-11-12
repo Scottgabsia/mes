@@ -95,6 +95,7 @@ export const FAQView = ({ onNavigate }: FAQViewProps) => {
                       className={`glass-panel border-white/5 overflow-hidden transition-all duration-300 hover:border-blue-500/20 ${isOpen ? 'bg-blue-600/5 border-blue-500/30' : ''}`}
                     >
                       <button 
+                        type="button"
                         onClick={() => toggle(id)}
                         className="w-full px-8 py-6 flex items-center justify-between text-left group"
                       >

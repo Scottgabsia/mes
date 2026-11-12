@@ -13,6 +13,7 @@ import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { lookupCaseByEmail } from '../lib/caseLookupApi';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { SeoEnrichment } from '../components/SeoEnrichment';
+import { prefetchClientWorkspace } from './lazyViews';
 
 interface CaseLookupViewProps {
   onCaseFound: (caseData: any) => void;
@@ -23,12 +24,17 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
   const [isSearching, setIsSearching] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  React.useEffect(() => {
+    prefetchClientWorkspace();
+  }, []);
+
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setIsSearching(true);
     setError(null);
+    prefetchClientWorkspace();
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
@@ -113,7 +119,7 @@ export const CaseLookupView = ({ onCaseFound }: CaseLookupViewProps) => {
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-transparent rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
                 <div className="relative">
-                  <Mail className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+                  <Mail className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
                   <input 
                     required
                     type="email"

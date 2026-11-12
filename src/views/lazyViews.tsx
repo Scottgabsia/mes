@@ -82,15 +82,32 @@ export const FAQView = lazy(() =>
 );
 export const CaseManagerView = lazy(() => import("./AdminDashboardView"));
 
+/** Warm the client portal workspace so Check Status / first visit open instantly. */
+export function prefetchClientWorkspace(): void {
+  void import("./ClientDashboardView");
+  void import("./RecoveryConfirmationView");
+}
+
 /** Warm common page chunks after first paint so nav is instant. */
 export function prefetchPrimaryViews(): void {
+  prefetchClientWorkspace();
   void import("./AboutView");
   void import("./ServicesView");
   void import("./FAQView");
   void import("./ReviewsView");
   void import("./CaseLookupView");
-  void import("./RecoveryConfirmationView");
   void import("./IntelligenceView");
+  void import("./BlogView");
+  void import("./SubmitReviewView");
+  void import("./ToolsView");
+  void import("./ChainTraceabilityView");
+  void import("./ExchangeRecoveryView");
+  void import("./LegalEnforcementView");
+  void import("./RiskMonitoringView");
+  void import("./ISO27001View");
+  void import("./SOC2View");
+  void import("./GDPRView");
+  void import("./AMLKYCView");
   void import("./PrivacyPolicyView");
   void import("./TermsOfServiceView");
 }
