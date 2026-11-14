@@ -6,7 +6,40 @@ import { Jimp } from "jimp";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import toIco from "to-ico";
+
+/** Build a multi-size ICO from PNG buffers without the unmaintained to-ico tree. */
+function pngsToIco(pngBuffers) {
+  const count = pngBuffers.length;
+  const headerSize = 6 + 16 * count;
+  let offset = headerSize;
+  const entries = pngBuffers.map((buf) => {
+    const entry = { buf, offset, size: buf.length };
+    offset += buf.length;
+    return entry;
+  });
+  const out = Buffer.alloc(offset);
+  out.writeUInt16LE(0, 0);
+  out.writeUInt16LE(1, 2);
+  out.writeUInt16LE(count, 4);
+  let pos = 6;
+  for (const entry of entries) {
+    const width = entry.buf.readUInt32BE(16);
+    const height = entry.buf.readUInt32BE(20);
+    out[pos] = width >= 256 ? 0 : width;
+    out[pos + 1] = height >= 256 ? 0 : height;
+    out[pos + 2] = 0;
+    out[pos + 3] = 0;
+    out.writeUInt16LE(1, pos + 4);
+    out.writeUInt16LE(32, pos + 6);
+    out.writeUInt32LE(entry.size, pos + 8);
+    out.writeUInt32LE(entry.offset, pos + 12);
+    pos += 16;
+  }
+  for (const entry of entries) {
+    entry.buf.copy(out, entry.offset);
+  }
+  return out;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(__dirname, "..", "public");
@@ -45,7 +78,7 @@ const icoBuffers = await Promise.all(
     fs.promises.readFile(path.join(publicDir, `favicon-${size}x${size}.png`))
   )
 );
-await fs.promises.writeFile(path.join(publicDir, "favicon.ico"), await toIco(icoBuffers));
+await fs.promises.writeFile(path.join(publicDir, "favicon.ico"), pngsToIco(icoBuffers));
 
 const manifest = {
   name: "Crypto Recovery Assets",

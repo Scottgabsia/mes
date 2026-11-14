@@ -7,6 +7,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     build: {
+      target: 'es2022',
       outDir: 'dist',
       emptyOutDir: true,
       cssCodeSplit: true,
@@ -34,6 +35,9 @@ export default defineConfig(({mode}) => {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
+    },
+    optimizeDeps: {
+      esbuildOptions: { target: 'es2022' },
     },
     server: {
       host: true,
