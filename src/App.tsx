@@ -50,6 +50,7 @@ import {
   prefetchPrimaryViews,
   prefetchClientWorkspace,
 } from './views/lazyViews';
+import { trackMetaPageView } from './lib/adsTracking';
 import {
   intakeSessionToCase,
   loadIntakeSession,
@@ -273,6 +274,15 @@ export default function App() {
   // Sync currentView with location for direct URL access
   React.useEffect(() => {
     setCurrentView(viewFromPathname(location.pathname));
+  }, [location.pathname]);
+
+  const metaPageViewReady = React.useRef(false);
+  React.useEffect(() => {
+    if (!metaPageViewReady.current) {
+      metaPageViewReady.current = true;
+      return;
+    }
+    trackMetaPageView();
   }, [location.pathname]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
